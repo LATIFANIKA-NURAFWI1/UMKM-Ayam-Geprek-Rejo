@@ -3,10 +3,12 @@
 namespace App\Livewire\Pengeluaran;
 
 use App\Models\Expense;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Layout('layouts.app')]
 class Index extends Component
 {
     use WithPagination;
@@ -36,12 +38,12 @@ class Index extends Component
         [$year, $month] = explode('-', $this->bulan);
 
         $expenses = Expense::when($this->search, fn ($q) => $q->where('description', 'like', "%{$this->search}%"))
-            ->whereYear('date', $year)
-            ->whereMonth('date', $month)
-            ->latest('date')
+            ->whereYear('expense_date', $year)
+            ->whereMonth('expense_date', $month)
+            ->latest('expense_date')
             ->paginate(15);
 
-        $totalBulanIni = Expense::whereYear('date', $year)->whereMonth('date', $month)->sum('amount');
+        $totalBulanIni = Expense::whereYear('expense_date', $year)->whereMonth('expense_date', $month)->sum('amount');
 
         return view('livewire.pengeluaran.index', compact('expenses', 'totalBulanIni'));
     }

@@ -1,5 +1,4 @@
-<x-layouts::app :title="__('Laporan Penjualan')">
-    <div class="flex h-full w-full flex-1 flex-col gap-6 p-6">
+<div class="flex h-full w-full flex-1 flex-col gap-6 p-6">
 
         <div>
             <flux:heading size="xl" level="1">Laporan Penjualan</flux:heading>
@@ -70,5 +69,4 @@
             </table>
         </div>
 
-    </div>
-</x-layouts::app>
+</div>

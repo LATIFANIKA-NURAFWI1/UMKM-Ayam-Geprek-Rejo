@@ -3,10 +3,13 @@
 namespace App\Livewire\Kategori;
 
 use App\Models\Category;
+use Illuminate\Support\Str;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Layout('layouts.app')]
 class Index extends Component
 {
     use WithPagination;
@@ -44,13 +47,13 @@ class Index extends Component
     public function save(): void
     {
         $this->validate([
-            'name' => 'required|string|max:100',
+            'name'       => 'required|string|max:100',
             'sort_order' => 'integer|min:0',
         ]);
 
         $data = [
             'name'       => $this->name,
-            'slug'       => \Str::slug($this->name),
+            'slug'       => Str::slug($this->name),
             'icon'       => $this->icon,
             'sort_order' => $this->sort_order,
             'is_active'  => $this->is_active,
@@ -74,9 +77,10 @@ class Index extends Component
 
     public function render()
     {
+        // Urut A-Z berdasarkan nama
         $categories = Category::withCount('menuItems')
             ->when($this->search, fn ($q) => $q->where('name', 'like', "%{$this->search}%"))
-            ->ordered()
+            ->orderBy('name')
             ->paginate(15);
 
         return view('livewire.kategori.index', compact('categories'));

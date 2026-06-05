@@ -3,8 +3,10 @@
 namespace App\Livewire\Laporan;
 
 use App\Models\Order;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 
+#[Layout('layouts.app')]
 class Index extends Component
 {
     public string $dari  = '';
