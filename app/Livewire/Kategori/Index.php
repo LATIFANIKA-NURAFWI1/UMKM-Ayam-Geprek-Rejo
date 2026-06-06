@@ -76,13 +76,16 @@ class Index extends Component
         }
 
         $this->showModal = false;
-        $this->dispatch('notify', message: 'Kategori berhasil disimpan.');
+        session()->flash('status', $this->editId ? 'Kategori berhasil diperbarui.' : 'Kategori berhasil ditambahkan.');
+        $this->reset(['editId', 'name']);
+        $this->is_active = true;
     }
 
     public function delete(int $id): void
     {
-        Category::findOrFail($id)->delete();
-        $this->dispatch('notify', message: 'Kategori berhasil dihapus.');
+        $cat = Category::findOrFail($id);
+        $cat->delete();
+        session()->flash('status', 'Kategori ' . $cat->name . ' berhasil dihapus.');
     }
 
     public function render()

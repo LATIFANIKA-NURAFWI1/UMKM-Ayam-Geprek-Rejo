@@ -56,9 +56,9 @@
             <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
                 @forelse($vouchers as $v)
                     @php
-                        $isExpired = $v->end_date ? $v->end_date->isPast() : false;
+                        $isExpired = $v->expires_at ? $v->expires_at->isPast() : false;
                         $isActive  = $v->is_active && !$isExpired;
-                        $quotaFull = $v->max_uses && $v->used_count >= $v->max_uses;
+                        $quotaFull = $v->max_uses && $v->uses_count >= $v->max_uses;
                     @endphp
                     <tr class="group transition hover:bg-zinc-50 dark:hover:bg-zinc-800/40">
                         <td class="px-5 py-4">
@@ -66,8 +66,8 @@
                                 <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100 text-lg">🎟️</div>
                                 <div>
                                     <p class="font-mono text-sm font-bold tracking-wider text-zinc-900 dark:text-white">{{ $v->code }}</p>
-                                    @if($v->min_purchase > 0)
-                                        <p class="text-xs text-zinc-400">Min. Rp {{ number_format($v->min_purchase, 0, ',', '.') }}</p>
+                                    @if($v->minimum_order > 0)
+                                        <p class="text-xs text-zinc-400">Min. Rp {{ number_format($v->minimum_order, 0, ',', '.') }}</p>
                                     @endif
                                 </div>
                             </div>
@@ -85,9 +85,9 @@
                         </td>
                         <td class="px-5 py-4">
                             <p class="text-xs text-zinc-500">
-                                {{ $v->start_date->translatedFormat('d M Y') }}
+                                {{ $v->starts_at?->translatedFormat('d M Y') ?? '—' }}
                                 <span class="mx-1">→</span>
-                                {{ $v->end_date->translatedFormat('d M Y') }}
+                                {{ $v->expires_at?->translatedFormat('d M Y') ?? 'Tanpa batas' }}
                             </p>
                             @if($isExpired)
                                 <span class="mt-1 inline-block rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">Kadaluarsa</span>
@@ -95,7 +95,7 @@
                         </td>
                         <td class="px-5 py-4 text-center">
                             <span class="{{ $quotaFull ? 'text-red-600 font-bold' : 'text-zinc-600' }} text-sm">
-                                {{ $v->used_count }}
+                                {{ $v->uses_count }}
                                 @if($v->max_uses)
                                     / {{ $v->max_uses }}
                                 @else

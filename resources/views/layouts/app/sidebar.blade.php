@@ -94,6 +94,41 @@
 
             <flux:spacer />
 
+            {{-- ── Theme Toggle ────────────────────────────────────────────── --}}
+            <div x-data="{
+                theme: localStorage.getItem('flux-theme') ?? 'system',
+                apply(t) {
+                    this.theme = t;
+                    localStorage.setItem('flux-theme', t);
+                    document.documentElement.classList.toggle('dark',
+                        t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                    );
+                },
+                init() { this.apply(this.theme); }
+            }" class="px-3 pb-2">
+                <p class="mb-1.5 px-1 text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Tema</p>
+                <div class="flex rounded-xl border border-zinc-200 bg-zinc-100 p-1 dark:border-zinc-700 dark:bg-zinc-800">
+                    <button @click="apply('light')"
+                        :class="theme==='light' ? 'bg-white shadow text-orange-500 dark:bg-zinc-700' : 'text-zinc-400 hover:text-zinc-600'"
+                        class="flex flex-1 items-center justify-center gap-1 rounded-lg py-1.5 text-xs font-semibold transition">
+                        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 110 10A5 5 0 0112 7z"/></svg>
+                        Terang
+                    </button>
+                    <button @click="apply('dark')"
+                        :class="theme==='dark' ? 'bg-white shadow text-orange-500 dark:bg-zinc-700' : 'text-zinc-400 hover:text-zinc-600'"
+                        class="flex flex-1 items-center justify-center gap-1 rounded-lg py-1.5 text-xs font-semibold transition">
+                        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+                        Gelap
+                    </button>
+                    <button @click="apply('system')"
+                        :class="theme==='system' ? 'bg-white shadow text-orange-500 dark:bg-zinc-700' : 'text-zinc-400 hover:text-zinc-600'"
+                        class="flex flex-1 items-center justify-center gap-1 rounded-lg py-1.5 text-xs font-semibold transition">
+                        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        Auto
+                    </button>
+                </div>
+            </div>
+
             <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
         </flux:sidebar>
 
@@ -152,6 +187,9 @@
         </flux:header>
 
         {{ $slot }}
+
+        {{-- Flash notification global (sukses/error/warning/info) --}}
+        <x-flash-notification />
 
         @persist('toast')
             <flux:toast.group>

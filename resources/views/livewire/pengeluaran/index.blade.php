@@ -63,7 +63,6 @@
                 'operasional' => ['bg-blue-50',    'text-blue-600',    'bg-blue-100',    '⚡'],
                 'gaji'        => ['bg-purple-50',  'text-purple-600',  'bg-purple-100',  '👤'],
                 'perawatan'   => ['bg-amber-50',   'text-amber-600',   'bg-amber-100',   '🔧'],
-                'marketing'   => ['bg-orange-50',  'text-orange-600',  'bg-orange-100',  '📢'],
                 'lainnya'     => ['bg-zinc-50',    'text-zinc-600',    'bg-zinc-100',    '📋'],
             ];
         @endphp
@@ -139,7 +138,6 @@
                                     'operasional' => 'bg-blue-100 text-blue-700',
                                     'gaji'        => 'bg-purple-100 text-purple-700',
                                     'perawatan'   => 'bg-amber-100 text-amber-700',
-                                    'marketing'   => 'bg-orange-100 text-orange-700',
                                     'lainnya'     => 'bg-zinc-100 text-zinc-700',
                                 ][$expense->category] ?? 'bg-zinc-100 text-zinc-700';
                             @endphp

@@ -42,7 +42,7 @@ class Index extends Component
 
     // ─── Constants ───────────────────────────────────────────────────────────
 
-    public const CATEGORIES = ['bahan_baku', 'operasional', 'gaji', 'perawatan', 'marketing', 'lainnya'];
+    public const CATEGORIES = ['bahan_baku', 'operasional', 'gaji', 'perawatan', 'lainnya'];
 
     // =========================================================================
     // LIFECYCLE

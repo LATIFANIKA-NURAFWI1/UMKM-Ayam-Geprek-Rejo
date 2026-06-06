@@ -27,14 +27,15 @@ class Index extends Component
     public bool   $showForm  = false;
     public ?int   $editingId = null;
 
-    public string  $formCode         = '';
-    public string  $formDiscountType = 'percentage';
+    public string  $formCode          = '';
+    public string  $formName          = '';   // nama voucher (deskripsi singkat)
+    public string  $formDiscountType  = 'percentage';
     public string  $formDiscountValue = '';
-    public string  $formMinPurchase  = '0';
-    public string  $formStartDate    = '';
-    public string  $formEndDate      = '';
-    public string  $formMaxUses      = '';
-    public bool    $formIsActive     = true;
+    public string  $formMinPurchase   = '0';
+    public string  $formStartDate     = '';
+    public string  $formEndDate       = '';
+    public string  $formMaxUses       = '';
+    public bool    $formIsActive      = true;
 
     // ─── Delete ──────────────────────────────────────────────────────────────
 
@@ -70,11 +71,12 @@ class Index extends Component
 
         $this->editingId         = $id;
         $this->formCode          = $v->code;
+        $this->formName          = $v->name ?? '';
         $this->formDiscountType  = $v->discount_type;
         $this->formDiscountValue = (string) $v->discount_value;
-        $this->formMinPurchase   = (string) (int) ($v->min_purchase ?? 0);
-        $this->formStartDate     = $v->start_date->toDateString();
-        $this->formEndDate       = $v->end_date->toDateString();
+        $this->formMinPurchase   = (string) (int) ($v->minimum_order ?? 0);
+        $this->formStartDate     = $v->starts_at ? $v->starts_at->toDateString() : today()->toDateString();
+        $this->formEndDate       = $v->expires_at ? $v->expires_at->toDateString() : today()->addMonth()->toDateString();
         $this->formMaxUses       = $v->max_uses ? (string) $v->max_uses : '';
         $this->formIsActive      = (bool) $v->is_active;
         $this->showForm          = true;
@@ -84,17 +86,23 @@ class Index extends Component
     {
         $rules = [
             'formCode'          => ['required', 'min:3', 'max:50', 'alpha_dash'],
+            'formName'          => ['nullable', 'string', 'max:100'],
             'formDiscountType'  => ['required', 'in:percentage,fixed'],
             'formDiscountValue' => ['required', 'numeric', 'min:0.01'],
             'formMinPurchase'   => ['required', 'numeric', 'min:0'],
-            'formStartDate'     => ['required', 'date'],
-            'formEndDate'       => ['required', 'date', 'after_or_equal:formStartDate'],
+            'formStartDate'     => ['nullable', 'date'],
+            'formEndDate'       => ['nullable', 'date'],
             'formMaxUses'       => ['nullable', 'integer', 'min:1'],
         ];
 
         // Validasi diskon persentase max 100
         if ($this->formDiscountType === 'percentage') {
             $rules['formDiscountValue'][] = 'max:100';
+        }
+
+        // after_or_equal jika keduanya diisi
+        if ($this->formStartDate && $this->formEndDate) {
+            $rules['formEndDate'][] = 'after_or_equal:formStartDate';
         }
 
         // Kode harus unik kecuali saat edit
@@ -112,15 +120,17 @@ class Index extends Component
             'formEndDate.after_or_equal' => 'Tanggal akhir harus sama atau setelah tanggal mulai.',
         ]);
 
+        // Mapping ke nama kolom model yang sebenarnya
         $payload = [
-            'code'           => strtoupper($this->formCode),
-            'discount_type'  => $this->formDiscountType,
+            'code'          => strtoupper($this->formCode),
+            'name'          => $this->formName ?: strtoupper($this->formCode), // fallback ke kode jika kosong
+            'discount_type' => $this->formDiscountType,
             'discount_value' => (float) $this->formDiscountValue,
-            'min_purchase'   => (float) $this->formMinPurchase,
-            'start_date'     => $this->formStartDate,
-            'end_date'       => $this->formEndDate,
-            'max_uses'       => $this->formMaxUses ? (int) $this->formMaxUses : null,
-            'is_active'      => $this->formIsActive,
+            'minimum_order' => (float) $this->formMinPurchase,
+            'starts_at'     => $this->formStartDate ?: null,
+            'expires_at'    => $this->formEndDate ?: null,
+            'max_uses'      => $this->formMaxUses ? (int) $this->formMaxUses : null,
+            'is_active'     => $this->formIsActive,
         ];
 
         if ($this->editingId) {
@@ -173,8 +183,9 @@ class Index extends Component
     {
         $vouchers = Voucher::when($this->search, fn ($q) => $q
                 ->where('code', 'like', "%{$this->search}%")
+                ->orWhere('name', 'like', "%{$this->search}%")
             )
-            ->when($this->filterStatus === 'active', fn ($q) => $q->where('is_active', true))
+            ->when($this->filterStatus === 'active',   fn ($q) => $q->where('is_active', true))
             ->when($this->filterStatus === 'inactive', fn ($q) => $q->where('is_active', false))
             ->latest()
             ->paginate(20);
@@ -189,6 +200,7 @@ class Index extends Component
     private function resetForm(): void
     {
         $this->formCode          = '';
+        $this->formName          = '';
         $this->formDiscountType  = 'percentage';
         $this->formDiscountValue = '';
         $this->formMinPurchase   = '0';

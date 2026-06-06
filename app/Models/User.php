@@ -14,7 +14,7 @@ use Laravel\Fortify\Contracts\PasskeyUser;
 use Laravel\Fortify\PasskeyAuthenticatable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'password', 'role'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements PasskeyUser
 {
@@ -33,6 +33,32 @@ class User extends Authenticatable implements PasskeyUser
             'password' => 'hashed',
         ];
     }
+
+    // =========================================================================
+    // ROLE HELPERS
+    // =========================================================================
+
+    /** Apakah user ini adalah owner/admin? */
+    public function isOwner(): bool
+    {
+        return $this->role === 'owner';
+    }
+
+    /** Apakah user ini kasir? */
+    public function isKasir(): bool
+    {
+        return $this->role === 'kasir';
+    }
+
+    /** Apakah user ini KDS dapur? */
+    public function isKds(): bool
+    {
+        return $this->role === 'kds';
+    }
+
+    // =========================================================================
+    // INITIALS
+    // =========================================================================
 
     /**
      * Get the user's initials

@@ -20,6 +20,19 @@ use Illuminate\Support\Facades\Route;
 
 Route::view("/", "welcome")->name("home");
 
+// ── Post-Login Redirect (berdasarkan role) ───────────────────────────────────
+Route::get('/redirect-by-role', function () {
+    if (! auth()->check()) {
+        return redirect()->route('login');
+    }
+    return match (auth()->user()->role) {
+        'owner' => redirect()->route('dashboard'),
+        'kasir' => redirect()->route('kasir.dashboard'),
+        'kds'   => redirect()->route('kds.display'),
+        default => redirect()->route('dashboard'),
+    };
+})->middleware('auth')->name('redirect.by.role');
+
 // ── Customer Self-Order (public, no auth) ─────────────────────────────────────
 Route::prefix("order")
     ->name("order.")
@@ -30,8 +43,8 @@ Route::prefix("order")
         Route::get("/success/{order}", SuccessPage::class)->name("success");
     });
 
-// ── Admin Panel ───────────────────────────────────────────────────────────────
-Route::middleware(["auth", "verified"])->group(function () {
+// ── Owner / Admin Panel (hanya role: owner) ───────────────────────────────────
+Route::middleware(["auth", "verified", "role:owner"])->group(function () {
     // Dashboard
     Route::view("dashboard", "dashboard")->name("dashboard");
 
@@ -62,9 +75,13 @@ Route::middleware(["auth", "verified"])->group(function () {
     Route::get("laporan", LaporanIndex::class)->name("laporan.index");
 });
 
-// ── Operational Screens (auth only) ──────────────────────────────────────────
-Route::middleware(["auth"])->group(function () {
+// ── Kasir Dashboard (role: kasir) ─────────────────────────────────────────────
+Route::middleware(["auth", "role:kasir,owner"])->group(function () {
     Route::get("/kasir", CashierDashboard::class)->name("kasir.dashboard");
+});
+
+// ── KDS Dapur (role: kds) ─────────────────────────────────────────────────────
+Route::middleware(["auth", "role:kds,owner"])->group(function () {
     Route::get("/kds", KdsDisplay::class)->name("kds.display");
 });
 

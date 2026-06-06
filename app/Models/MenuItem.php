@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class MenuItem extends Model
 {
@@ -22,6 +23,36 @@ class MenuItem extends Model
         'is_available',
         'sort_order',
     ];
+
+    // ─── Auto-generate slug ───────────────────────────────────────────────────
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function (self $item) {
+            if (empty($item->slug)) {
+                $item->slug = self::generateUniqueSlug($item->name);
+            }
+        });
+
+        static::updating(function (self $item) {
+            if ($item->isDirty('name') && empty($item->slug)) {
+                $item->slug = self::generateUniqueSlug($item->name);
+            }
+        });
+    }
+
+    private static function generateUniqueSlug(string $name): string
+    {
+        $base = Str::slug($name);
+        $slug = $base;
+        $i    = 1;
+        while (static::withTrashed()->where('slug', $slug)->exists()) {
+            $slug = $base . '-' . $i++;
+        }
+        return $slug;
+    }
 
     protected function casts(): array
     {

@@ -24,14 +24,6 @@
             <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari nama / no. HP…"
                 class="w-full rounded-xl border border-zinc-300 py-2 pl-10 pr-4 text-sm text-zinc-700 placeholder-zinc-400 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200"/>
         </div>
-        <select wire:model.live="filterTier"
-            class="rounded-xl border border-zinc-300 px-4 py-2 text-sm text-zinc-700 focus:border-orange-400 focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200">
-            <option value="">Semua Tier</option>
-            <option value="bronze">🥉 Bronze</option>
-            <option value="silver">🥈 Silver</option>
-            <option value="gold">🥇 Gold</option>
-            <option value="platinum">💎 Platinum</option>
-        </select>
         <select wire:model.live="filterStatus"
             class="rounded-xl border border-zinc-300 px-4 py-2 text-sm text-zinc-700 focus:border-orange-400 focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200">
             <option value="">Semua Status</option>
@@ -46,7 +38,6 @@
             <thead class="bg-zinc-50 dark:bg-zinc-800/60">
                 <tr>
                     <th class="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-zinc-500">Member</th>
-                    <th class="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-zinc-500">Tier</th>
                     <th class="px-5 py-3.5 text-right text-xs font-semibold uppercase tracking-wide text-zinc-500">Poin</th>
                     <th class="px-5 py-3.5 text-right text-xs font-semibold uppercase tracking-wide text-zinc-500">Total Belanja</th>
                     <th class="px-5 py-3.5 text-center text-xs font-semibold uppercase tracking-wide text-zinc-500">Pesanan</th>
@@ -56,14 +47,6 @@
             </thead>
             <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
                 @forelse($members as $member)
-                    @php
-                        $tierBadge = [
-                            'platinum' => ['💎 Platinum', 'bg-violet-100 text-violet-700'],
-                            'gold'     => ['🥇 Gold',     'bg-yellow-100 text-yellow-700'],
-                            'silver'   => ['🥈 Silver',   'bg-zinc-200 text-zinc-700'],
-                            'bronze'   => ['🥉 Bronze',   'bg-amber-100 text-amber-700'],
-                        ][$member->tier] ?? ['❓ Unknown', 'bg-zinc-100 text-zinc-500'];
-                    @endphp
                     <tr class="group transition hover:bg-zinc-50 dark:hover:bg-zinc-800/40">
                         <td class="px-5 py-4">
                             <div class="flex items-center gap-3">
@@ -75,11 +58,6 @@
                                     <p class="text-xs text-zinc-400">📱 {{ $member->phone }}</p>
                                 </div>
                             </div>
-                        </td>
-                        <td class="px-5 py-4">
-                            <span class="inline-block rounded-full px-3 py-1 text-xs font-bold {{ $tierBadge[1] }}">
-                                {{ $tierBadge[0] }}
-                            </span>
                         </td>
                         <td class="px-5 py-4 text-right">
                             <span class="text-sm font-bold text-orange-600">
@@ -105,15 +83,19 @@
                             </button>
                         </td>
                         <td class="px-5 py-4 text-right">
-                            <div class="flex items-center justify-end gap-2">
-                                <button wire:click="viewMember({{ $member->id }})"
-                                    class="rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 transition hover:bg-blue-100 active:scale-95">
-                            </div>
+                            <button wire:click="viewMember({{ $member->id }})"
+                                class="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 transition hover:bg-blue-100 active:scale-95">
+                                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                                Lihat
+                            </button>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="px-5 py-16 text-center">
+                        <td colspan="6" class="px-5 py-16 text-center">
                             <div class="flex flex-col items-center gap-3">
                                 <span class="text-5xl">👥</span>
                                 <p class="font-semibold text-zinc-500">Belum ada member</p>

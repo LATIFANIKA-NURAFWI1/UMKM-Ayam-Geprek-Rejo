@@ -32,10 +32,8 @@ class Edit extends Component
     #[Validate('boolean')]
     public bool $is_available = true;
 
-    #[Validate('integer|min:0')]
-    public int $sort_order = 0;
-
-    #[Validate('nullable|image|max:2048')]
+    // image: nullable agar bisa upload ulang setelah hapus
+    #[Validate('nullable|image|mimes:jpg,jpeg,png,webp|max:2048')]
     public $image = null;
 
     public ?string $existingImage = null;
@@ -49,8 +47,13 @@ class Edit extends Component
         $this->price         = (string) $item->price;
         $this->category_id   = (string) $item->category_id;
         $this->is_available  = (bool) $item->is_available;
-        $this->sort_order    = $item->sort_order ?? 0;
         $this->existingImage = $item->image;
+    }
+
+    // Reset image supaya bisa upload ulang setelah preview
+    public function updatedImage(): void
+    {
+        $this->validateOnly('image');
     }
 
     public function save(): void
@@ -65,20 +68,20 @@ class Edit extends Component
             'price'        => $this->price,
             'category_id'  => $this->category_id,
             'is_available' => $this->is_available,
-            'sort_order'   => $this->sort_order,
         ];
 
         if ($this->image) {
-            // Hapus gambar lama
+            // Hapus gambar lama kalau ada
             if ($this->existingImage) {
                 Storage::disk('public')->delete($this->existingImage);
             }
             $data['image'] = $this->image->store('menu', 'public');
+            $this->image   = null;
         }
 
         $item->update($data);
 
-        $this->dispatch('notify', message: 'Menu berhasil diperbarui.');
+        session()->flash('status', 'Menu berhasil diperbarui.');
         $this->redirect(route('menu.index'), navigate: true);
     }
 
@@ -88,7 +91,9 @@ class Edit extends Component
             Storage::disk('public')->delete($this->existingImage);
             MenuItem::findOrFail($this->menuId)->update(['image' => null]);
             $this->existingImage = null;
+            $this->image         = null;
         }
+        session()->flash('status', 'Foto menu dihapus.');
     }
 
     public function render()

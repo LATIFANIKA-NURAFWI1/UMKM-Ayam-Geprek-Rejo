@@ -18,6 +18,9 @@ class Index extends Component
     #[Url]
     public string $search = "";
 
+    #[Url]
+    public string $filterStatus = ""; // '' | 'low' | 'ok'
+
     public bool $showForm = false;
     public bool $showAdjustModal = false;
 
@@ -37,10 +40,8 @@ class Index extends Component
 
     // ── Lifecycle ────────────────────────────────────────────────────────────
 
-    public function updatedSearch(): void
-    {
-        $this->resetPage();
-    }
+    public function updatedSearch(): void       { $this->resetPage(); }
+    public function updatedFilterStatus(): void { $this->resetPage(); }
 
     // ── CRUD ─────────────────────────────────────────────────────────────────
 
@@ -73,32 +74,33 @@ class Index extends Component
     public function save(): void
     {
         $this->validate([
-            "name" => "required|min:2|max:100",
-            "unit" => "required|max:20",
+            "name"          => "required|min:2|max:100",
+            "unit"          => "required|max:20",
             "current_stock" => "required|numeric|min:0",
             "minimum_stock" => "required|numeric|min:0",
-            "unit_cost" => "required|numeric|min:0",
+            "unit_cost"     => "required|numeric|min:0",
         ]);
 
-        StockIngredient::updateOrCreate(
-            ["id" => $this->editingId],
-            [
-                "name" => $this->name,
-                "unit" => $this->unit,
-                "current_stock" => $this->current_stock,
-                "minimum_stock" => $this->minimum_stock,
-                "unit_cost" => $this->unit_cost,
-            ],
-        );
+        $data = [
+            "name"          => $this->name,
+            "unit"          => $this->unit,
+            "current_stock" => $this->current_stock,
+            "minimum_stock" => $this->minimum_stock,
+            "unit_cost"     => $this->unit_cost,
+        ];
 
-        session()->flash(
-            "status",
-            $this->editingId
-                ? "Bahan baku diperbarui."
-                : "Bahan baku ditambahkan.",
-        );
+        $isEdit = (bool) $this->editingId;
+
+        if ($isEdit) {
+            StockIngredient::findOrFail($this->editingId)->update($data);
+            session()->flash("status", "Bahan baku \"{$this->name}\" berhasil diperbarui.");
+        } else {
+            StockIngredient::create($data);
+            session()->flash("status", "Bahan baku \"{$this->name}\" berhasil ditambahkan.");
+        }
 
         $this->showForm = false;
+        $this->filterStatus = ''; // Reset filter agar item yang baru diperbarui selalu terlihat
         $this->reset([
             "editingId",
             "name",
@@ -107,6 +109,8 @@ class Index extends Component
             "minimum_stock",
             "unit_cost",
         ]);
+        $this->resetValidation();
+        $this->resetPage();
     }
 
     public function delete(int $id): void
@@ -149,6 +153,8 @@ class Index extends Component
                 $this->search,
                 fn($q) => $q->where("name", "like", "%{$this->search}%"),
             )
+            ->when($this->filterStatus === 'low', fn($q) => $q->whereColumn('current_stock', '<=', 'minimum_stock'))
+            ->when($this->filterStatus === 'ok',  fn($q) => $q->whereColumn('current_stock', '>', 'minimum_stock'))
             ->orderBy("name")
             ->paginate(20);
 

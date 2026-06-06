@@ -29,13 +29,14 @@ class Index extends Component
     {
         $item = MenuItem::findOrFail($id);
         $item->update(['is_available' => ! $item->is_available]);
-        $this->dispatch('notify', message: 'Status menu diperbarui.');
+        session()->flash('status', 'Status menu ' . $item->name . ' diperbarui.');
     }
 
     public function delete(int $id): void
     {
-        MenuItem::findOrFail($id)->delete();
-        $this->dispatch('notify', message: 'Menu berhasil dihapus.');
+        $item = MenuItem::findOrFail($id);
+        $item->delete();
+        session()->flash('status', 'Menu ' . $item->name . ' berhasil dihapus.');
     }
 
     public function render()

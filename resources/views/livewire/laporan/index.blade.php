@@ -19,46 +19,76 @@
          PERIOD FILTER
     ═══════════════════════════════════════════════════════════════════ --}}
     <div class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
-        {{-- Preset Buttons --}}
-        <div class="mb-4 flex flex-wrap gap-2">
-            @php
-                $presets = [
-                    'hari_ini'   => '📅 Hari Ini',
-                    'minggu_ini' => '📆 Minggu Ini',
-                    'bulan_ini'  => '🗓 Bulan Ini',
-                    'bulan_lalu' => '⏮ Bulan Lalu',
-                    'tahun_ini'  => '📊 Tahun Ini',
-                ];
-            @endphp
-            @foreach($presets as $key => $label)
-                <button
-                    wire:click="applyPreset('{{ $key }}')"
-                    @class([
-                        'rounded-xl px-4 py-2 text-sm font-semibold transition',
-                        'bg-orange-500 text-white shadow-sm' => $preset === $key,
-                        'border border-zinc-200 bg-white text-zinc-600 hover:border-orange-300 hover:text-orange-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' => $preset !== $key,
-                    ])
-                >
-                    {{ $label }}
+        <div class="flex flex-wrap items-center gap-3">
+
+            {{-- Hari Ini --}}
+            <button wire:click="applyPreset('hari_ini')"
+                @class(['rounded-xl px-4 py-2.5 text-sm font-semibold transition',
+                    'bg-orange-500 text-white shadow-sm' => $preset === 'hari_ini',
+                    'border border-zinc-200 bg-white text-zinc-600 hover:border-orange-300 hover:text-orange-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' => $preset !== 'hari_ini',
+                ])>
+                📅 Hari Ini
+            </button>
+
+            {{-- Minggu Ini --}}
+            <button wire:click="applyPreset('minggu_ini')"
+                @class(['rounded-xl px-4 py-2.5 text-sm font-semibold transition',
+                    'bg-orange-500 text-white shadow-sm' => $preset === 'minggu_ini',
+                    'border border-zinc-200 bg-white text-zinc-600 hover:border-orange-300 hover:text-orange-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' => $preset !== 'minggu_ini',
+                ])>
+                📆 Minggu Ini
+            </button>
+
+            {{-- Bulanan + dropdown bulan --}}
+            <div class="flex items-center gap-1">
+                <button wire:click="applyPreset('bulanan')"
+                    @class(['rounded-l-xl px-4 py-2.5 text-sm font-semibold transition border',
+                        'bg-orange-500 text-white border-orange-500 shadow-sm' => $preset === 'bulanan',
+                        'border-zinc-200 bg-white text-zinc-600 hover:border-orange-300 hover:text-orange-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' => $preset !== 'bulanan',
+                    ])>
+                    🗓 Bulanan
                 </button>
-            @endforeach
+                <select wire:model.live="selectedMonth"
+                    wire:change="applyPreset('bulanan')"
+                    class="rounded-r-xl border border-l-0 border-zinc-200 bg-white px-3 py-2.5 text-sm text-zinc-700 focus:border-orange-400 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">
+                    @foreach(['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'] as $i => $bulanLabel)
+                        <option value="{{ $i + 1 }}">{{ $bulanLabel }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- Tahun + dropdown tahun --}}
+            <div class="flex items-center gap-1">
+                <button wire:click="applyPreset('tahun')"
+                    @class(['rounded-l-xl px-4 py-2.5 text-sm font-semibold transition border',
+                        'bg-orange-500 text-white border-orange-500 shadow-sm' => $preset === 'tahun',
+                        'border-zinc-200 bg-white text-zinc-600 hover:border-orange-300 hover:text-orange-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' => $preset !== 'tahun',
+                    ])>
+                    📊 Tahun
+                </button>
+                <select wire:model.live="selectedYear"
+                    wire:change="applyPreset('tahun')"
+                    class="rounded-r-xl border border-l-0 border-zinc-200 bg-white px-3 py-2.5 text-sm text-zinc-700 focus:border-orange-400 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">
+                    @foreach(range(now()->year, 2020) as $yr)
+                        <option value="{{ $yr }}">{{ $yr }}</option>
+                    @endforeach
+                </select>
+            </div>
+
         </div>
 
-        {{-- Date Range --}}
-        <div class="flex flex-wrap items-end gap-3">
-            <div>
-                <label class="mb-1 block text-xs font-semibold text-zinc-500">Dari Tanggal</label>
-                <input type="date" wire:model.live="dari"
-                    class="rounded-xl border border-zinc-300 px-4 py-2.5 text-sm text-zinc-700 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200"
-                />
-            </div>
-            <div>
-                <label class="mb-1 block text-xs font-semibold text-zinc-500">Sampai Tanggal</label>
-                <input type="date" wire:model.live="sampai"
-                    class="rounded-xl border border-zinc-300 px-4 py-2.5 text-sm text-zinc-700 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200"
-                />
-            </div>
-        </div>
+        {{-- Info periode aktif --}}
+        @if($dari && $sampai)
+            <p class="mt-3 text-xs text-zinc-400">
+                📌 Menampilkan:
+                <span class="font-semibold text-zinc-600 dark:text-zinc-300">
+                    {{ \Carbon\Carbon::parse($dari)->translatedFormat('d M Y') }}
+                    @if($dari !== $sampai)
+                        — {{ \Carbon\Carbon::parse($sampai)->translatedFormat('d M Y') }}
+                    @endif
+                </span>
+            </p>
+        @endif
     </div>
 
     @if(!empty($this->report))

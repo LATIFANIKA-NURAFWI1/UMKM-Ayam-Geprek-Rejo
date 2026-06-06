@@ -4,7 +4,6 @@ namespace App\Livewire\Menu;
 
 use App\Models\Category;
 use App\Models\MenuItem;
-use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -30,11 +29,14 @@ class Create extends Component
     #[Validate('boolean')]
     public bool $is_available = true;
 
-    #[Validate('integer|min:0')]
-    public int $sort_order = 0;
-
-    #[Validate('nullable|image|max:2048')]
+    #[Validate('nullable|image|mimes:jpg,jpeg,png,webp|max:2048')]
     public $image = null;
+
+    // Dipanggil otomatis saat user memilih file — validasi on-the-fly
+    public function updatedImage(): void
+    {
+        $this->validateOnly('image');
+    }
 
     public function save(): void
     {
@@ -46,7 +48,6 @@ class Create extends Component
             'price'        => $this->price,
             'category_id'  => $this->category_id,
             'is_available' => $this->is_available,
-            'sort_order'   => $this->sort_order,
         ];
 
         if ($this->image) {
@@ -55,7 +56,7 @@ class Create extends Component
 
         MenuItem::create($data);
 
-        $this->dispatch('notify', message: 'Menu berhasil ditambahkan.');
+        session()->flash('status', 'Menu berhasil ditambahkan.');
         $this->redirect(route('menu.index'), navigate: true);
     }
 

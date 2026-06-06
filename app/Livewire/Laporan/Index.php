@@ -19,7 +19,15 @@ class Index extends Component
     public string $sampai = '';
 
     #[Url]
-    public string $preset = 'bulan_ini';
+    public string $preset = 'hari_ini';
+
+    /** Bulan yang dipilih saat preset = 'bulanan' (format: 1-12) */
+    #[Url]
+    public int $selectedMonth;
+
+    /** Tahun yang dipilih saat preset = 'tahun' */
+    #[Url]
+    public int $selectedYear;
 
     // =========================================================================
     // LIFECYCLE
@@ -27,9 +35,10 @@ class Index extends Component
 
     public function mount(): void
     {
-        if (! $this->dari && ! $this->sampai) {
-            $this->applyPreset($this->preset);
-        }
+        $this->selectedMonth = (int) now()->format('m');
+        $this->selectedYear  = (int) now()->format('Y');
+
+        $this->applyPreset($this->preset);
     }
 
     // =========================================================================
@@ -39,19 +48,11 @@ class Index extends Component
     public function applyPreset(string $p): void
     {
         $this->preset = $p;
-
-        match ($p) {
-            'hari_ini'    => [$this->dari, $this->sampai] = [today()->toDateString(), today()->toDateString()],
-            'minggu_ini'  => [$this->dari, $this->sampai] = [now()->startOfWeek()->toDateString(), now()->endOfWeek()->toDateString()],
-            'bulan_ini'   => [$this->dari, $this->sampai] = [now()->startOfMonth()->toDateString(), now()->toDateString()],
-            'bulan_lalu'  => [$this->dari, $this->sampai] = [now()->subMonth()->startOfMonth()->toDateString(), now()->subMonth()->endOfMonth()->toDateString()],
-            'tahun_ini'   => [$this->dari, $this->sampai] = [now()->startOfYear()->toDateString(), now()->toDateString()],
-            default       => null,
-        };
+        $this->resolveRange();
     }
 
-    public function updatedDari(): void   { $this->preset = 'custom'; }
-    public function updatedSampai(): void { $this->preset = 'custom'; }
+    public function updatedSelectedMonth(): void { $this->resolveRange(); }
+    public function updatedSelectedYear(): void  { $this->resolveRange(); }
 
     // =========================================================================
     // COMPUTED
@@ -113,5 +114,26 @@ class Index extends Component
     public function render()
     {
         return view('livewire.laporan.index');
+    }
+
+    // =========================================================================
+    // PROTECTED
+    // =========================================================================
+
+    protected function resolveRange(): void
+    {
+        match ($this->preset) {
+            'hari_ini'   => [$this->dari, $this->sampai] = [today()->toDateString(), today()->toDateString()],
+            'minggu_ini' => [$this->dari, $this->sampai] = [now()->startOfWeek()->toDateString(), now()->endOfWeek()->toDateString()],
+            'bulanan'    => [$this->dari, $this->sampai] = [
+                now()->setMonth($this->selectedMonth)->startOfMonth()->toDateString(),
+                now()->setMonth($this->selectedMonth)->endOfMonth()->toDateString(),
+            ],
+            'tahun'      => [$this->dari, $this->sampai] = [
+                now()->setYear($this->selectedYear)->startOfYear()->toDateString(),
+                now()->setYear($this->selectedYear)->endOfYear()->toDateString(),
+            ],
+            default      => null,
+        };
     }
 }
