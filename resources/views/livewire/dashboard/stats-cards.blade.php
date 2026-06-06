@@ -49,7 +49,7 @@
                 {{ $s['pending'] }}
             </p>
             @if($s['pending'] > 0)
-                <a href="{{ route('cashier.dashboard') }}" wire:navigate class="mt-1 inline-block text-xs font-medium text-amber-700 underline hover:text-amber-900">
+                <a href="{{ route('kasir.dashboard') }}" wire:navigate class="mt-1 inline-block text-xs font-medium text-amber-700 underline hover:text-amber-900">
                     → Ke Kasir
                 </a>
             @endif
