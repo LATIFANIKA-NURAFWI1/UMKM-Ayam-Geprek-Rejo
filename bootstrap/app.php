@@ -15,6 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // Trust all proxies (untuk ngrok, Cloudflare Tunnel, dll)
         $middleware->trustProxies(at: '*');
 
+        // Bypass halaman peringatan interstitial ngrok di browser HP
+        $middleware->append(\App\Http\Middleware\BypassNgrokWarning::class);
+
         $middleware->alias([
             'role' => \App\Http\Middleware\EnsureRole::class,
         ]);
