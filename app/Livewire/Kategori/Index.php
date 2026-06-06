@@ -3,13 +3,10 @@
 namespace App\Livewire\Kategori;
 
 use App\Models\Category;
-use Illuminate\Support\Str;
-use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-#[Layout('layouts.app')]
 class Index extends Component
 {
     use WithPagination;
@@ -17,18 +14,36 @@ class Index extends Component
     #[Url]
     public string $search = '';
 
+    #[Url]
+    public string $filterStatus = '';
+
+    #[Url]
+    public string $sortField = 'name';
+
+    #[Url]
+    public string $sortDirection = 'asc';
+
     public bool $showModal = false;
     public ?int $editId = null;
     public string $name = '';
-    public string $icon = '';
-    public int $sort_order = 0;
     public bool $is_active = true;
 
     public function updatedSearch(): void { $this->resetPage(); }
+    public function updatedFilterStatus(): void { $this->resetPage(); }
+
+    public function sortBy(string $field): void
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
+    }
 
     public function openCreate(): void
     {
-        $this->reset(['editId', 'name', 'icon', 'sort_order']);
+        $this->reset(['editId', 'name']);
         $this->is_active = true;
         $this->showModal = true;
     }
@@ -38,8 +53,6 @@ class Index extends Component
         $cat = Category::findOrFail($id);
         $this->editId     = $cat->id;
         $this->name       = $cat->name;
-        $this->icon       = $cat->icon ?? '';
-        $this->sort_order = $cat->sort_order;
         $this->is_active  = $cat->is_active;
         $this->showModal  = true;
     }
@@ -47,15 +60,12 @@ class Index extends Component
     public function save(): void
     {
         $this->validate([
-            'name'       => 'required|string|max:100',
-            'sort_order' => 'integer|min:0',
+            'name' => 'required|string|max:100',
         ]);
 
         $data = [
             'name'       => $this->name,
-            'slug'       => Str::slug($this->name),
-            'icon'       => $this->icon,
-            'sort_order' => $this->sort_order,
+            'slug'       => \Str::slug($this->name),
             'is_active'  => $this->is_active,
         ];
 
@@ -77,11 +87,22 @@ class Index extends Component
 
     public function render()
     {
-        // Urut A-Z berdasarkan nama
-        $categories = Category::withCount('menuItems')
-            ->when($this->search, fn ($q) => $q->where('name', 'like', "%{$this->search}%"))
-            ->orderBy('name')
-            ->paginate(15);
+        $query = Category::withCount('menuItems')
+            ->when($this->search, fn ($q) => $q->where('name', 'like', "%{$this->search}%"));
+
+        if ($this->filterStatus === 'active') {
+            $query->where('is_active', true);
+        } elseif ($this->filterStatus === 'inactive') {
+            $query->where('is_active', false);
+        }
+
+        if ($this->sortField === 'menu_items_count') {
+            $query->orderBy('menu_items_count', $this->sortDirection);
+        } else {
+            $query->orderBy($this->sortField, $this->sortDirection);
+        }
+
+        $categories = $query->paginate(15);
 
         return view('livewire.kategori.index', compact('categories'));
     }

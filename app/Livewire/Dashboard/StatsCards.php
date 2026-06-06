@@ -4,27 +4,35 @@ namespace App\Livewire\Dashboard;
 
 use App\Models\MenuItem;
 use App\Models\Order;
+use App\Models\StockIngredient;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class StatsCards extends Component
 {
-    public int $totalPesananHariIni    = 0;
-    public string $omsetHariIni        = '0';
-    public int $pesananPending         = 0;
-    public int $menuAktif              = 0;
-
-    public function mount(): void
+    #[Computed]
+    public function stats(): array
     {
-        $this->totalPesananHariIni = Order::today()->count();
+        $todayOrders   = Order::today()->get();
+        $paidToday     = $todayOrders->filter(fn ($o) => in_array($o->status, ['confirmed', 'preparing', 'completed']));
 
-        $this->omsetHariIni = number_format(
-            Order::today()->paid()->sum('total_amount'),
-            0, ',', '.'
-        );
+        $revenue       = $paidToday->sum('total_amount');
+        $hpp           = $paidToday->sum('total_hpp');
+        $grossProfit   = $revenue - $hpp;
+        $pending       = $todayOrders->where('status', 'pending')->count();
 
-        $this->pesananPending = Order::pending()->today()->count();
+        $menuAktif     = MenuItem::available()->count();
+        $stokKritis    = StockIngredient::whereColumn('current_stock', '<=', 'minimum_stock')->count();
 
-        $this->menuAktif = MenuItem::available()->count();
+        return [
+            'total_pesanan' => $todayOrders->count(),
+            'paid_count'    => $paidToday->count(),
+            'omset'         => $revenue,
+            'gross_profit'  => $grossProfit,
+            'pending'       => $pending,
+            'menu_aktif'    => $menuAktif,
+            'stok_kritis'   => $stokKritis,
+        ];
     }
 
     public function render()

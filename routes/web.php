@@ -1,44 +1,71 @@
 <?php
 
+use App\Livewire\Cashier\Dashboard as CashierDashboard;
+use App\Livewire\Customer\CheckoutPage;
+use App\Livewire\Customer\MenuPage;
+use App\Livewire\Customer\PaymentPage;
+use App\Livewire\Customer\SuccessPage;
 use App\Livewire\Kategori\Index as KategoriIndex;
+use App\Livewire\Kds\Display as KdsDisplay;
 use App\Livewire\Laporan\Index as LaporanIndex;
 use App\Livewire\Member\Index as MemberIndex;
 use App\Livewire\Menu\Index as MenuIndex;
+use App\Livewire\Menu\Create as MenuCreate;
+use App\Livewire\Menu\Edit as MenuEdit;
 use App\Livewire\Pengeluaran\Index as PengeluaranIndex;
 use App\Livewire\Pesanan\Index as PesananIndex;
 use App\Livewire\Stok\Index as StokIndex;
 use App\Livewire\Voucher\Index as VoucherIndex;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome')->name('home');
+Route::view("/", "welcome")->name("home");
 
-Route::middleware(['auth', 'verified'])->group(function () {
-
-    // Dashboard
-    Route::view('dashboard', 'dashboard')->name('dashboard');
-
-    // Manajemen Menu
-    Route::prefix('menu')->name('menu.')->group(function () {
-        Route::get('/', MenuIndex::class)->name('index');
-        Route::view('/tambah', 'pages.menu.create')->name('create');
-        Route::view('/edit/{id}', 'pages.menu.edit')->name('edit');
+// ── Customer Self-Order (public, no auth) ─────────────────────────────────────
+Route::prefix("order")
+    ->name("order.")
+    ->group(function () {
+        Route::get("/", MenuPage::class)->name("menu");
+        Route::get("/checkout", CheckoutPage::class)->name("checkout");
+        Route::get("/payment/{order}", PaymentPage::class)->name("payment");
+        Route::get("/success/{order}", SuccessPage::class)->name("success");
     });
 
+// ── Admin Panel ───────────────────────────────────────────────────────────────
+Route::middleware(["auth", "verified"])->group(function () {
+    // Dashboard
+    Route::view("dashboard", "dashboard")->name("dashboard");
+
+    // Manajemen Menu
+    Route::prefix("menu")
+        ->name("menu.")
+        ->group(function () {
+            Route::get("/", MenuIndex::class)->name("index");
+            Route::get("/tambah", MenuCreate::class)->name("create");
+            Route::get("/edit/{id}", MenuEdit::class)->name("edit");
+        });
+
     // Kategori
-    Route::get('kategori', KategoriIndex::class)->name('kategori.index');
+    Route::get("kategori", KategoriIndex::class)->name("kategori.index");
 
     // Transaksi
-    Route::get('pesanan', PesananIndex::class)->name('pesanan.index');
-    Route::get('member', MemberIndex::class)->name('member.index');
+    Route::get("pesanan", PesananIndex::class)->name("pesanan.index");
+    Route::get("member", MemberIndex::class)->name("member.index");
 
     // Operasional
-    Route::get('stok', StokIndex::class)->name('stok.index');
-    Route::get('pengeluaran', PengeluaranIndex::class)->name('pengeluaran.index');
-    Route::get('voucher', VoucherIndex::class)->name('voucher.index');
+    Route::get("stok", StokIndex::class)->name("stok.index");
+    Route::get("pengeluaran", PengeluaranIndex::class)->name(
+        "pengeluaran.index",
+    );
+    Route::get("voucher", VoucherIndex::class)->name("voucher.index");
 
     // Laporan
-    Route::get('laporan', LaporanIndex::class)->name('laporan.index');
-
+    Route::get("laporan", LaporanIndex::class)->name("laporan.index");
 });
 
-require __DIR__.'/settings.php';
+// ── Operational Screens (auth only) ──────────────────────────────────────────
+Route::middleware(["auth"])->group(function () {
+    Route::get("/kasir", CashierDashboard::class)->name("kasir.dashboard");
+    Route::get("/kds", KdsDisplay::class)->name("kds.display");
+});
+
+require __DIR__ . "/settings.php";

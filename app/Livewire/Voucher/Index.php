@@ -3,6 +3,7 @@
 namespace App\Livewire\Voucher;
 
 use App\Models\Voucher;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -13,26 +14,187 @@ class Index extends Component
 {
     use WithPagination;
 
+    // ─── Filter ──────────────────────────────────────────────────────────────
+
     #[Url]
     public string $search = '';
 
-    public function updatedSearch(): void { $this->resetPage(); }
+    #[Url]
+    public string $filterStatus = '';
 
-    public function delete(int $id): void
+    // ─── Form ────────────────────────────────────────────────────────────────
+
+    public bool   $showForm  = false;
+    public ?int   $editingId = null;
+
+    public string  $formCode         = '';
+    public string  $formDiscountType = 'percentage';
+    public string  $formDiscountValue = '';
+    public string  $formMinPurchase  = '0';
+    public string  $formStartDate    = '';
+    public string  $formEndDate      = '';
+    public string  $formMaxUses      = '';
+    public bool    $formIsActive     = true;
+
+    // ─── Delete ──────────────────────────────────────────────────────────────
+
+    public ?int $deletingId = null;
+
+    // =========================================================================
+    // LIFECYCLE
+    // =========================================================================
+
+    public function mount(): void
     {
-        Voucher::findOrFail($id)->delete();
-        $this->dispatch('notify', message: 'Voucher berhasil dihapus.');
+        $this->formStartDate = today()->toDateString();
+        $this->formEndDate   = today()->addMonth()->toDateString();
     }
+
+    public function updatedSearch(): void       { $this->resetPage(); }
+    public function updatedFilterStatus(): void { $this->resetPage(); }
+
+    // =========================================================================
+    // FORM ACTIONS
+    // =========================================================================
+
+    public function openCreate(): void
+    {
+        $this->resetForm();
+        $this->editingId = null;
+        $this->showForm  = true;
+    }
+
+    public function openEdit(int $id): void
+    {
+        $v = Voucher::findOrFail($id);
+
+        $this->editingId         = $id;
+        $this->formCode          = $v->code;
+        $this->formDiscountType  = $v->discount_type;
+        $this->formDiscountValue = (string) $v->discount_value;
+        $this->formMinPurchase   = (string) (int) ($v->min_purchase ?? 0);
+        $this->formStartDate     = $v->start_date->toDateString();
+        $this->formEndDate       = $v->end_date->toDateString();
+        $this->formMaxUses       = $v->max_uses ? (string) $v->max_uses : '';
+        $this->formIsActive      = (bool) $v->is_active;
+        $this->showForm          = true;
+    }
+
+    public function saveVoucher(): void
+    {
+        $rules = [
+            'formCode'          => ['required', 'min:3', 'max:50', 'alpha_dash'],
+            'formDiscountType'  => ['required', 'in:percentage,fixed'],
+            'formDiscountValue' => ['required', 'numeric', 'min:0.01'],
+            'formMinPurchase'   => ['required', 'numeric', 'min:0'],
+            'formStartDate'     => ['required', 'date'],
+            'formEndDate'       => ['required', 'date', 'after_or_equal:formStartDate'],
+            'formMaxUses'       => ['nullable', 'integer', 'min:1'],
+        ];
+
+        // Validasi diskon persentase max 100
+        if ($this->formDiscountType === 'percentage') {
+            $rules['formDiscountValue'][] = 'max:100';
+        }
+
+        // Kode harus unik kecuali saat edit
+        if ($this->editingId) {
+            $rules['formCode'][] = \Illuminate\Validation\Rule::unique('vouchers', 'code')->ignore($this->editingId);
+        } else {
+            $rules['formCode'][] = \Illuminate\Validation\Rule::unique('vouchers', 'code');
+        }
+
+        $this->validate($rules, [
+            'formCode.required'          => 'Kode voucher wajib diisi.',
+            'formCode.unique'            => 'Kode voucher sudah digunakan.',
+            'formCode.alpha_dash'        => 'Kode hanya boleh huruf, angka, dan tanda hubung.',
+            'formDiscountValue.required' => 'Nilai diskon wajib diisi.',
+            'formEndDate.after_or_equal' => 'Tanggal akhir harus sama atau setelah tanggal mulai.',
+        ]);
+
+        $payload = [
+            'code'           => strtoupper($this->formCode),
+            'discount_type'  => $this->formDiscountType,
+            'discount_value' => (float) $this->formDiscountValue,
+            'min_purchase'   => (float) $this->formMinPurchase,
+            'start_date'     => $this->formStartDate,
+            'end_date'       => $this->formEndDate,
+            'max_uses'       => $this->formMaxUses ? (int) $this->formMaxUses : null,
+            'is_active'      => $this->formIsActive,
+        ];
+
+        if ($this->editingId) {
+            Voucher::findOrFail($this->editingId)->update($payload);
+            session()->flash('status', 'Voucher berhasil diperbarui.');
+        } else {
+            Voucher::create($payload);
+            session()->flash('status', 'Voucher berhasil dibuat.');
+        }
+
+        $this->closeForm();
+    }
+
+    public function closeForm(): void
+    {
+        $this->showForm  = false;
+        $this->editingId = null;
+        $this->resetForm();
+        $this->resetValidation();
+    }
+
+    public function toggleActive(int $id): void
+    {
+        $v = Voucher::findOrFail($id);
+        $v->update(['is_active' => ! $v->is_active]);
+        session()->flash('status', 'Status voucher diperbarui.');
+    }
+
+    // =========================================================================
+    // DELETE
+    // =========================================================================
+
+    public function confirmDelete(int $id): void { $this->deletingId = $id; }
+    public function cancelDelete(): void          { $this->deletingId = null; }
+
+    public function delete(): void
+    {
+        if ($this->deletingId) {
+            Voucher::findOrFail($this->deletingId)->delete();
+            session()->flash('status', 'Voucher berhasil dihapus.');
+        }
+        $this->deletingId = null;
+    }
+
+    // =========================================================================
+    // RENDER
+    // =========================================================================
 
     public function render()
     {
         $vouchers = Voucher::when($this->search, fn ($q) => $q
                 ->where('code', 'like', "%{$this->search}%")
-                ->orWhere('name', 'like', "%{$this->search}%")
             )
+            ->when($this->filterStatus === 'active', fn ($q) => $q->where('is_active', true))
+            ->when($this->filterStatus === 'inactive', fn ($q) => $q->where('is_active', false))
             ->latest()
-            ->paginate(15);
+            ->paginate(20);
 
         return view('livewire.voucher.index', compact('vouchers'));
+    }
+
+    // =========================================================================
+    // PRIVATE
+    // =========================================================================
+
+    private function resetForm(): void
+    {
+        $this->formCode          = '';
+        $this->formDiscountType  = 'percentage';
+        $this->formDiscountValue = '';
+        $this->formMinPurchase   = '0';
+        $this->formStartDate     = today()->toDateString();
+        $this->formEndDate       = today()->addMonth()->toDateString();
+        $this->formMaxUses       = '';
+        $this->formIsActive      = true;
     }
 }
