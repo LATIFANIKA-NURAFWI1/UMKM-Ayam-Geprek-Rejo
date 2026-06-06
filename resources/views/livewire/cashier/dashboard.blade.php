@@ -73,9 +73,21 @@
                 </div>
 
                 <div class="rounded-lg bg-gray-100 px-4 py-2">
-                    <span class="font-mono text-sm font-medium text-gray-600">
-                        🕐 {{ now()->format('H:i:s') }}
-                    </span>
+                    <span
+                        class="font-mono text-sm font-medium text-gray-600"
+                        x-data="{
+                            time: '',
+                            init() {
+                                this.tick();
+                                setInterval(() => this.tick(), 1000);
+                            },
+                            tick() {
+                                const d = new Date();
+                                this.time = '🕐 ' + d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+                            }
+                        }"
+                        x-text="time"
+                    >🕐 --:--:--</span>
                 </div>
 
                 @auth

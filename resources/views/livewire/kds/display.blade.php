@@ -1,4 +1,4 @@
-<div wire:poll.5s class="flex h-screen flex-col overflow-hidden bg-gray-950">
+<div wire:poll.5s class="flex h-screen flex-col overflow-hidden" :class="isDark ? 'bg-gray-950' : 'bg-gray-50'">
 
     @php
         $confirmed = $this->kitchenOrders->where('status', 'confirmed')->values();
@@ -8,19 +8,21 @@
     {{-- ═══════════════════════════════════════════════════════════════════════
          TOP BAR
     ═══════════════════════════════════════════════════════════════════════ --}}
-    <div class="flex shrink-0 items-center justify-between border-b border-gray-800 bg-gray-900 px-6 py-3">
+    <div class="flex shrink-0 items-center justify-between border-b px-6 py-3"
+        :class="isDark ? 'border-gray-800 bg-gray-900' : 'border-gray-200 bg-white shadow-sm'">
         <div class="flex items-center gap-3">
             <span class="text-3xl leading-none">🍳</span>
             <div>
-                <p class="text-lg font-extrabold uppercase tracking-widest text-white">Dapur — Geprek Rejo</p>
-                <p class="text-xs font-medium tracking-wider text-gray-500">Kitchen Display System</p>
+                <p :class="isDark ? 'text-white' : 'text-gray-900'" class="text-lg font-extrabold uppercase tracking-widest">Dapur — Geprek Rejo</p>
+                <p :class="isDark ? 'text-gray-500' : 'text-gray-400'" class="text-xs font-medium tracking-wider">Kitchen Display System</p>
             </div>
         </div>
 
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3">
             <div class="text-right">
                 <p
-                    class="font-mono text-2xl font-bold tabular-nums text-orange-400"
+                    :class="isDark ? 'text-orange-400' : 'text-orange-600'"
+                    class="font-mono text-2xl font-bold tabular-nums"
                     x-data="{
                         time: '',
                         init() {
@@ -36,20 +38,31 @@
                 >
                     --:--:--
                 </p>
-                <p class="text-xs text-gray-600">{{ now()->translatedFormat('l, d F Y') }}</p>
+                <p :class="isDark ? 'text-gray-600' : 'text-gray-400'" class="text-xs">{{ now()->translatedFormat('l, d F Y') }}</p>
             </div>
+
+            {{-- Theme Toggle Button --}}
+            <button @click="toggle()"
+                :title="isDark ? 'Ganti ke Tema Terang' : 'Ganti ke Tema Gelap'"
+                :class="isDark
+                    ? 'bg-gray-800 border-gray-700 text-yellow-400 hover:bg-gray-700'
+                    : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'"
+                class="flex h-10 w-10 items-center justify-center rounded-xl border-2 text-xl transition active:scale-95">
+                <span x-show="isDark">☀️</span>
+                <span x-show="!isDark">🌙</span>
+            </button>
         </div>
     </div>
 
     {{-- ═══════════════════════════════════════════════════════════════════════
          MAIN COLUMNS
     ═══════════════════════════════════════════════════════════════════════ --}}
-    <div class="flex min-h-0 flex-1">
+    <div class="flex min-h-0 flex-1" :class="isDark ? '' : ''">
 
         {{-- ───────────────────────────────────────────────────────────────────
              COLUMN 1 — ANTRIAN MASAK (confirmed)
         ─────────────────────────────────────────────────────────────────── --}}
-        <div class="flex w-1/2 flex-col border-r border-gray-800">
+        <div class="flex w-1/2 flex-col" :class="isDark ? 'border-r border-gray-800' : 'border-r border-gray-200'">
 
             {{-- Column Header --}}
             <div class="shrink-0 bg-orange-600 px-5 py-3.5">
@@ -70,12 +83,15 @@
             {{-- Cards --}}
             <div class="flex-1 space-y-3 overflow-y-auto p-4">
                 @forelse($confirmed as $order)
-                    <div class="overflow-hidden rounded-2xl border border-orange-800/40 bg-gray-900 shadow-lg transition hover:border-orange-600/60">
+                    <div :class="isDark
+                        ? 'border-orange-800/40 bg-gray-900 hover:border-orange-600/60'
+                        : 'border-orange-200 bg-white hover:border-orange-400'"
+                        class="overflow-hidden rounded-2xl border shadow-lg transition">
 
                         {{-- Card Top --}}
                         <div class="flex items-start justify-between border-b border-gray-800 bg-gray-800/60 px-5 py-3">
                             <div class="flex items-end gap-3">
-                                <span class="text-7xl font-black leading-none text-orange-400">
+                                <span :class="isDark ? 'text-orange-400' : 'text-orange-600'" class="text-7xl font-black leading-none">
                                     #{{ $order->queue_number }}
                                 </span>
                                 <div class="pb-1">
@@ -181,12 +197,15 @@
             {{-- Cards --}}
             <div class="flex-1 space-y-3 overflow-y-auto p-4">
                 @forelse($preparing as $order)
-                    <div class="overflow-hidden rounded-2xl border border-blue-800/40 bg-gray-900 shadow-lg transition hover:border-blue-600/60">
+                    <div :class="isDark
+                        ? 'border-blue-800/40 bg-gray-900 hover:border-blue-600/60'
+                        : 'border-blue-200 bg-white hover:border-blue-400'"
+                        class="overflow-hidden rounded-2xl border shadow-lg transition">
 
                         {{-- Card Top --}}
                         <div class="flex items-start justify-between border-b border-gray-800 bg-gray-800/60 px-5 py-3">
                             <div class="flex items-end gap-3">
-                                <span class="text-7xl font-black leading-none text-blue-400">
+                                <span :class="isDark ? 'text-blue-400' : 'text-blue-600'" class="text-7xl font-black leading-none">
                                     #{{ $order->queue_number }}
                                 </span>
                                 <div class="pb-1">
