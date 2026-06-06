@@ -87,8 +87,9 @@ class Dashboard extends Component
 
     public function openConfirmModal(int $orderId): void
     {
+        $order = Order::find($orderId);
         $this->confirmingOrderId    = $orderId;
-        $this->confirmPaymentMethod = 'qris';
+        $this->confirmPaymentMethod = $order ? $order->payment_method : 'qris';
         $this->showDetailModal      = false; // tutup detail modal jika sedang buka
     }
 

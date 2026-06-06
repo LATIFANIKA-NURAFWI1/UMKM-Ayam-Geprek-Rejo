@@ -589,44 +589,26 @@
                             @endif
                         </div>
 
-                        {{-- Payment Method Selector --}}
-                        <div
-                            x-data="{ method: @entangle('confirmPaymentMethod') }"
-                            class="mb-2"
-                        >
-                            <p class="mb-3 text-sm font-bold text-gray-600">Metode Pembayaran</p>
-                            <div class="grid grid-cols-2 gap-3">
-                                <label
-                                    :class="method === 'qris'
-                                        ? 'border-orange-400 bg-orange-50 ring-2 ring-orange-300'
-                                        : 'border-gray-200 bg-white hover:border-gray-300'"
-                                    class="flex cursor-pointer flex-col items-center gap-2 rounded-2xl border-2 p-4 transition"
-                                >
-                                    <input type="radio" x-model="method" value="qris" class="sr-only">
+                        {{-- Payment Method Info (Read Only) --}}
+                        <div class="mb-2">
+                            <p class="mb-2 text-sm font-bold text-gray-600">Metode Pembayaran</p>
+                            @if($confirmOrder->payment_method === 'qris')
+                                <div class="flex items-center gap-3 rounded-2xl border-2 border-orange-200 bg-orange-50 p-4">
                                     <span class="text-4xl">📱</span>
-                                    <span
-                                        :class="method === 'qris' ? 'text-orange-700' : 'text-gray-500'"
-                                        class="text-sm font-bold"
-                                    >
-                                        QRIS Statis
-                                    </span>
-                                </label>
-                                <label
-                                    :class="method === 'cash'
-                                        ? 'border-green-400 bg-green-50 ring-2 ring-green-300'
-                                        : 'border-gray-200 bg-white hover:border-gray-300'"
-                                    class="flex cursor-pointer flex-col items-center gap-2 rounded-2xl border-2 p-4 transition"
-                                >
-                                    <input type="radio" x-model="method" value="cash" class="sr-only">
+                                    <div>
+                                        <p class="text-sm font-bold text-orange-800">QRIS Statis</p>
+                                        <p class="text-xs text-orange-600">Pelanggan membayar via Scan QRIS</p>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="flex items-center gap-3 rounded-2xl border-2 border-green-200 bg-green-50 p-4">
                                     <span class="text-4xl">💵</span>
-                                    <span
-                                        :class="method === 'cash' ? 'text-green-700' : 'text-gray-500'"
-                                        class="text-sm font-bold"
-                                    >
-                                        Tunai
-                                    </span>
-                                </label>
-                            </div>
+                                    <div>
+                                        <p class="text-sm font-bold text-green-800">Tunai (Cash)</p>
+                                        <p class="text-xs text-green-600">Terima pembayaran tunai di kasir</p>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     </div>
 

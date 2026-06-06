@@ -10,12 +10,12 @@ use Illuminate\Support\Facades\Log;
 class PointService
 {
     /**
-     * Formula: poin = floor(total_amount / 100)
-     * Artinya: setiap Rp 100 = 1 poin.
+     * Formula: poin = floor(total_amount / 1000)
+     * Artinya: setiap Rp 1.000 = 1 poin.
      */
     public function calculateEarnedPoints(float $totalAmount): int
     {
-        return (int) floor($totalAmount / 100);
+        return (int) floor($totalAmount / 1000);
     }
 
     /**
@@ -80,12 +80,12 @@ class PointService
             );
         }
 
-        // 1 poin = Rp 1 (sesuai model Member)
-        $discountValue = $member->pointsToRupiah($pointsToRedeem);
+        // 1 poin = Rp 10.000
+        $discountValue = (float) $pointsToRedeem * 10000.0;
 
         // Redeem tidak boleh melebihi total order
         $actualDiscount = min($discountValue, $orderTotal);
-        $actualPoints   = (int) $actualDiscount; // 1 poin = Rp 1
+        $actualPoints   = $pointsToRedeem;
 
         return [
             'discount'    => $actualDiscount,
@@ -149,5 +149,81 @@ class PointService
             'balance_after' => $newBalance,
             'description'   => $reason,
         ]);
+    }
+
+    /**
+     * Cek dan auto-redeem poin member jika mencapai target 150 poin.
+     * Mengurangi 150 poin per voucher, membuat voucher baru, dan menyimpan ke session.
+     */
+    public function checkAndAutoRedeemReward(Member $member): ?string
+    {
+        if ($member->points < 150) {
+            return null;
+        }
+
+        $lastCode = null;
+        while ($member->points >= 150) {
+            $lastCode = \Illuminate\Support\Facades\DB::transaction(function () use ($member) {
+                // Re-fetch member under lock to avoid race conditions
+                $memberLocked = Member::lockForUpdate()->find($member->id);
+                if (!$memberLocked || $memberLocked->points < 150) {
+                    return null;
+                }
+
+                // Deduct 150 points
+                $pointsToDeduct = 150;
+                $newBalance = $memberLocked->points - $pointsToDeduct;
+                $memberLocked->decrement('points', $pointsToDeduct);
+
+                // Record in point_logs
+                PointLog::create([
+                    'member_id'     => $memberLocked->id,
+                    'order_id'      => null,
+                    'type'          => 'redeem',
+                    'points'        => -$pointsToDeduct,
+                    'balance_after' => $newBalance,
+                    'description'   => "Auto-redemption 150 poin untuk Voucher Paket Nasi Ayam Geprek Gratis",
+                ]);
+
+                // Generate a unique 5-char alphanumeric code
+                do {
+                    $suffix = strtoupper(\Illuminate\Support\Str::random(5));
+                    $code = 'FREE-GEPREK-' . $suffix;
+                } while (\App\Models\Voucher::where('code', $code)->exists());
+
+                // Create the Voucher
+                \App\Models\Voucher::create([
+                    'code'             => $code,
+                    'name'             => 'Gratis 1 Paket Nasi Ayam Geprek',
+                    'description'      => 'Reward member penukaran 150 poin. Berlaku untuk 1 Paket Nasi Ayam Geprek gratis.',
+                    'discount_type'    => 'fixed',
+                    'discount_value'   => 15000.00,
+                    'minimum_order'    => 0.00,
+                    'maximum_discount' => 22000.00,
+                    'max_uses'         => 1,
+                    'uses_count'       => 0,
+                    'is_active'        => true,
+                    'member_only'      => true,
+                    'starts_at'        => now(),
+                    'expires_at'       => now()->addDays(7),
+                ]);
+
+                Log::info("PointService: Auto-redeemed 150 points for Member#{$memberLocked->id}. Generated voucher: {$code}");
+
+                return $code;
+            });
+
+            if ($lastCode) {
+                // Store in session
+                $redeemed = session('reward_vouchers_redeemed', []);
+                $redeemed[] = $lastCode;
+                session(['reward_vouchers_redeemed' => $redeemed]);
+            }
+
+            // Refresh member state
+            $member->refresh();
+        }
+
+        return $lastCode;
     }
 }

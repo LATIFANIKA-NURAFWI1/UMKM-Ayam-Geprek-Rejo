@@ -24,7 +24,7 @@ class CheckoutPage extends Component
     // ── Order Info ────────────────────────────────────────────────────────────
 
     public string $customerName  = '';
-    public string $orderType     = 'dine_in';
+    public string $orderType     = 'takeaway';
     public string $paymentMethod = 'qris';
     public string $orderNotes    = '';
     public string $tableNumber   = '';
@@ -47,6 +47,14 @@ class CheckoutPage extends Component
     public bool    $showMemberForm   = false;
     public string  $memberLoginError = '';
 
+    // Registration properties
+    public string  $registerName      = '';
+    public string  $registerPhone     = '';
+    public string  $registerPin       = '';
+    public string  $registerPin_confirmation = '';
+    public bool    $isRegistering     = false;
+    public string  $memberRegisterError = '';
+
     // ── General ───────────────────────────────────────────────────────────────
 
     public string $orderError = '';
@@ -65,6 +73,12 @@ class CheckoutPage extends Component
         if ($memberId) {
             $member = Member::find($memberId);
             if ($member && $member->is_active) {
+                // Auto redeem check
+                if ($member->points >= 150) {
+                    app(\App\Services\PointService::class)->checkAndAutoRedeemReward($member);
+                    $member->refresh();
+                }
+
                 $this->loggedInMemberId   = $member->id;
                 $this->loggedInMemberName = $member->name;
                 $this->memberPoints       = $member->points;
@@ -87,8 +101,8 @@ class CheckoutPage extends Component
     #[Computed]
     public function pointsDiscountAmount(): float
     {
-        // 1 poin = Rp 1
-        return (float) $this->pointsToRedeem;
+        // 1 poin = Rp 10.000
+        return (float) $this->pointsToRedeem * 10000.0;
     }
 
     #[Computed]
@@ -117,7 +131,8 @@ class CheckoutPage extends Component
             $result = $voucherService->validateAndCalculate(
                 $this->voucherCode,
                 $this->subtotal,
-                $this->loggedInMemberId
+                $this->loggedInMemberId,
+                $this->cart
             );
 
             $this->voucherDiscount = (float) $result['discount'];
@@ -159,12 +174,78 @@ class CheckoutPage extends Component
 
         session(['checkout_member_id' => $member->id]);
 
+        // Auto redeem check
+        if ($member->points >= 150) {
+            app(\App\Services\PointService::class)->checkAndAutoRedeemReward($member);
+            $member->refresh();
+        }
+
         $this->loggedInMemberId   = $member->id;
         $this->loggedInMemberName = $member->name;
         $this->memberPoints       = $member->points;
         $this->showMemberForm     = false;
         $this->memberPhone        = '';
         $this->memberPin          = '';
+    }
+
+    public function registerMember(): void
+    {
+        $this->memberRegisterError = '';
+
+        $this->validate([
+            'registerName'              => 'required|string|min:2|max:150',
+            'registerPhone'             => 'required|numeric|digits_between:10,15|unique:members,phone',
+            'registerPin'               => 'required|numeric|digits:6|confirmed',
+            'registerPin_confirmation'  => 'required',
+        ], [
+            'registerName.required' => 'Nama lengkap wajib diisi.',
+            'registerPhone.required' => 'Nomor HP wajib diisi.',
+            'registerPhone.numeric' => 'Nomor HP harus berupa angka.',
+            'registerPhone.digits_between' => 'Nomor HP harus terdiri dari 10-15 digit.',
+            'registerPhone.unique' => 'Nomor HP sudah terdaftar sebagai member.',
+            'registerPin.required' => 'PIN wajib diisi.',
+            'registerPin.numeric' => 'PIN harus berupa angka.',
+            'registerPin.digits' => 'PIN harus terdiri dari 6 digit.',
+            'registerPin.confirmed' => 'Konfirmasi PIN tidak cocok.',
+            'registerPin_confirmation.required' => 'Konfirmasi PIN wajib diisi.',
+        ]);
+
+        try {
+            $member = Member::create([
+                'name'         => $this->registerName,
+                'phone'        => $this->registerPhone,
+                'pin'          => $this->registerPin, // Model auto-hashes pin attribute
+                'points'       => 0,
+                'is_active'    => true,
+                'total_orders' => 0,
+                'total_spent'  => 0,
+                'tier'         => 'bronze',
+            ]);
+
+            session(['checkout_member_id' => $member->id]);
+
+            // Auto redeem check
+            if ($member->points >= 150) {
+                app(\App\Services\PointService::class)->checkAndAutoRedeemReward($member);
+                $member->refresh();
+            }
+
+            $this->loggedInMemberId   = $member->id;
+            $this->loggedInMemberName = $member->name;
+            $this->memberPoints       = $member->points;
+            $this->showMemberForm     = false;
+            $this->isRegistering      = false;
+
+            // Reset inputs
+            $this->registerName              = '';
+            $this->registerPhone             = '';
+            $this->registerPin               = '';
+            $this->registerPin_confirmation   = '';
+
+            session()->flash('status', 'Pendaftaran member berhasil dan otomatis masuk!');
+        } catch (\Throwable $e) {
+            $this->memberRegisterError = 'Pendaftaran gagal: ' . $e->getMessage();
+        }
     }
 
     public function logoutMember(): void
@@ -181,6 +262,11 @@ class CheckoutPage extends Component
         if ($this->voucherApplied) {
             $this->removeVoucher();
         }
+    }
+
+    public function closeRewardPopup(): void
+    {
+        session()->forget('reward_vouchers_redeemed');
     }
 
     // =========================================================================

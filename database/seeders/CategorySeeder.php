@@ -10,11 +10,10 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            ['name' => 'Ayam Geprek',    'slug' => 'ayam-geprek',    'icon' => '🍗', 'sort_order' => 1],
-            ['name' => 'Ayam Goreng',    'slug' => 'ayam-goreng',    'icon' => '🍖', 'sort_order' => 2],
-            ['name' => 'Nasi & Lauk',    'slug' => 'nasi-lauk',      'icon' => '🍚', 'sort_order' => 3],
-            ['name' => 'Minuman',        'slug' => 'minuman',        'icon' => '🥤', 'sort_order' => 4],
-            ['name' => 'Snack & Extra',  'slug' => 'snack-extra',    'icon' => '🍟', 'sort_order' => 5],
+            ['name' => 'Pake Nasi', 'slug' => 'pake-nasi', 'icon' => '🍚', 'sort_order' => 1],
+            ['name' => 'Ayam',      'slug' => 'ayam',      'icon' => '🍗', 'sort_order' => 2],
+            ['name' => 'Minuman',   'slug' => 'minuman',   'icon' => '🥤', 'sort_order' => 3],
+            ['name' => 'Snack',     'slug' => 'snack',     'icon' => '🍟', 'sort_order' => 4],
         ];
 
         foreach ($categories as $cat) {

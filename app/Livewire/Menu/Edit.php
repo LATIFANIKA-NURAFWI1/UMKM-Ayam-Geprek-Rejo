@@ -32,7 +32,6 @@ class Edit extends Component
     #[Validate('boolean')]
     public bool $is_available = true;
 
-    // image: nullable agar bisa upload ulang setelah hapus
     #[Validate('nullable|image|mimes:jpg,jpeg,png,webp|max:2048')]
     public $image = null;
 

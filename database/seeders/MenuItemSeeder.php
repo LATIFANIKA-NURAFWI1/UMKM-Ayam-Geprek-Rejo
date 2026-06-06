@@ -10,16 +10,15 @@ class MenuItemSeeder extends Seeder
 {
     public function run(): void
     {
-        $ayamGeprek  = Category::where('slug', 'ayam-geprek')->first();
-        $ayamGoreng  = Category::where('slug', 'ayam-goreng')->first();
-        $nasiLauk    = Category::where('slug', 'nasi-lauk')->first();
-        $minuman     = Category::where('slug', 'minuman')->first();
-        $snack       = Category::where('slug', 'snack-extra')->first();
+        $pakeNasi = Category::where('slug', 'pake-nasi')->first();
+        $ayam     = Category::where('slug', 'ayam')->first();
+        $minuman  = Category::where('slug', 'minuman')->first();
+        $snack    = Category::where('slug', 'snack')->first();
 
         $menus = [
             // ── Ayam Geprek ──────────────────────────────────────────────────
             [
-                'category_id'  => $ayamGeprek?->id,
+                'category_id'  => $ayam?->id,
                 'name'         => 'Geprek Original',
                 'slug'         => 'geprek-original',
                 'description'  => 'Ayam goreng crispy diulek dengan sambal bawang segar',
@@ -27,7 +26,7 @@ class MenuItemSeeder extends Seeder
                 'sort_order'   => 1,
             ],
             [
-                'category_id'  => $ayamGeprek?->id,
+                'category_id'  => $ayam?->id,
                 'name'         => 'Geprek Mozzarella',
                 'slug'         => 'geprek-mozzarella',
                 'description'  => 'Geprek original + keju mozzarella leleh yang memanjakan',
@@ -35,7 +34,7 @@ class MenuItemSeeder extends Seeder
                 'sort_order'   => 2,
             ],
             [
-                'category_id'  => $ayamGeprek?->id,
+                'category_id'  => $ayam?->id,
                 'name'         => 'Geprek Super Pedas',
                 'slug'         => 'geprek-super-pedas',
                 'description'  => 'Level kepedasan maksimal, cocok buat pecinta pedas sejati',
@@ -43,7 +42,7 @@ class MenuItemSeeder extends Seeder
                 'sort_order'   => 3,
             ],
             [
-                'category_id'  => $ayamGeprek?->id,
+                'category_id'  => $ayam?->id,
                 'name'         => 'Geprek Saus Tiram',
                 'slug'         => 'geprek-saus-tiram',
                 'description'  => 'Geprek dengan siraman saus tiram gurih spesial',
@@ -52,7 +51,7 @@ class MenuItemSeeder extends Seeder
             ],
             // ── Ayam Goreng ──────────────────────────────────────────────────
             [
-                'category_id'  => $ayamGoreng?->id,
+                'category_id'  => $ayam?->id,
                 'name'         => 'Ayam Goreng Biasa',
                 'slug'         => 'ayam-goreng-biasa',
                 'description'  => 'Ayam goreng bumbu kuning renyah khas rumahan',
@@ -60,7 +59,7 @@ class MenuItemSeeder extends Seeder
                 'sort_order'   => 1,
             ],
             [
-                'category_id'  => $ayamGoreng?->id,
+                'category_id'  => $ayam?->id,
                 'name'         => 'Ayam Goreng Crispy',
                 'slug'         => 'ayam-goreng-crispy',
                 'description'  => 'Ayam goreng dibalut tepung crispy berlapis',
@@ -69,7 +68,7 @@ class MenuItemSeeder extends Seeder
             ],
             // ── Nasi & Lauk ──────────────────────────────────────────────────
             [
-                'category_id'  => $nasiLauk?->id,
+                'category_id'  => $pakeNasi?->id,
                 'name'         => 'Nasi Putih',
                 'slug'         => 'nasi-putih',
                 'description'  => 'Nasi putih pulen porsi standar',
@@ -77,7 +76,7 @@ class MenuItemSeeder extends Seeder
                 'sort_order'   => 1,
             ],
             [
-                'category_id'  => $nasiLauk?->id,
+                'category_id'  => $pakeNasi?->id,
                 'name'         => 'Nasi Jumbo',
                 'slug'         => 'nasi-jumbo',
                 'description'  => 'Nasi putih porsi jumbo, cocok buat yang lapar berat',
@@ -85,7 +84,7 @@ class MenuItemSeeder extends Seeder
                 'sort_order'   => 2,
             ],
             [
-                'category_id'  => $nasiLauk?->id,
+                'category_id'  => $pakeNasi?->id,
                 'name'         => 'Tahu Goreng',
                 'slug'         => 'tahu-goreng',
                 'description'  => 'Tahu goreng crispy gurih',
@@ -93,7 +92,7 @@ class MenuItemSeeder extends Seeder
                 'sort_order'   => 3,
             ],
             [
-                'category_id'  => $nasiLauk?->id,
+                'category_id'  => $pakeNasi?->id,
                 'name'         => 'Tempe Goreng',
                 'slug'         => 'tempe-goreng',
                 'description'  => 'Tempe goreng tepung renyah',

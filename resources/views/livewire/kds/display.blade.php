@@ -51,6 +51,18 @@
                 <span x-show="isDark">☀️</span>
                 <span x-show="!isDark">🌙</span>
             </button>
+
+            {{-- Logout Button --}}
+            <button wire:click="logout"
+                wire:confirm="Keluar dari akun KDS?"
+                :class="isDark
+                    ? 'bg-red-950 border-red-900 text-red-400 hover:bg-red-900'
+                    : 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100'"
+                class="flex h-10 px-4 items-center justify-center gap-1.5 rounded-xl border-2 text-sm font-semibold transition active:scale-95"
+                title="Keluar Akun">
+                <flux:icon name="arrow-right-start-on-rectangle" class="h-4 w-4" />
+                <span>Keluar</span>
+            </button>
         </div>
     </div>
 

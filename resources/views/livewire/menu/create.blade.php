@@ -43,7 +43,7 @@
                     <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
                     Mengupload...
                 </div>
-                <p class="text-xs text-zinc-400">JPG, PNG, maks 2MB</p>
+                <p class="text-xs text-zinc-400">JPG, PNG, maks 2MB (Rekomendasi rasio 1:1 / persegi)</p>
             </div>
             @error('image') <p class="mt-2 text-xs text-red-500">{{ $message }}</p> @enderror
         </div>

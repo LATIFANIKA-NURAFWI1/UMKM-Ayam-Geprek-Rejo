@@ -19,7 +19,7 @@ class VoucherService
      *
      * @throws \InvalidArgumentException
      */
-    public function validateAndCalculate(string $code, float $subtotal, ?int $memberId = null): array
+    public function validateAndCalculate(string $code, float $subtotal, ?int $memberId = null, array $cart = []): array
     {
         $voucher = Voucher::active()->where('code', strtoupper(trim($code)))->first();
 
@@ -36,16 +36,46 @@ class VoucherService
             throw new \InvalidArgumentException('Voucher tidak dapat digunakan. Periksa syarat & ketentuan.');
         }
 
-        if ($subtotal < (float) $voucher->minimum_order) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'Minimum pembelian untuk voucher ini adalah Rp %s.',
-                    number_format($voucher->minimum_order, 0, ',', '.')
-                )
-            );
-        }
+        // Hitung diskon khusus untuk reward FREE-GEPREK-
+        if (str_starts_with($voucher->code, 'FREE-GEPREK-')) {
+            // Dapatkan list menu_item_id dari cart
+            $menuItemIds = [];
+            foreach ($cart as $key => $item) {
+                if (is_array($item)) {
+                    if (isset($item['menu_item_id'])) {
+                        $menuItemIds[] = (int) $item['menu_item_id'];
+                    } elseif (isset($item['id'])) {
+                        $menuItemIds[] = (int) $item['id'];
+                    }
+                } else {
+                    if (is_numeric($key)) {
+                        $menuItemIds[] = (int) $key;
+                    }
+                }
+            }
 
-        $discount = $voucher->calculateDiscount($subtotal);
+            // Cari item dengan nama "Paket Nasi Ayam Geprek" di DB berdasarkan ID yang ada di keranjang
+            $menuItems = \App\Models\MenuItem::whereIn('id', $menuItemIds)->get();
+            $geprekItem = $menuItems->first(fn ($item) => strtolower(trim($item->name)) === 'paket nasi ayam geprek');
+
+            if (! $geprekItem) {
+                throw new \InvalidArgumentException('Voucher ini hanya dapat digunakan jika terdapat menu Paket Nasi Ayam Geprek di dalam keranjang.');
+            }
+
+            // Nilai diskon adalah harga dari 1 porsi menu Geprek tersebut
+            $discount = (float) $geprekItem->price;
+        } else {
+            if ($subtotal < (float) $voucher->minimum_order) {
+                throw new \InvalidArgumentException(
+                    sprintf(
+                        'Minimum pembelian untuk voucher ini adalah Rp %s.',
+                        number_format($voucher->minimum_order, 0, ',', '.')
+                    )
+                );
+            }
+
+            $discount = $voucher->calculateDiscount($subtotal);
+        }
 
         if ($discount <= 0) {
             throw new \InvalidArgumentException('Voucher tidak memberikan nilai diskon untuk order ini.');

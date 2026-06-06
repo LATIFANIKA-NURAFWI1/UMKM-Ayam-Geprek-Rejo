@@ -65,7 +65,7 @@
                     </button>
                 @endif
 
-                <p class="text-xs text-zinc-400">JPG, PNG, maks 2MB</p>
+                <p class="text-xs text-zinc-400">JPG, PNG, maks 2MB (Rekomendasi rasio 1:1 / persegi)</p>
             </div>
             @error('image') <p class="mt-2 text-xs text-red-500">{{ $message }}</p> @enderror
         </div>

@@ -145,26 +145,12 @@
                         </div>
                     @endif
 
-                    {{-- Order Type Toggle --}}
+                    {{-- Order Type --}}
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Pesanan</label>
-                        <div class="grid grid-cols-2 gap-1 p-1 bg-gray-100 rounded-xl">
-                            <button type="button" wire:click="$set('orderType', 'dine_in')"
-                                class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-sm font-medium transition-all
-                                       {{ $orderType === 'dine_in'
-                                          ? 'bg-white text-orange-600 shadow-sm'
-                                          : 'text-gray-500 hover:text-gray-700' }}">
-                                <span>🍽️</span>
-                                <span>Makan di Sini</span>
-                            </button>
-                            <button type="button" wire:click="$set('orderType', 'takeaway')"
-                                class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-sm font-medium transition-all
-                                       {{ $orderType === 'takeaway'
-                                          ? 'bg-white text-orange-600 shadow-sm'
-                                          : 'text-gray-500 hover:text-gray-700' }}">
-                                <span>🥡</span>
-                                <span>Bawa Pulang</span>
-                            </button>
+                        <div class="flex items-center gap-2.5 py-3 px-4 bg-orange-50 text-orange-800 rounded-xl text-sm font-bold border border-orange-100">
+                            <span>🥡</span>
+                            <span>Bawa Pulang (Takeaway)</span>
                         </div>
                     </div>
 
@@ -220,38 +206,36 @@
                             </div>
                         </div>
 
-                        {{-- Points redemption slider --}}
-                        @if($memberPoints > 0)
-                            @php
-                                $maxRedeem = min($memberPoints, (int) $this->subtotal);
-                            @endphp
-                            <div class="bg-orange-50 rounded-xl p-3.5 space-y-2">
-                                <div class="flex items-center justify-between text-sm">
-                                    <span class="text-gray-600 font-medium">Tukar Poin</span>
-                                    @if($pointsToRedeem > 0)
-                                        <span class="font-semibold text-orange-600">
-                                            {{ number_format($pointsToRedeem, 0, ',', '.') }} poin
-                                            = <span class="text-green-600">−Rp {{ number_format($this->pointsDiscountAmount, 0, ',', '.') }}</span>
-                                        </span>
-                                    @else
-                                        <span class="text-gray-400 text-xs">Geser untuk tukar poin</span>
-                                    @endif
-                                </div>
-                                <input
-                                    type="range"
-                                    wire:model.live="pointsToRedeem"
-                                    min="0"
-                                    max="{{ $maxRedeem }}"
-                                    step="1"
-                                    class="w-full h-2 accent-orange-500 cursor-pointer">
-                                <div class="flex justify-between text-xs text-gray-400">
-                                    <span>0 poin</span>
-                                    <span>{{ number_format($maxRedeem, 0, ',', '.') }} poin maks</span>
-                                </div>
+                        {{-- 🎁 Reward Member Section --}}
+                        @php
+                            $targetPoints = 150;
+                            $currentPoints = $memberPoints;
+                            $neededPoints = max(0, $targetPoints - $currentPoints);
+                            $progressPercent = min(100, ($currentPoints / $targetPoints) * 100);
+                        @endphp
+                        <div class="mt-3 bg-gradient-to-br from-orange-50 to-amber-50 p-4 rounded-xl border border-orange-100 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-xs text-gray-700 flex items-center gap-1.5">🎁 Reward Member</span>
+                                <span class="text-xs font-bold text-orange-600 bg-orange-100/60 px-2 py-0.5 rounded-md">
+                                    {{ $currentPoints }} / {{ $targetPoints }} Poin
+                                </span>
                             </div>
-                        @else
-                            <p class="text-sm text-gray-400 italic">Saldo poin Anda 0. Belanja lebih banyak untuk kumpulkan poin!</p>
-                        @endif
+
+                            {{-- Progress Bar --}}
+                            <div class="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+                                <div class="bg-orange-500 h-full rounded-full transition-all duration-500" style="width: {{ $progressPercent }}%"></div>
+                            </div>
+
+                            @if($neededPoints > 0)
+                                <p class="text-xs text-gray-600">
+                                    <strong>{{ $neededPoints }} poin</strong> lagi untuk mendapatkan <strong>1 Paket Nasi Ayam Geprek GRATIS</strong>.
+                                </p>
+                            @else
+                                <p class="text-xs text-green-600 font-bold">
+                                    🎉 Poin Anda sudah mencapai target! Voucher gratis sedang diproses.
+                                </p>
+                            @endif
+                        </div>
                     </div>
 
                 @else
@@ -262,7 +246,7 @@
                             <span class="text-base">⭐</span>
                             <div>
                                 <span class="font-semibold text-gray-900 text-sm block">Program Member</span>
-                                <span class="text-xs text-gray-400">Login untuk tukar poin & diskon eksklusif</span>
+                                <span class="text-xs text-gray-400">Daftar / Login untuk mendapatkan poin & diskon</span>
                             </div>
                         </div>
                         <svg class="w-4 h-4 text-gray-400 transition-transform {{ $showMemberForm ? 'rotate-180' : '' }}"
@@ -272,43 +256,118 @@
                     </button>
 
                     @if($showMemberForm)
-                        <div class="border-t border-gray-100 px-4 py-4 space-y-3">
-                            <p class="text-sm text-gray-500">Masukkan nomor HP dan PIN member Anda.</p>
-
-                            {{-- Error message --}}
-                            @if($memberLoginError)
-                                <div class="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 text-sm px-3.5 py-2.5 rounded-xl">
-                                    <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                                    </svg>
-                                    <span>{{ $memberLoginError }}</span>
-                                </div>
-                            @endif
-
-                            <div>
-                                <input
-                                    type="tel"
-                                    wire:model="memberPhone"
-                                    placeholder="Nomor HP (08xx...)"
-                                    autocomplete="tel"
-                                    class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
+                        <div class="border-t border-gray-100 bg-gray-50/50">
+                            {{-- Tab Selector --}}
+                            <div class="flex border-b border-gray-200 bg-white">
+                                <button type="button" wire:click="$set('isRegistering', false)"
+                                    class="flex-1 py-3 text-center text-sm font-bold border-b-2 transition
+                                           {{ ! $isRegistering ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-400' }}">
+                                    Masuk Member
+                                </button>
+                                <button type="button" wire:click="$set('isRegistering', true)"
+                                    class="flex-1 py-3 text-center text-sm font-bold border-b-2 transition
+                                           {{ $isRegistering ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-400' }}">
+                                    Daftar Member
+                                </button>
                             </div>
-                            <div>
-                                <input
-                                    type="password"
-                                    wire:model="memberPin"
-                                    placeholder="PIN (6 digit)"
-                                    maxlength="6"
-                                    inputmode="numeric"
-                                    wire:keydown.enter="loginMember"
-                                    class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
+
+                            <div class="px-4 py-4 space-y-3">
+                                @if(! $isRegistering)
+                                    {{-- FORM LOGIN --}}
+                                    <p class="text-xs text-gray-500">Masukkan nomor HP dan PIN member Anda untuk masuk.</p>
+
+                                    {{-- Error message --}}
+                                    @if($memberLoginError)
+                                        <div class="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 text-xs px-3 py-2 rounded-xl">
+                                            <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                            </svg>
+                                            <span>{{ $memberLoginError }}</span>
+                                        </div>
+                                    @endif
+
+                                    <div>
+                                        <input
+                                            type="tel"
+                                            wire:model="memberPhone"
+                                            placeholder="Nomor HP (cth: 08123456789)"
+                                            autocomplete="tel"
+                                            class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
+                                    </div>
+                                    <div>
+                                        <input
+                                            type="password"
+                                            wire:model="memberPin"
+                                            placeholder="PIN Member (6 digit)"
+                                            maxlength="6"
+                                            inputmode="numeric"
+                                            wire:keydown.enter="loginMember"
+                                            class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
+                                    </div>
+                                    <button type="button" wire:click="loginMember"
+                                        wire:loading.attr="disabled" wire:loading.class="opacity-60" wire:target="loginMember"
+                                        class="w-full py-2.5 bg-orange-500 text-white rounded-xl text-sm font-semibold hover:bg-orange-600 transition active:scale-95">
+                                        <span wire:loading.remove wire:target="loginMember">Masuk Member</span>
+                                        <span wire:loading wire:target="loginMember">Memverifikasi...</span>
+                                    </button>
+                                @else
+                                    {{-- FORM DAFTAR --}}
+                                    <p class="text-xs text-gray-500">Pendaftaran gratis! Dapatkan poin belanja yang bisa ditukar voucher.</p>
+
+                                    {{-- Error message --}}
+                                    @if($memberRegisterError)
+                                        <div class="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 text-xs px-3 py-2 rounded-xl">
+                                            <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                            </svg>
+                                            <span>{{ $memberRegisterError }}</span>
+                                        </div>
+                                    @endif
+
+                                    <div>
+                                        <input
+                                            type="text"
+                                            wire:model="registerName"
+                                            placeholder="Nama Lengkap"
+                                            class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
+                                        @error('registerName') <p class="text-xs text-red-500 mt-1 pl-1">{{ $message }}</p> @enderror
+                                    </div>
+                                    <div>
+                                        <input
+                                            type="tel"
+                                            wire:model="registerPhone"
+                                            placeholder="Nomor HP (cth: 08123456789)"
+                                            class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
+                                        @error('registerPhone') <p class="text-xs text-red-500 mt-1 pl-1">{{ $message }}</p> @enderror
+                                    </div>
+                                    <div>
+                                        <input
+                                            type="password"
+                                            wire:model="registerPin"
+                                            placeholder="PIN Baru (6 digit angka)"
+                                            maxlength="6"
+                                            inputmode="numeric"
+                                            class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
+                                        @error('registerPin') <p class="text-xs text-red-500 mt-1 pl-1">{{ $message }}</p> @enderror
+                                    </div>
+                                    <div>
+                                        <input
+                                            type="password"
+                                            wire:model="registerPin_confirmation"
+                                            placeholder="Konfirmasi PIN"
+                                            maxlength="6"
+                                            inputmode="numeric"
+                                            class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
+                                        @error('registerPin_confirmation') <p class="text-xs text-red-500 mt-1 pl-1">{{ $message }}</p> @enderror
+                                    </div>
+                                    <button type="button" wire:click="registerMember"
+                                        wire:loading.attr="disabled" wire:loading.class="opacity-60" wire:target="registerMember"
+                                        class="w-full py-2.5 bg-orange-500 text-white rounded-xl text-sm font-semibold hover:bg-orange-600 transition active:scale-95 animate-pulse-subtle">
+                                        <span wire:loading.remove wire:target="registerMember">Daftar & Masuk Member</span>
+                                        <span wire:loading wire:target="registerMember">Mendaftar...</span>
+                                    </button>
+                                @endif
                             </div>
-                            <button type="button" wire:click="loginMember"
-                                wire:loading.attr="disabled" wire:loading.class="opacity-60" wire:target="loginMember"
-                                class="w-full py-2.5 bg-orange-500 text-white rounded-xl text-sm font-semibold hover:bg-orange-600 transition active:scale-95">
-                                <span wire:loading.remove wire:target="loginMember">Masuk Member</span>
-                                <span wire:loading wire:target="loginMember">Memverifikasi...</span>
-                            </button>
                         </div>
                     @endif
                 @endif
@@ -484,20 +543,7 @@
                         </div>
                     @endif
 
-                    {{-- Points discount --}}
-                    @if($this->pointsDiscountAmount > 0)
-                        <div class="flex items-center justify-between text-sm">
-                            <span class="text-blue-600 flex items-center gap-1">
-                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
-                                </svg>
-                                Poin ({{ number_format($pointsToRedeem, 0, ',', '.') }} poin)
-                            </span>
-                            <span class="font-semibold text-blue-600">
-                                −Rp {{ number_format($this->pointsDiscountAmount, 0, ',', '.') }}
-                            </span>
-                        </div>
-                    @endif
+
 
                     {{-- Total --}}
                     <div class="pt-3 border-t border-gray-200 flex items-center justify-between">
@@ -558,7 +604,44 @@
                 </button>
             </div>
         </div>
+    @endif
 
+    @if(session()->has('reward_vouchers_redeemed') && !empty(session('reward_vouchers_redeemed')))
+        @php
+            $redeemedVouchers = session('reward_vouchers_redeemed');
+        @endphp
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+            <div class="relative w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl text-center space-y-4 animate-scale-up">
+                
+                {{-- Confetti / Gift icon --}}
+                <div class="mx-auto w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center text-3xl">
+                    🎉
+                </div>
+
+                <div class="space-y-1">
+                    <h3 class="text-lg font-extrabold text-zinc-900">Selamat!</h3>
+                    <p class="text-sm text-zinc-500">Anda berhasil menukarkan 150 poin menjadi voucher:</p>
+                </div>
+
+                @foreach($redeemedVouchers as $code)
+                    <div class="bg-orange-50 border-2 border-dashed border-orange-300 rounded-xl p-3 font-mono text-lg font-black text-orange-600 select-all tracking-wider relative group">
+                        {{ $code }}
+                        <span class="absolute -top-2 -right-2 bg-orange-500 text-[10px] text-white font-bold px-1.5 py-0.5 rounded-full shadow-sm">SALIN</span>
+                    </div>
+                @endforeach
+
+                <div class="text-xs text-zinc-500 space-y-1 bg-zinc-50 p-3 rounded-xl border border-zinc-100">
+                    <p class="font-bold text-zinc-700">🎁 Reward:</p>
+                    <p>1 Paket Nasi Ayam Geprek Gratis</p>
+                    <p class="text-[10px] text-zinc-400">Masa berlaku: 7 hari sejak ditukarkan</p>
+                </div>
+
+                <button type="button" wire:click="closeRewardPopup"
+                        class="w-full py-3 bg-orange-500 text-white rounded-xl font-bold hover:bg-orange-600 transition active:scale-95 shadow-lg shadow-orange-500/20">
+                    Gunakan Sekarang
+                </button>
+            </div>
+        </div>
     @endif
 
 </div>

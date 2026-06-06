@@ -65,7 +65,8 @@ class OrderService
             $voucherData = $this->voucherService->validateAndCalculate(
                 $data['voucher_code'],
                 $this->calculateSubtotal($data['cart']),
-                $data['member_id'] ?? null
+                $data['member_id'] ?? null,
+                $data['cart']
             );
         }
 

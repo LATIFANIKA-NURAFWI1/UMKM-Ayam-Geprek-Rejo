@@ -41,6 +41,11 @@ class Display extends Component
         unset($this->kitchenOrders);
     }
 
+    public function logout(\App\Livewire\Actions\Logout $logout): void
+    {
+        $logout();
+    }
+
     // ─── Render ───────────────────────────────────────────────────────────────
 
     public function render()
