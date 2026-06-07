@@ -17,3 +17,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ])
         ->name('security.edit');
 });
+
+// QRIS setting — owner only
+Route::middleware(['auth', 'verified', 'role:owner'])->group(function () {
+    Route::livewire('settings/qris', 'pages::settings.qris')->name('settings.qris');
+});
+

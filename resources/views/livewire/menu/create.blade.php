@@ -16,22 +16,47 @@
         <div class="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:label class="mb-3 block font-semibold">Foto Menu</flux:label>
 
-            {{-- Preview --}}
-            <div class="mb-4 flex h-40 w-full items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-zinc-300 bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800">
+            {{-- Drop Zone --}}
+            <div
+                id="menu-create-drop-zone"
+                class="mb-4 relative flex h-48 w-full items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-zinc-300 bg-zinc-50 transition-all duration-200 cursor-pointer dark:border-zinc-600 dark:bg-zinc-800"
+                onclick="document.getElementById('menu-create-image-input').click()"
+                ondragover="event.preventDefault(); this.classList.add('border-orange-400','bg-orange-50','dark:bg-zinc-700');"
+                ondragleave="this.classList.remove('border-orange-400','bg-orange-50','dark:bg-zinc-700');"
+                ondragenter="event.preventDefault();"
+                ondrop="event.preventDefault();
+                        this.classList.remove('border-orange-400','bg-orange-50','dark:bg-zinc-700');
+                        const file = event.dataTransfer.files[0];
+                        if (file && file.type.startsWith('image/')) {
+                            const input = document.getElementById('menu-create-image-input');
+                            const dt = new DataTransfer();
+                            dt.items.add(file);
+                            input.files = dt.files;
+                            input.dispatchEvent(new Event('change', { bubbles: true }));
+                        }"
+            >
                 @if($image)
                     <img src="{{ $image->temporaryUrl() }}" class="h-full w-full object-cover rounded-xl">
+                    <div class="absolute inset-0 bg-black/30 flex items-end justify-center pb-3 rounded-xl opacity-0 hover:opacity-100 transition-opacity">
+                        <span class="text-white text-xs font-semibold bg-black/50 px-3 py-1 rounded-full">Klik / drag untuk ganti</span>
+                    </div>
                 @else
-                    <div class="flex flex-col items-center gap-2 text-zinc-400">
-                        <flux:icon name="fire" class="h-10 w-10" />
-                        <p class="text-sm">Belum ada foto</p>
+                    <div class="flex flex-col items-center gap-2 text-zinc-400 pointer-events-none">
+                        <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <p class="text-sm font-medium">Drag & drop foto ke sini</p>
+                        <p class="text-xs">atau klik untuk memilih file</p>
                     </div>
                 @endif
             </div>
 
-            {{-- Upload button (native file input wired to Livewire) --}}
+            {{-- Hidden file input --}}
+            <input type="file" id="menu-create-image-input" wire:model="image" accept="image/*" class="sr-only">
+
+            {{-- Upload button --}}
             <div class="flex items-center gap-3">
-                <label class="cursor-pointer">
-                    <input type="file" wire:model="image" accept="image/*" class="sr-only">
+                <label for="menu-create-image-input" class="cursor-pointer">
                     <span class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -43,10 +68,11 @@
                     <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
                     Mengupload...
                 </div>
-                <p class="text-xs text-zinc-400">JPG, PNG, maks 2MB (Rekomendasi rasio 1:1 / persegi)</p>
+                <p class="text-xs text-zinc-400">JPG, PNG, WebP, maks 2MB (Rekomendasi rasio 1:1 / persegi)</p>
             </div>
             @error('image') <p class="mt-2 text-xs text-red-500">{{ $message }}</p> @enderror
         </div>
+
 
         {{-- Info Utama --}}
         <div class="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900 space-y-4">

@@ -73,16 +73,25 @@
                         <p class="text-xs text-gray-400 mt-2">💡 Tip: Screenshot halaman ini untuk menyimpan QR</p>
                     </div>
                 @else
-                    {{-- Fallback when no QR image is configured --}}
-                    <div class="flex flex-col items-center justify-center py-10 px-6 text-center">
-                        <div class="w-24 h-24 bg-gray-100 rounded-2xl flex items-center justify-center mb-3">
-                            <svg class="w-12 h-12 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    {{-- Fallback when no QR image is configured by admin --}}
+                    <div class="flex flex-col items-center justify-center py-8 px-6 text-center gap-4">
+                        <div class="w-20 h-20 bg-orange-50 rounded-2xl flex items-center justify-center">
+                            <svg class="w-10 h-10 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                       d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12v.01M12 3.01V3M4 20h4m-4 0V4m0 0h4m12 0h-4m4 0v4m0 12v-4M4 8h4V4M4 4h4m12 0h-4m4 0v4m-4 16v-4m0 4h-4"/>
                             </svg>
                         </div>
-                        <p class="font-semibold text-gray-700">Minta kasir tunjukkan QR QRIS</p>
-                        <p class="text-sm text-gray-400 mt-1">Atau scan QR yang tersedia di meja kasir</p>
+                        <div>
+                            <p class="font-semibold text-gray-800">QR QRIS belum dikonfigurasi</p>
+                            <p class="text-sm text-gray-500 mt-1 leading-relaxed">
+                                Admin belum mengupload gambar QRIS statis.<br>
+                                Silakan upload di menu <strong>Pengaturan → QRIS</strong>.
+                            </p>
+                        </div>
+                        <div class="w-full bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-left">
+                            <p class="text-xs font-semibold text-amber-800 mb-1">Sementara ini:</p>
+                            <p class="text-xs text-amber-700">Minta kasir untuk menunjukkan QR QRIS atau scan QR yang tersedia di meja kasir.</p>
+                        </div>
                     </div>
                 @endif
             </div>

@@ -270,6 +270,48 @@ class CheckoutPage extends Component
     }
 
     // =========================================================================
+    // CART MANAGEMENT
+    // =========================================================================
+
+    /**
+     * Increment or decrement the quantity of a cart item.
+     * If quantity reaches 0 after decrement, the item is removed.
+     */
+    public function updateCartQuantity(string $itemId, int $delta): void
+    {
+        if (! isset($this->cart[$itemId])) {
+            return;
+        }
+
+        $newQty = (int) $this->cart[$itemId]['quantity'] + $delta;
+
+        if ($newQty <= 0) {
+            $this->removeCartItem($itemId);
+            return;
+        }
+
+        $this->cart[$itemId]['quantity'] = $newQty;
+        $this->cart[$itemId]['subtotal'] = (float) $this->cart[$itemId]['price'] * $newQty;
+
+        // Persist to session
+        session(['cart' => $this->cart]);
+
+        // Re-validate voucher discount doesn't exceed new subtotal
+        if ($this->voucherApplied && $this->voucherDiscount > $this->subtotal) {
+            $this->voucherDiscount = $this->subtotal;
+        }
+    }
+
+    /**
+     * Completely remove an item from the cart.
+     */
+    public function removeCartItem(string $itemId): void
+    {
+        unset($this->cart[$itemId]);
+        session(['cart' => $this->cart]);
+    }
+
+    // =========================================================================
     // ORDER PLACEMENT
     // =========================================================================
 

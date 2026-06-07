@@ -48,7 +48,7 @@ class Index extends Component
             ->ordered();
 
         return view('livewire.menu.index', [
-            'menuItems'  => $query->paginate(12),
+            'menuItems'  => $query->paginate(10),
             'categories' => Category::active()->ordered()->get(),
         ]);
     }
