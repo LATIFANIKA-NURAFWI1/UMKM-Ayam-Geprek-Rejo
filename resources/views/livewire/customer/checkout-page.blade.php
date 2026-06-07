@@ -12,10 +12,10 @@
                 </svg>
             </a>
             <div class="flex-1">
-                <h1 class="text-lg font-bold text-gray-900 leading-tight">Pesanan Saya</h1>
+                <h1 class="font-jakarta text-lg font-bold text-gray-900 leading-tight">Pesanan Saya</h1>
             </div>
             @if(!empty($cart))
-                <span class="text-sm font-medium text-orange-600 bg-orange-50 px-2.5 py-1 rounded-full flex-shrink-0">
+                <span class="font-inter text-sm font-medium text-[#bc000a] bg-[#fff8f7] px-2.5 py-1 rounded-full flex-shrink-0">
                     {{ count($cart) }} item
                 </span>
             @endif
@@ -36,7 +36,7 @@
             <p class="text-lg font-semibold text-gray-700">Keranjang masih kosong</p>
             <p class="text-sm text-gray-400 mt-1 mb-6">Yuk pilih menu lezat kami!</p>
             <a href="{{ route('order.menu') }}" wire:navigate
-               class="px-8 py-3 bg-orange-500 text-white font-semibold rounded-2xl hover:bg-orange-600 transition active:scale-95">
+               class="px-8 py-3 bg-[#bc000a] text-white font-semibold rounded-2xl hover:bg-[#c0000b] transition active:scale-95">
                 Pilih Menu
             </a>
         </div>
@@ -49,11 +49,11 @@
                  ============================================================== --}}
             <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
                 <div class="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
-                    <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg class="w-4 h-4 text-[#bc000a]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                     </svg>
-                    <h2 class="font-semibold text-gray-900">Ringkasan Pesanan</h2>
+                    <h2 class="font-jakarta font-semibold text-gray-900">Ringkasan Pesanan</h2>
                 </div>
 
                 <div class="divide-y divide-gray-50">
@@ -65,19 +65,19 @@
                                      alt="{{ $item['name'] }}"
                                      class="w-14 h-14 rounded-xl object-cover flex-shrink-0">
                             @else
-                                <div class="w-14 h-14 rounded-xl bg-orange-50 flex items-center justify-center flex-shrink-0">
+                                <div class="w-14 h-14 rounded-xl bg-[#fff8f7] flex items-center justify-center flex-shrink-0">
                                     <span class="text-2xl">🍗</span>
                                 </div>
                             @endif
 
                             {{-- Item info --}}
                             <div class="flex-1 min-w-0">
-                                <p class="font-medium text-gray-900 text-sm leading-tight truncate">{{ $item['name'] }}</p>
+                                <p class="font-semibold text-gray-900 text-sm leading-tight truncate">{{ $item['name'] }}</p>
                                 <p class="text-xs text-gray-500 mt-0.5">
                                     Rp {{ number_format($item['price'], 0, ',', '.') }} / pcs
                                 </p>
                                 {{-- Subtotal --}}
-                                <p class="text-sm font-bold text-orange-600 mt-1">
+                                <p class="text-sm font-bold text-[#bc000a] mt-1">
                                     Rp {{ number_format($item['subtotal'], 0, ',', '.') }}
                                 </p>
                             </div>
@@ -112,7 +112,7 @@
                                 <button type="button"
                                     wire:click="updateCartQuantity('{{ $itemId }}', 1)"
                                     wire:loading.attr="disabled"
-                                    class="w-8 h-8 flex items-center justify-center rounded-full bg-orange-500 text-white hover:bg-orange-600 transition active:scale-90">
+                                    class="w-8 h-8 flex items-center justify-center rounded-full bg-[#bc000a] text-white hover:bg-[#c0000b] transition active:scale-90">
                                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
                                     </svg>
@@ -135,11 +135,11 @@
                  ============================================================== --}}
             <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
                 <div class="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
-                    <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg class="w-4 h-4 text-[#bc000a]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
-                    <h2 class="font-semibold text-gray-900">Informasi Pesanan</h2>
+                    <h2 class="font-jakarta font-semibold text-gray-900">Informasi Pesanan</h2>
                 </div>
                 <div class="px-4 py-4 space-y-4">
 
@@ -154,7 +154,7 @@
                             wire:model="customerName"
                             placeholder="Contoh: Budi Santoso"
                             autocomplete="name"
-                            class="w-full px-3.5 py-2.5 border rounded-xl text-sm transition focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent
+                            class="w-full px-3.5 py-2.5 border rounded-xl text-sm transition focus:outline-none focus:ring-2 focus:ring-[#bc000a] focus:border-transparent
                                    @error('customerName') border-red-400 bg-red-50 @else border-gray-300 @enderror">
                         @error('customerName')
                             <p class="mt-1.5 text-xs text-red-500 flex items-center gap-1">
@@ -168,19 +168,19 @@
 
                     {{-- Table number badge (if from QR scan) --}}
                     @if($tableNumber)
-                        <div class="flex items-center gap-2 px-3.5 py-2.5 bg-orange-50 border border-orange-200 rounded-xl">
-                            <svg class="w-4 h-4 text-orange-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="flex items-center gap-2 px-3.5 py-2.5 bg-[#fff8f7] border border-[#e8bcb6] rounded-xl">
+                            <svg class="w-4 h-4 text-[#bc000a] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                       d="M3 10h18M3 14h18M8 6h.01M16 6h.01M8 18h.01M16 18h.01"/>
                             </svg>
-                            <span class="text-sm font-medium text-orange-700">Meja: <strong>{{ $tableNumber }}</strong></span>
+                            <span class="text-sm font-medium text-[#930006]">Meja: <strong>{{ $tableNumber }}</strong></span>
                         </div>
                     @endif
 
                     {{-- Order Type --}}
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Jenis Pesanan</label>
-                        <div class="flex items-center gap-2.5 py-3 px-4 bg-orange-50 text-orange-800 rounded-xl text-sm font-bold border border-orange-100">
+                        <div class="flex items-center gap-2.5 py-3 px-4 bg-[#fff8f7] text-[#410001] rounded-xl text-sm font-bold border border-[#ffdad5]">
                             <span>🥡</span>
                             <span>Bawa Pulang (Takeaway)</span>
                         </div>
@@ -196,7 +196,7 @@
                             wire:model="orderNotes"
                             placeholder="Misal: tidak pedas, extra nasi, sambal terpisah..."
                             rows="2"
-                            class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm resize-none transition focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"></textarea>
+                            class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm resize-none transition focus:outline-none focus:ring-2 focus:ring-[#bc000a] focus:border-transparent"></textarea>
                     </div>
 
                 </div>
@@ -227,7 +227,7 @@
                     <div class="px-4 py-4 space-y-3">
                         {{-- Member info --}}
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#e61919] to-[#bc000a] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                                 {{ strtoupper(substr($loggedInMemberName, 0, 1)) }}
                             </div>
                             <div>
@@ -245,17 +245,17 @@
                             $neededPoints = max(0, $targetPoints - $currentPoints);
                             $progressPercent = min(100, ($currentPoints / $targetPoints) * 100);
                         @endphp
-                        <div class="mt-3 bg-gradient-to-br from-orange-50 to-amber-50 p-4 rounded-xl border border-orange-100 space-y-3">
+                        <div class="mt-3 bg-gradient-to-br from-[#fff8f7] to-amber-50 p-4 rounded-xl border border-[#ffdad5] space-y-3">
                             <div class="flex items-center justify-between">
                                 <span class="font-bold text-xs text-gray-700 flex items-center gap-1.5">🎁 Reward Member</span>
-                                <span class="text-xs font-bold text-orange-600 bg-orange-100/60 px-2 py-0.5 rounded-md">
+                                <span class="text-xs font-bold text-[#bc000a] bg-[#ffdad5]/60 px-2 py-0.5 rounded-md">
                                     {{ $currentPoints }} / {{ $targetPoints }} Poin
                                 </span>
                             </div>
 
                             {{-- Progress Bar --}}
                             <div class="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
-                                <div class="bg-orange-500 h-full rounded-full transition-all duration-500" style="width: {{ $progressPercent }}%"></div>
+                                <div class="bg-[#bc000a] h-full rounded-full transition-all duration-500" style="width: {{ $progressPercent }}%"></div>
                             </div>
 
                             @if($neededPoints > 0)
@@ -277,8 +277,8 @@
                         <div class="flex items-center gap-2">
                             <span class="text-base">⭐</span>
                             <div>
-                                <span class="font-semibold text-gray-900 text-sm block">Program Member</span>
-                                <span class="text-xs text-gray-400">Daftar / Login untuk mendapatkan poin & diskon</span>
+                                <span class="font-jakarta font-semibold text-gray-900 text-sm block">Program Member</span>
+                                <span class="font-inter text-xs text-gray-400">Daftar / Login untuk mendapatkan poin & diskon</span>
                             </div>
                         </div>
                         <svg class="w-4 h-4 text-gray-400 transition-transform {{ $showMemberForm ? 'rotate-180' : '' }}"
@@ -292,13 +292,13 @@
                             {{-- Tab Selector --}}
                             <div class="flex border-b border-gray-200 bg-white">
                                 <button type="button" wire:click="$set('isRegistering', false)"
-                                    class="flex-1 py-3 text-center text-sm font-bold border-b-2 transition
-                                           {{ ! $isRegistering ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-400' }}">
+                                    class="flex-1 py-3 text-center text-sm font-bold border-b-2 transition font-jakarta
+                                           {{ ! $isRegistering ? 'border-[#bc000a] text-[#bc000a]' : 'border-transparent text-gray-400' }}">
                                     Masuk Member
                                 </button>
                                 <button type="button" wire:click="$set('isRegistering', true)"
-                                    class="flex-1 py-3 text-center text-sm font-bold border-b-2 transition
-                                           {{ $isRegistering ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-400' }}">
+                                    class="flex-1 py-3 text-center text-sm font-bold border-b-2 transition font-jakarta
+                                           {{ $isRegistering ? 'border-[#bc000a] text-[#bc000a]' : 'border-transparent text-gray-400' }}">
                                     Daftar Member
                                 </button>
                             </div>
@@ -324,7 +324,7 @@
                                             wire:model="memberPhone"
                                             placeholder="Nomor HP (cth: 08123456789)"
                                             autocomplete="tel"
-                                            class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
+                                            class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#bc000a] focus:border-transparent">
                                     </div>
                                     <div>
                                         <input
@@ -334,11 +334,11 @@
                                             maxlength="6"
                                             inputmode="numeric"
                                             wire:keydown.enter="loginMember"
-                                            class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
+                                            class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#bc000a] focus:border-transparent">
                                     </div>
                                     <button type="button" wire:click="loginMember"
                                         wire:loading.attr="disabled" wire:loading.class="opacity-60" wire:target="loginMember"
-                                        class="w-full py-2.5 bg-orange-500 text-white rounded-xl text-sm font-semibold hover:bg-orange-600 transition active:scale-95">
+                                        class="w-full py-2.5 bg-[#bc000a] text-white rounded-xl text-sm font-semibold hover:bg-[#c0000b] transition active:scale-95">
                                         <span wire:loading.remove wire:target="loginMember">Masuk Member</span>
                                         <span wire:loading wire:target="loginMember">Memverifikasi...</span>
                                     </button>
@@ -361,7 +361,7 @@
                                             type="text"
                                             wire:model="registerName"
                                             placeholder="Nama Lengkap"
-                                            class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
+                                            class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#bc000a] focus:border-transparent">
                                         @error('registerName') <p class="text-xs text-red-500 mt-1 pl-1">{{ $message }}</p> @enderror
                                     </div>
                                     <div>
@@ -369,7 +369,7 @@
                                             type="tel"
                                             wire:model="registerPhone"
                                             placeholder="Nomor HP (cth: 08123456789)"
-                                            class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
+                                            class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#bc000a] focus:border-transparent">
                                         @error('registerPhone') <p class="text-xs text-red-500 mt-1 pl-1">{{ $message }}</p> @enderror
                                     </div>
                                     <div>
@@ -379,7 +379,7 @@
                                             placeholder="PIN Baru (6 digit angka)"
                                             maxlength="6"
                                             inputmode="numeric"
-                                            class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
+                                            class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#bc000a] focus:border-transparent">
                                         @error('registerPin') <p class="text-xs text-red-500 mt-1 pl-1">{{ $message }}</p> @enderror
                                     </div>
                                     <div>
@@ -389,12 +389,12 @@
                                             placeholder="Konfirmasi PIN"
                                             maxlength="6"
                                             inputmode="numeric"
-                                            class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent">
+                                            class="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#bc000a] focus:border-transparent">
                                         @error('registerPin_confirmation') <p class="text-xs text-red-500 mt-1 pl-1">{{ $message }}</p> @enderror
                                     </div>
                                     <button type="button" wire:click="registerMember"
                                         wire:loading.attr="disabled" wire:loading.class="opacity-60" wire:target="registerMember"
-                                        class="w-full py-2.5 bg-orange-500 text-white rounded-xl text-sm font-semibold hover:bg-orange-600 transition active:scale-95 animate-pulse-subtle">
+                                        class="w-full py-2.5 bg-[#bc000a] text-white rounded-xl text-sm font-semibold hover:bg-[#c0000b] transition active:scale-95 animate-pulse-subtle">
                                         <span wire:loading.remove wire:target="registerMember">Daftar & Masuk Member</span>
                                         <span wire:loading wire:target="registerMember">Mendaftar...</span>
                                     </button>
@@ -410,11 +410,11 @@
                  ============================================================== --}}
             <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
                 <div class="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
-                    <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg class="w-4 h-4 text-[#bc000a]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
                     </svg>
-                    <h2 class="font-semibold text-gray-900">Voucher</h2>
+                    <h2 class="font-jakarta font-semibold text-gray-900">Voucher</h2>
                 </div>
                 <div class="px-4 py-4">
 
@@ -449,11 +449,11 @@
                                 type="text"
                                 wire:model="voucherCode"
                                 placeholder="Kode voucher"
-                                class="flex-1 px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+                                class="flex-1 px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-[#bc000a] focus:border-transparent"
                                 wire:keydown.enter="applyVoucher">
                             <button type="button" wire:click="applyVoucher"
                                 wire:loading.attr="disabled" wire:target="applyVoucher"
-                                class="px-4 py-2.5 bg-orange-500 text-white rounded-xl text-sm font-semibold hover:bg-orange-600 transition whitespace-nowrap disabled:opacity-60">
+                                class="px-4 py-2.5 bg-[#bc000a] text-white rounded-xl text-sm font-semibold hover:bg-[#c0000b] transition whitespace-nowrap disabled:opacity-60">
                                 <span wire:loading.remove wire:target="applyVoucher">Pakai</span>
                                 <span wire:loading wire:target="applyVoucher">...</span>
                             </button>
@@ -476,11 +476,11 @@
                  ============================================================== --}}
             <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
                 <div class="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
-                    <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg class="w-4 h-4 text-[#bc000a]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                     </svg>
-                    <h2 class="font-semibold text-gray-900">Metode Pembayaran</h2>
+                    <h2 class="font-jakarta font-semibold text-gray-900">Metode Pembayaran</h2>
                 </div>
                 <div class="px-4 py-4">
 
@@ -493,23 +493,23 @@
                         <button type="button" wire:click="$set('paymentMethod', 'qris')"
                             class="relative flex flex-col items-center gap-2.5 p-4 border-2 rounded-2xl transition-all
                                    {{ $paymentMethod === 'qris'
-                                      ? 'border-orange-500 bg-orange-50 shadow-sm'
+                                      ? 'border-[#bc000a] bg-[#fff8f7] shadow-sm'
                                       : 'border-gray-200 bg-white hover:border-gray-300' }}">
                             {{-- Selected checkmark --}}
                             @if($paymentMethod === 'qris')
-                                <span class="absolute top-2 right-2 w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center">
+                                <span class="absolute top-2 right-2 w-5 h-5 bg-[#bc000a] rounded-full flex items-center justify-center">
                                     <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
                                     </svg>
                                 </span>
                             @endif
                             {{-- QR icon --}}
-                            <svg class="w-10 h-10 {{ $paymentMethod === 'qris' ? 'text-orange-500' : 'text-gray-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg class="w-10 h-10 {{ $paymentMethod === 'qris' ? 'text-[#bc000a]' : 'text-gray-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                       d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12v.01M12 3.01V3M4 20h4m-4 0V4m0 0h4m12 0h-4m4 0v4m0 12v-4M4 8h4V4M4 4h4m12 0h-4m4 0v4m-4 16v-4m0 4h-4"/>
                             </svg>
                             <div class="text-center">
-                                <p class="font-bold text-sm {{ $paymentMethod === 'qris' ? 'text-orange-700' : 'text-gray-700' }}">QRIS</p>
+                                <p class="font-bold text-sm {{ $paymentMethod === 'qris' ? 'text-[#930006]' : 'text-gray-700' }}">QRIS</p>
                                 <p class="text-xs text-gray-400 mt-0.5">Scan QR Code</p>
                             </div>
                         </button>
@@ -518,23 +518,23 @@
                         <button type="button" wire:click="$set('paymentMethod', 'cash')"
                             class="relative flex flex-col items-center gap-2.5 p-4 border-2 rounded-2xl transition-all
                                    {{ $paymentMethod === 'cash'
-                                      ? 'border-orange-500 bg-orange-50 shadow-sm'
+                                      ? 'border-[#bc000a] bg-[#fff8f7] shadow-sm'
                                       : 'border-gray-200 bg-white hover:border-gray-300' }}">
                             {{-- Selected checkmark --}}
                             @if($paymentMethod === 'cash')
-                                <span class="absolute top-2 right-2 w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center">
+                                <span class="absolute top-2 right-2 w-5 h-5 bg-[#bc000a] rounded-full flex items-center justify-center">
                                     <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
                                     </svg>
                                 </span>
                             @endif
                             {{-- Cash icon --}}
-                            <svg class="w-10 h-10 {{ $paymentMethod === 'cash' ? 'text-orange-500' : 'text-gray-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg class="w-10 h-10 {{ $paymentMethod === 'cash' ? 'text-[#bc000a]' : 'text-gray-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                       d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
                             </svg>
                             <div class="text-center">
-                                <p class="font-bold text-sm {{ $paymentMethod === 'cash' ? 'text-orange-700' : 'text-gray-700' }}">Tunai</p>
+                                <p class="font-bold text-sm {{ $paymentMethod === 'cash' ? 'text-[#930006]' : 'text-gray-700' }}">Tunai</p>
                                 <p class="text-xs text-gray-400 mt-0.5">Bayar ke Kasir</p>
                             </div>
                         </button>
@@ -547,11 +547,11 @@
                  ============================================================== --}}
             <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
                 <div class="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
-                    <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg class="w-4 h-4 text-[#bc000a]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
                     </svg>
-                    <h2 class="font-semibold text-gray-900">Rincian Biaya</h2>
+                    <h2 class="font-jakarta font-semibold text-gray-900">Rincian Biaya</h2>
                 </div>
                 <div class="px-4 py-4 space-y-3">
                     {{-- Subtotal row --}}
@@ -579,8 +579,8 @@
 
                     {{-- Total --}}
                     <div class="pt-3 border-t border-gray-200 flex items-center justify-between">
-                        <span class="font-bold text-gray-900 text-base">Total Bayar</span>
-                        <span class="text-2xl font-black text-orange-600">
+                        <span class="font-jakarta font-bold text-gray-900 text-base">Total Bayar</span>
+                        <span class="font-jakarta text-2xl font-black text-[#bc000a]">
                             Rp {{ number_format($this->totalAmount, 0, ',', '.') }}
                         </span>
                     </div>
@@ -613,7 +613,7 @@
                     wire:loading.attr="disabled"
                     wire:loading.class="opacity-60 cursor-not-allowed"
                     wire:target="placeOrder"
-                    class="w-full flex items-center justify-center gap-2.5 py-4 bg-orange-500 text-white font-bold text-base rounded-2xl shadow-lg hover:bg-orange-600 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed">
+                    class="w-full flex items-center justify-center gap-2.5 py-4 bg-[#bc000a] text-white font-bold text-base rounded-2xl shadow-lg hover:bg-[#c0000b] active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed">
 
                     {{-- Default state --}}
                     <span wire:loading.remove wire:target="placeOrder" class="flex items-center gap-2">
@@ -646,7 +646,7 @@
             <div class="relative w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl text-center space-y-4 animate-scale-up">
                 
                 {{-- Confetti / Gift icon --}}
-                <div class="mx-auto w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center text-3xl">
+                <div class="mx-auto w-16 h-16 rounded-full bg-[#ffdad5] flex items-center justify-center text-3xl">
                     🎉
                 </div>
 
@@ -656,9 +656,9 @@
                 </div>
 
                 @foreach($redeemedVouchers as $code)
-                    <div class="bg-orange-50 border-2 border-dashed border-orange-300 rounded-xl p-3 font-mono text-lg font-black text-orange-600 select-all tracking-wider relative group">
+                    <div class="bg-[#fff8f7] border-2 border-dashed border-[#e8bcb6] rounded-xl p-3 font-mono text-lg font-black text-[#bc000a] select-all tracking-wider relative group">
                         {{ $code }}
-                        <span class="absolute -top-2 -right-2 bg-orange-500 text-[10px] text-white font-bold px-1.5 py-0.5 rounded-full shadow-sm">SALIN</span>
+                        <span class="absolute -top-2 -right-2 bg-[#bc000a] text-[10px] text-white font-bold px-1.5 py-0.5 rounded-full shadow-sm">SALIN</span>
                     </div>
                 @endforeach
 
@@ -669,7 +669,7 @@
                 </div>
 
                 <button type="button" wire:click="closeRewardPopup"
-                        class="w-full py-3 bg-orange-500 text-white rounded-xl font-bold hover:bg-orange-600 transition active:scale-95 shadow-lg shadow-orange-500/20">
+                        class="w-full py-3 bg-[#bc000a] text-white rounded-xl font-bold hover:bg-[#c0000b] transition active:scale-95 shadow-lg shadow-[#bc000a]/20">
                     Gunakan Sekarang
                 </button>
             </div>
@@ -677,3 +677,4 @@
     @endif
 
 </div>
+

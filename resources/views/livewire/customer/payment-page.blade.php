@@ -10,14 +10,14 @@
         {{-- Header --}}
         <div class="bg-white border-b border-gray-200 shadow-sm">
             <div class="max-w-lg mx-auto px-4 py-4 text-center">
-                <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <svg class="w-6 h-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="w-12 h-12 bg-[#ffdad5] rounded-full flex items-center justify-center mx-auto mb-2">
+                    <svg class="w-6 h-6 text-[#bc000a]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12v.01M12 3.01V3M4 20h4m-4 0V4m0 0h4m12 0h-4m4 0v4m0 12v-4M4 8h4V4M4 4h4m12 0h-4m4 0v4m-4 16v-4m0 4h-4"/>
                     </svg>
                 </div>
-                <h1 class="text-lg font-bold text-gray-900">Scan QRIS Untuk Membayar</h1>
-                <p class="text-sm text-gray-500 mt-0.5">Bayar melalui aplikasi dompet digital Anda</p>
+                <h1 class="font-jakarta text-lg font-bold text-gray-900">Scan QRIS Untuk Membayar</h1>
+                <p class="font-inter text-sm text-gray-500 mt-0.5">Bayar melalui aplikasi dompet digital Anda</p>
             </div>
         </div>
 
@@ -26,11 +26,11 @@
 
             {{-- Total Amount --}}
             <div class="bg-white rounded-2xl shadow-sm px-6 py-5 text-center">
-                <p class="text-sm text-gray-500 mb-1">Total Pembayaran</p>
-                <p class="text-4xl font-black text-gray-900 tracking-tight">
+                <p class="font-inter text-sm text-gray-500 mb-1">Total Pembayaran</p>
+                <p class="font-jakarta text-4xl font-black text-gray-900 tracking-tight">
                     Rp {{ number_format($order->total_amount, 0, ',', '.') }}
                 </p>
-                <p class="text-xs text-gray-400 mt-1">Order #{{ $order->order_number }}</p>
+                <p class="font-inter text-xs text-gray-400 mt-1">Order #{{ $order->order_number }}</p>
             </div>
 
             {{-- QRIS Image --}}
@@ -47,7 +47,7 @@
                         <div class="flex gap-2 mt-3 w-full">
                             <a href="{{ $this->qrisImageUrl }}"
                                download="QRIS-Geprek-Rejo.png"
-                               class="flex-1 flex items-center justify-center gap-2 py-2.5 bg-orange-500 text-white text-sm font-semibold rounded-xl hover:bg-orange-600 transition active:scale-95">
+                               class="flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#bc000a] text-white text-sm font-semibold rounded-xl hover:bg-[#c0000b] transition active:scale-95">
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                           d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -75,8 +75,8 @@
                 @else
                     {{-- Fallback when no QR image is configured by admin --}}
                     <div class="flex flex-col items-center justify-center py-8 px-6 text-center gap-4">
-                        <div class="w-20 h-20 bg-orange-50 rounded-2xl flex items-center justify-center">
-                            <svg class="w-10 h-10 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <div class="w-20 h-20 bg-[#fff8f7] rounded-2xl flex items-center justify-center">
+                            <svg class="w-10 h-10 text-[#e8bcb6]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                       d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12v.01M12 3.01V3M4 20h4m-4 0V4m0 0h4m12 0h-4m4 0v4m0 12v-4M4 8h4V4M4 4h4m12 0h-4m4 0v4m-4 16v-4m0 4h-4"/>
                             </svg>
@@ -98,7 +98,7 @@
 
             {{-- Payment Steps --}}
             <div class="bg-white rounded-2xl shadow-sm px-4 py-4">
-                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Cara Pembayaran</p>
+                <p class="font-inter text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Cara Pembayaran</p>
                 <div class="space-y-2.5">
                     @foreach([
                         ['1', 'Buka aplikasi dompet digital (GoPay, OVO, Dana, dll.)'],
@@ -108,7 +108,7 @@
                         ['5', 'Konfirmasi & selesaikan pembayaran'],
                     ] as [$step, $desc])
                         <div class="flex items-start gap-3">
-                            <span class="flex-shrink-0 w-6 h-6 bg-orange-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                            <span class="font-inter flex-shrink-0 w-6 h-6 bg-[#bc000a] text-white text-xs font-bold rounded-full flex items-center justify-center">
                                 {{ $step }}
                             </span>
                             <p class="text-sm text-gray-600 leading-tight pt-0.5">{{ $desc }}</p>
@@ -146,8 +146,8 @@
                               d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
                     </svg>
                 </div>
-                <h1 class="text-lg font-bold text-gray-900">Bayar Tunai ke Kasir</h1>
-                <p class="text-sm text-gray-500 mt-0.5">Serahkan uang tunai kepada kasir kami</p>
+                <h1 class="font-jakarta text-lg font-bold text-gray-900">Bayar Tunai ke Kasir</h1>
+                <p class="font-inter text-sm text-gray-500 mt-0.5">Serahkan uang tunai kepada kasir kami</p>
             </div>
         </div>
 
@@ -156,8 +156,8 @@
 
             {{-- Big total amount --}}
             <div class="bg-white rounded-2xl shadow-sm px-6 py-8 text-center">
-                <p class="text-sm text-gray-500 mb-2 font-medium">💵 Silakan bayar sebesar</p>
-                <p class="text-5xl font-black text-orange-500 tracking-tight leading-none">
+                <p class="font-inter text-sm text-gray-500 mb-2 font-medium">💵 Silakan bayar sebesar</p>
+                <p class="font-jakarta text-5xl font-black text-[#bc000a] tracking-tight leading-none">
                     Rp {{ number_format($order->total_amount, 0, ',', '.') }}
                 </p>
                 <p class="text-sm text-gray-400 mt-3">Order #{{ $order->order_number }}</p>
@@ -201,8 +201,8 @@
     <div class="sticky bottom-0 bg-white border-t border-gray-200 shadow-[0_-4px_16px_rgba(0,0,0,0.06)]">
         <div class="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
             <div>
-                <p class="text-xs text-gray-400">Nomor Pesanan</p>
-                <p class="text-sm font-bold text-gray-900 tracking-wide">{{ $order->order_number }}</p>
+                <p class="font-inter text-xs text-gray-400">Nomor Pesanan</p>
+                <p class="font-jakarta text-sm font-bold text-gray-900 tracking-wide">{{ $order->order_number }}</p>
             </div>
             <div class="h-8 w-px bg-gray-200"></div>
             <div class="text-right">
@@ -220,3 +220,4 @@
     </div>
 
 </div>
+

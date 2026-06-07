@@ -17,8 +17,8 @@
                 <span class="absolute inset-0 rounded-full bg-green-300 opacity-30 animate-ping"></span>
             </div>
 
-            <h1 class="text-2xl font-black text-gray-900">Pesanan Berhasil! 🎉</h1>
-            <p class="text-gray-500 mt-1 text-sm">Pesanan Anda sedang diproses oleh dapur</p>
+            <h1 class="font-jakarta text-2xl font-black text-gray-900">Pesanan Berhasil! 🎉</h1>
+            <p class="font-inter text-gray-500 mt-1 text-sm">Pesanan Anda sedang diproses oleh dapur</p>
 
         </div>
     </div>
@@ -26,16 +26,12 @@
     {{-- =====================================================================
          QUEUE NUMBER — CENTER STAGE
          ===================================================================== --}}
-    <div class="bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg">
+    <div class="bg-gradient-to-br from-[#e61919] to-[#bc000a] shadow-lg">
         <div class="max-w-lg mx-auto px-6 py-8 text-center">
-            <p class="text-orange-200 text-sm font-semibold uppercase tracking-widest mb-1">Nomor Antrean Anda</p>
+            <p class="font-inter text-[#e8bcb6] text-sm font-semibold uppercase tracking-widest mb-1">Nomor Antrean Anda</p>
 
-            <p class="text-9xl font-black text-white leading-none drop-shadow-md">
+            <p class="font-jakarta text-9xl font-black text-white leading-none drop-shadow-md">
                 {{ $order->queue_number }}
-            </p>
-
-            <p class="text-orange-200 text-sm mt-3 font-medium">
-                Panggil nomor ini saat pesanan siap
             </p>
         </div>
     </div>
@@ -48,18 +44,18 @@
         {{-- Order header info --}}
         <div class="grid grid-cols-3 gap-3">
             <div class="bg-white rounded-2xl p-3.5 text-center shadow-sm">
-                <p class="text-xs text-gray-400 mb-1">Pesanan</p>
-                <p class="text-xs font-bold text-gray-900 truncate">{{ $order->order_number }}</p>
+                <p class="font-inter text-xs text-gray-400 mb-1">Pesanan</p>
+                <p class="font-jakarta text-xs font-bold text-gray-900 truncate">{{ $order->order_number }}</p>
             </div>
             <div class="bg-white rounded-2xl p-3.5 text-center shadow-sm">
-                <p class="text-xs text-gray-400 mb-1">Jenis</p>
-                <p class="text-xs font-bold text-gray-900">
+                <p class="font-inter text-xs text-gray-400 mb-1">Jenis</p>
+                <p class="font-jakarta text-xs font-bold text-gray-900">
                     {{ $order->type === 'dine_in' ? '🍽️ Di Sini' : '🥡 Bawa Pulang' }}
                 </p>
             </div>
             <div class="bg-white rounded-2xl p-3.5 text-center shadow-sm">
-                <p class="text-xs text-gray-400 mb-1">Bayar</p>
-                <p class="text-xs font-bold text-gray-900 uppercase">
+                <p class="font-inter text-xs text-gray-400 mb-1">Bayar</p>
+                <p class="font-jakarta text-xs font-bold text-gray-900 uppercase">
                     {{ $order->payment_method === 'qris' ? '📱 QRIS' : '💵 Tunai' }}
                 </p>
             </div>
@@ -67,7 +63,7 @@
 
         {{-- Customer name + table --}}
         <div class="bg-white rounded-2xl shadow-sm px-4 py-3.5 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#e61919] to-[#bc000a] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                 {{ strtoupper(substr($customerName, 0, 1)) }}
             </div>
             <div class="flex-1 min-w-0">
@@ -77,7 +73,7 @@
                 @endif
             </div>
             @if($order->member)
-                <span class="text-xs bg-orange-100 text-orange-600 px-2.5 py-1 rounded-full font-semibold flex-shrink-0">
+                <span class="text-xs bg-[#ffdad5] text-[#bc000a] px-2.5 py-1 rounded-full font-semibold flex-shrink-0">
                     ⭐ Member
                 </span>
             @endif
@@ -86,16 +82,16 @@
         {{-- Order items list --}}
         <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
             <div class="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
-                <svg class="w-4 h-4 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg class="w-4 h-4 text-[#bc000a]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                 </svg>
-                <h2 class="font-semibold text-gray-900 text-sm">Detail Pesanan</h2>
+                <h2 class="font-jakarta font-semibold text-gray-900 text-sm">Detail Pesanan</h2>
             </div>
             <div class="divide-y divide-gray-50">
                 @foreach($this->orderDetails as $detail)
                     <div class="flex items-center gap-3 px-4 py-3">
-                        <div class="w-9 h-9 bg-orange-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <div class="w-9 h-9 bg-[#fff8f7] rounded-lg flex items-center justify-center flex-shrink-0">
                             <span class="text-lg">🍗</span>
                         </div>
                         <div class="flex-1 min-w-0">
@@ -141,8 +137,8 @@
                 @endif
 
                 <div class="pt-2.5 border-t border-gray-100 flex items-center justify-between">
-                    <span class="font-bold text-gray-900">Total Dibayar</span>
-                    <span class="text-2xl font-black text-orange-600">
+                    <span class="font-jakarta font-bold text-gray-900">Total Dibayar</span>
+                    <span class="font-jakarta text-2xl font-black text-[#bc000a]">
                         Rp {{ number_format($order->total_amount, 0, ',', '.') }}
                     </span>
                 </div>
@@ -151,7 +147,7 @@
 
         {{-- Points earned notification (if member) --}}
         @if($order->member && $order->points_earned > 0)
-            <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl px-4 py-3.5 flex items-center gap-3">
+            <div class="bg-[#fff8f7] border border-amber-200 rounded-2xl px-4 py-3.5 flex items-center gap-3">
                 <span class="text-2xl flex-shrink-0">⭐</span>
                 <div>
                     <p class="text-sm font-semibold text-amber-800">
@@ -175,7 +171,7 @@
         {{-- Pesan Lagi button --}}
         <div class="pt-2 pb-6">
             <a href="{{ route('order.menu') }}" wire:navigate
-               class="w-full flex items-center justify-center gap-2 py-4 bg-orange-500 text-white font-bold text-base rounded-2xl shadow-lg hover:bg-orange-600 active:scale-[0.98] transition-all">
+               class="w-full flex items-center justify-center gap-2 py-4 bg-[#bc000a] text-white font-bold text-base rounded-2xl shadow-lg hover:bg-[#c0000b] active:scale-[0.98] transition-all">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
@@ -187,3 +183,4 @@
     </div>
 
 </div>
+
