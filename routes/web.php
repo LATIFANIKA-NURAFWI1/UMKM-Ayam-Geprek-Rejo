@@ -86,3 +86,4 @@ Route::middleware(["auth", "role:kds,owner"])->group(function () {
 });
 
 require __DIR__ . "/settings.php";
+

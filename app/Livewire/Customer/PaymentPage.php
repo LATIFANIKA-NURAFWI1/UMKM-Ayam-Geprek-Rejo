@@ -78,7 +78,7 @@ class PaymentPage extends Component
 
         $path = \App\Models\Setting::get('qris_image_path');
 
-        return $path ? Storage::url($path) : null;
+        return $path ? Storage::url($path) . '?v=' . time() : null;
     }
 
     // =========================================================================

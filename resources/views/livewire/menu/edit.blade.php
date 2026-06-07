@@ -43,7 +43,7 @@
                     </div>
                 @elseif($existingImage)
                     {{-- Foto lama yang sudah tersimpan --}}
-                    <img src="{{ Storage::url($existingImage) }}" class="h-full w-full object-cover rounded-xl">
+                    <img src="{{ Storage::url($existingImage) }}?v={{ time() }}" class="h-full w-full object-cover rounded-xl">
                     <div class="absolute inset-0 bg-black/30 flex items-end justify-center pb-3 rounded-xl opacity-0 hover:opacity-100 transition-opacity">
                         <span class="text-white text-xs font-semibold bg-black/50 px-3 py-1 rounded-full">Klik / drag untuk ganti</span>
                     </div>

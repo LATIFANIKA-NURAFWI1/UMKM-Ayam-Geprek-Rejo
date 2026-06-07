@@ -125,7 +125,7 @@ class extends Component {
                 </div>
             @elseif($existingQris)
                 {{-- QRIS yang sudah tersimpan --}}
-                <img src="{{ Storage::url($existingQris) }}" class="h-full w-full object-contain p-4">
+                <img src="{{ Storage::url($existingQris) }}?v={{ time() }}" class="h-full w-full object-contain p-4">
                 <div class="absolute inset-0 flex items-end justify-center pb-3 opacity-0 hover:opacity-100 transition-opacity">
                     <span class="rounded-full bg-black/50 px-3 py-1 text-xs font-semibold text-white">Klik / drag untuk ganti</span>
                 </div>

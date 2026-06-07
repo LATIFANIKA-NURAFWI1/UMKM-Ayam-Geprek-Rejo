@@ -10,7 +10,7 @@ class MenuItemSeeder extends Seeder
 {
     public function run(): void
     {
-        $pakeNasi = Category::where('slug', 'pake-nasi')->first();
+        $paketNasi = Category::where('slug', 'paket-nasi')->first();
         $ayam     = Category::where('slug', 'ayam')->first();
         $minuman  = Category::where('slug', 'minuman')->first();
         $snack    = Category::where('slug', 'snack')->first();
@@ -68,7 +68,7 @@ class MenuItemSeeder extends Seeder
             ],
             // ── Nasi & Lauk ──────────────────────────────────────────────────
             [
-                'category_id'  => $pakeNasi?->id,
+                'category_id'  => $paketNasi?->id,
                 'name'         => 'Nasi Putih',
                 'slug'         => 'nasi-putih',
                 'description'  => 'Nasi putih pulen porsi standar',
@@ -76,7 +76,7 @@ class MenuItemSeeder extends Seeder
                 'sort_order'   => 1,
             ],
             [
-                'category_id'  => $pakeNasi?->id,
+                'category_id'  => $paketNasi?->id,
                 'name'         => 'Nasi Jumbo',
                 'slug'         => 'nasi-jumbo',
                 'description'  => 'Nasi putih porsi jumbo, cocok buat yang lapar berat',
@@ -84,7 +84,7 @@ class MenuItemSeeder extends Seeder
                 'sort_order'   => 2,
             ],
             [
-                'category_id'  => $pakeNasi?->id,
+                'category_id'  => $paketNasi?->id,
                 'name'         => 'Tahu Goreng',
                 'slug'         => 'tahu-goreng',
                 'description'  => 'Tahu goreng crispy gurih',
@@ -92,7 +92,7 @@ class MenuItemSeeder extends Seeder
                 'sort_order'   => 3,
             ],
             [
-                'category_id'  => $pakeNasi?->id,
+                'category_id'  => $paketNasi?->id,
                 'name'         => 'Tempe Goreng',
                 'slug'         => 'tempe-goreng',
                 'description'  => 'Tempe goreng tepung renyah',

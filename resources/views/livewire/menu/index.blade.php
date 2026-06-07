@@ -46,7 +46,7 @@
                     {{-- Image --}}
                     <div class="relative aspect-square overflow-hidden bg-zinc-100 dark:bg-zinc-800">
                         @if($item->image)
-                            <img src="{{ Storage::url($item->image) }}" alt="{{ $item->name }}"
+                            <img src="{{ Storage::url($item->image) }}?v={{ time() }}" alt="{{ $item->name }}"
                                 class="h-full w-full object-cover transition group-hover:scale-105">
                         @else
                             <div class="flex h-full items-center justify-center">

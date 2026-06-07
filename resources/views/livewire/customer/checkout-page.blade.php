@@ -61,7 +61,7 @@
                         <div class="flex items-center gap-3 px-4 py-3">
                             {{-- Item image --}}
                             @if(!empty($item['image']))
-                                <img src="{{ \Illuminate\Support\Facades\Storage::url($item['image']) }}"
+                                <img src="{{ \Illuminate\Support\Facades\Storage::url($item['image']) }}?v={{ time() }}"
                                      alt="{{ $item['name'] }}"
                                      class="w-14 h-14 rounded-xl object-cover flex-shrink-0">
                             @else

@@ -175,7 +175,7 @@
                         <div wire:click="showMenuDetail({{ $item->id }})" class="relative aspect-square w-full overflow-hidden cursor-pointer">
                             @if($item->image)
                                 <img
-                                    src="{{ Storage::url($item->image) }}"
+                                    src="{{ Storage::url($item->image) }}?v={{ time() }}"
                                     alt="{{ $item->name }}"
                                     class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                                     loading="lazy"
@@ -350,7 +350,7 @@
                 {{-- Detail Image --}}
                 <div class="relative aspect-square w-full overflow-hidden bg-zinc-100">
                     @if($detailItem->image)
-                        <img src="{{ Storage::url($detailItem->image) }}" alt="{{ $detailItem->name }}" class="h-full w-full object-cover">
+                        <img src="{{ Storage::url($detailItem->image) }}?v={{ time() }}" alt="{{ $detailItem->name }}" class="h-full w-full object-cover">
                     @else
                         <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-orange-400 to-amber-500">
                             <span class="text-6xl drop-shadow">🍗</span>
