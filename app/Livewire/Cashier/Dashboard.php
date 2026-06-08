@@ -63,6 +63,16 @@ class Dashboard extends Component
     }
 
     #[Computed]
+    public function historyOrders()
+    {
+        return Order::with(['details', 'member'])
+            ->whereIn('status', ['completed', 'cancelled'])
+            ->today()
+            ->latest()
+            ->get();
+    }
+
+    #[Computed]
     public function selectedOrder()
     {
         if ($this->selectedOrderId === null) {

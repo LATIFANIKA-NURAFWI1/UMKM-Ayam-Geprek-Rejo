@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" id="kds-html">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -23,12 +23,72 @@
             .font-inter   { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
             .scrollbar-hide::-webkit-scrollbar { display: none; }
             .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+            html.kds-transitioning,
+            html.kds-transitioning *,
+            html.kds-transitioning *::before,
+            html.kds-transitioning *::after {
+                transition: background-color 0.25s ease, border-color 0.2s ease, color 0.2s ease !important;
+            }
         </style>
+
+        {{-- Terapkan tema SEBELUM render untuk hindari flash of wrong theme --}}
+        <script>
+            (function () {
+                const isDark = localStorage.getItem('kds-theme') === 'dark';
+                if (isDark) document.documentElement.classList.add('dark');
+            })();
+        </script>
     </head>
-    <body class="font-inter min-h-screen bg-[#f7f9ff] text-[#181c20] antialiased flex flex-col md:pb-0 pb-20">
+    <body class="font-inter h-screen overflow-hidden antialiased">
 
         {{ $slot }}
 
         @fluxScripts
+        @stack('scripts')
+
+        <script>
+            // ── Global Theme Controller (sama seperti KDS layout) ────────────────
+            window.kdsIsDark = function () {
+                return document.documentElement.classList.contains('dark');
+            };
+
+            window.kdsToggleTheme = function () {
+                const html = document.documentElement;
+                html.classList.add('kds-transitioning');
+                setTimeout(() => html.classList.remove('kds-transitioning'), 300);
+
+                const nowDark = html.classList.toggle('dark');
+                localStorage.setItem('kds-theme', nowDark ? 'dark' : 'light');
+
+                document.querySelectorAll('[data-kds-theme-icon]').forEach(el => {
+                    el.textContent = nowDark ? 'light_mode' : 'dark_mode';
+                });
+                document.querySelectorAll('[data-kds-theme-label]').forEach(el => {
+                    el.textContent = nowDark ? 'Light' : 'Night';
+                });
+            };
+
+            // Inisialisasi state tombol setelah DOM siap
+            document.addEventListener('DOMContentLoaded', function () {
+                const isDark = window.kdsIsDark();
+                document.querySelectorAll('[data-kds-theme-icon]').forEach(el => {
+                    el.textContent = isDark ? 'light_mode' : 'dark_mode';
+                });
+                document.querySelectorAll('[data-kds-theme-label]').forEach(el => {
+                    el.textContent = isDark ? 'Light' : 'Night';
+                });
+            });
+
+            // Re-inisialisasi setelah Livewire poll (DOM morphing)
+            document.addEventListener('livewire:update', function () {
+                const isDark = window.kdsIsDark();
+                document.querySelectorAll('[data-kds-theme-icon]').forEach(el => {
+                    el.textContent = isDark ? 'light_mode' : 'dark_mode';
+                });
+                document.querySelectorAll('[data-kds-theme-label]').forEach(el => {
+                    el.textContent = isDark ? 'Light' : 'Night';
+                });
+            });
+        </script>
     </body>
 </html>
