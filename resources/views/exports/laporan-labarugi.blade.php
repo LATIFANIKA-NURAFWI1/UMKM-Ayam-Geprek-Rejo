@@ -19,6 +19,7 @@
 </head>
 <body>
     <div class="header">
+        <img src="{{ public_path('images/logo.png') }}" alt="Logo Ayam Geprek Rejo" style="height: 80px; object-fit: contain; margin-bottom: 10px;">
         <div class="title">Laporan Laba Rugi - Ayam Geprek Rejo</div>
         <div class="subtitle">Periode: {{ \Carbon\Carbon::parse($dari)->translatedFormat('d M Y') }} s/d {{ \Carbon\Carbon::parse($sampai)->translatedFormat('d M Y') }}</div>
     </div>

@@ -35,10 +35,8 @@
 
         {{-- Logo & brand --}}
         <div class="text-center mb-8">
-            <div class="w-16 h-16 bg-[#bc000a] rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-[#bc000a]/25 mb-4">
-                <span class="text-3xl">🍗</span>
-            </div>
-            <h1 class="text-2xl font-extrabold text-[#181c20]">Geprek Rejo</h1>
+            <img src="{{ asset('images/logo.png') }}" alt="Ayam Geprek Rejo" class="h-32 w-auto object-contain mx-auto mb-4 drop-shadow-md">
+            <h1 class="text-2xl font-extrabold text-[#181c20] hidden">Geprek Rejo</h1>
             <p class="font-inter text-sm text-[#5e3f3b] mt-1">Masuk ke sistem manajemen</p>
         </div>
 

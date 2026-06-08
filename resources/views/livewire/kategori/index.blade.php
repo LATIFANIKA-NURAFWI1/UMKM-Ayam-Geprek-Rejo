@@ -7,7 +7,7 @@
             <p class="font-body-md text-body-md text-on-surface-variant">Kelola kategori untuk mengorganisir menu</p>
         </div>
         <button wire:click="openCreate()"
-                class="bg-primary hover:bg-surface-tint text-on-primary font-body-lg text-body-lg py-2.5 px-5 rounded-lg shadow-[0_2px_10px_-3px_rgba(188,0,10,0.4)] transition-all active:scale-95 flex items-center gap-2 whitespace-nowrap w-full sm:w-auto justify-center">
+                class="bg-primary hover:bg-surface-tint text-on-primary font-body-lg text-body-lg py-2.5 px-5 rounded-lg shadow-[0_2px_10px_-3px_rgba(188,0,10,0.4)] transition-all duration-300 active:scale-95 hover:-translate-y-0.5 hover:shadow-lg flex items-center gap-2 whitespace-nowrap w-full sm:w-auto justify-center">
             <span class="material-symbols-outlined text-xl">add</span>
             Tambah Kategori
         </button>
@@ -54,7 +54,7 @@
                 </thead>
                 <tbody class="divide-y divide-surface-variant/50">
                     @forelse($categories ?? [] as $cat)
-                        <tr class="hover:bg-surface-container-low transition-colors group">
+                        <tr class="hover:bg-surface-container-low transition-all duration-200 group">
                             <td class="py-4 px-6">
                                 <span class="font-body-lg text-body-lg text-on-surface">{{ $cat->name }}</span>
                             </td>
@@ -69,14 +69,14 @@
                                 @endif
                             </td>
                             <td class="py-4 px-6 text-right">
-                                <div class="flex justify-end gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                                <div class="flex justify-end gap-2">
                                     <button wire:click="openEdit({{ $cat->id }})"
-                                            class="p-2 text-on-surface-variant hover:text-secondary hover:bg-secondary-container/20 rounded-lg transition-colors" title="Edit">
+                                            class="p-2 text-on-surface-variant hover:text-secondary hover:bg-secondary-container/20 rounded-lg transition-all duration-200 hover:scale-110" title="Edit">
                                         <span class="material-symbols-outlined text-xl">edit</span>
                                     </button>
                                     <button wire:click="delete({{ $cat->id }})"
                                             wire:confirm="Hapus kategori '{{ $cat->name }}'? Semua menu di kategori ini akan kehilangan kategorinya."
-                                            class="p-2 text-on-surface-variant hover:text-primary hover:bg-error-container/50 rounded-lg transition-colors" title="Hapus">
+                                            class="p-2 text-on-surface-variant hover:text-error hover:bg-error-container/50 rounded-lg transition-all duration-200 hover:scale-110" title="Hapus">
                                         <span class="material-symbols-outlined text-xl">delete</span>
                                     </button>
                                 </div>

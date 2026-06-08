@@ -7,9 +7,8 @@
         {{-- Brand --}}
         <div class="flex flex-col">
             <span class="font-inter text-[10px] tracking-widest text-[#5e3f3b] uppercase font-bold leading-tight">SELF ORDER</span>
-            <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-[#bc000a]">restaurant_menu</span>
-                <span class="font-jakarta text-[20px] leading-[28px] font-semibold text-[#bc000a]">Geprek Rejo</span>
+            <div class="flex items-center gap-2 mt-1">
+                <img src="{{ asset('images/logo.png') }}" alt="Geprek Rejo" class="h-10 w-auto object-contain">
             </div>
         </div>
 

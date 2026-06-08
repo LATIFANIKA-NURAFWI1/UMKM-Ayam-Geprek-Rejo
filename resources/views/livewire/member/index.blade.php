@@ -136,7 +136,7 @@
                         @forelse($m->orders ?? [] as $order)
                             <div class="flex justify-between py-2 text-sm">
                                 <span class="text-on-surface">#{{ $order->order_number ?? $order->id }}</span>
-                                <span class="text-primary font-semibold">Rp {{ number_format($order->total_price ?? $order->grand_total ?? 0, 0, ',', '.') }}</span>
+                                <span class="text-primary font-semibold">Rp {{ number_format($order->total_amount ?? 0, 0, ',', '.') }}</span>
                             </div>
                         @empty
                             <div class="text-center py-8 text-on-surface-variant italic text-sm">Belum ada pesanan</div>
