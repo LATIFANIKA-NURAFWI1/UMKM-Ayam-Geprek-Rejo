@@ -192,7 +192,10 @@ class Index extends Component
             ->latest('expense_date')
             ->paginate(20);
 
-        return view('livewire.pengeluaran.index', compact('expenses'));
+        return view('livewire.pengeluaran.index', [
+            'expenses'      => $expenses,
+            'totalBulanIni' => $this->totalBulanIni,
+        ]);
     }
 
     // =========================================================================

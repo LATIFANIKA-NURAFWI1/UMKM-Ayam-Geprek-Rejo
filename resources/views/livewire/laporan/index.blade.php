@@ -30,25 +30,47 @@
     </style>
 
     @php
-        $rep = $this->report ?? [];
-        $rev = $rep['revenue'] ?? $rep['total_revenue'] ?? $totalRevenue ?? 0;
-        $cogs = $rep['total_hpp'] ?? $totalHpp ?? 0;
-        $gross = $rep['gross_profit'] ?? $rep['laba_kotor'] ?? $labaKotor ?? ($rev - $cogs);
-        $exp = $rep['total_expenses'] ?? $totalExpense ?? 0;
-        $net = $rep['net_profit'] ?? $rep['laba_bersih'] ?? $labaBersih ?? ($gross - $exp);
-        $top = $this->topItems ?? [];
+        $rep   = $this->report ?? [];
+        $rev   = (float)($rep['revenue']        ?? 0);
+        $cogs  = (float)($rep['total_hpp']      ?? 0);
+        $gross = (float)($rep['gross_profit']   ?? ($rev - $cogs));
+        $exp   = (float)($rep['total_expenses'] ?? 0);
+        $net   = (float)($rep['net_profit']     ?? ($gross - $exp));
+        $top   = $this->topItems ?? [];
 
-        $gaji = $rep['expenses_by_category']['Gaji'] ?? $rep['expenses_by_category']['gaji'] ?? 0;
-        $ops = $rep['expenses_by_category']['Operasional'] ?? $rep['expenses_by_category']['operasional'] ?? 0;
-        $lain = array_sum(array_filter($rep['expenses_by_category'] ?? [], fn($k) => strtolower($k) !== 'gaji' && strtolower($k) !== 'operasional', ARRAY_FILTER_USE_KEY));
+        // expenses_by_category keyed by DB snake_case (e.g. 'gaji', 'bahan_baku', 'operasional', 'perawatan', 'lainnya')
+        $expCat = $rep['expenses_by_category'] ?? [];
 
-        $gajiPct = $exp > 0 ? round(($gaji / $exp) * 100) : 0;
-        $operasionalPct = $exp > 0 ? round(($ops / $exp) * 100) : 0;
-        $lainPct = $exp > 0 ? round(($lain / $exp) * 100) : 0;
+        $gaji   = (float)($expCat['gaji']        ?? 0);
+        $ops    = (float)($expCat['operasional']  ?? 0);
+        $bahan  = (float)($expCat['bahan_baku']   ?? 0);
+        $rawat  = (float)($expCat['perawatan']    ?? 0);
+        $lainnya= (float)($expCat['lainnya']      ?? 0);
 
-        $gajiNominal = 'Rp ' . number_format($gaji, 0, ',', '.');
-        $operasionalNominal = 'Rp ' . number_format($ops, 0, ',', '.');
-        $lainNominal = 'Rp ' . number_format($lain, 0, ',', '.');
+        // "Lain-lain" di chart = semua selain Gaji & Operasional
+        $lain = $bahan + $rawat + $lainnya;
+
+        $gajiPct        = $exp > 0 ? round(($gaji / $exp) * 100) : 0;
+        $operasionalPct = $exp > 0 ? round(($ops  / $exp) * 100) : 0;
+        $lainPct        = $exp > 0 ? (100 - $gajiPct - $operasionalPct) : 0;
+
+        $gajiNominal        = 'Rp ' . number_format($gaji, 0, ',', '.');
+        $operasionalNominal = 'Rp ' . number_format($ops,  0, ',', '.');
+        $lainNominal        = 'Rp ' . number_format($lain, 0, ',', '.');
+
+        // SVG Donut: circumference = 2π × r, r = 54 (viewBox 120×120, cx=cy=60)
+        $r            = 54;
+        $circumference = round(2 * M_PI * $r, 2); // ≈ 339.29
+
+        // Donut segments (stroke-dasharray = filled gap)
+        $gajiDash        = $exp > 0 ? round(($gaji / $exp) * $circumference, 2)   : 0;
+        $opsDash         = $exp > 0 ? round(($ops  / $exp) * $circumference, 2)   : 0;
+        $lainDash        = $exp > 0 ? round(($lain / $exp) * $circumference, 2)   : 0;
+
+        // Offsets (rotate segments: gaji starts at top = -circumference/4)
+        $gajiOffset = round($circumference * 0.25, 2);
+        $opsOffset  = round($gajiOffset - $gajiDash, 2);
+        $lainOffset = round($opsOffset - $opsDash, 2);
     @endphp
 
     {{-- ── Header & Filters ──────────────────────────────────────── --}}
@@ -97,29 +119,24 @@
     @endif
 
     {{-- ── Financial Summary Cards ─────────────────────────────────── --}}
-    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-card-gap">
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-card-gap">
         {{-- Total Revenue --}}
-        <div class="bg-surface border border-surface-variant rounded-xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-shadow">
+        <div class="bg-surface border border-surface-variant rounded-xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
             <p class="font-body-md text-body-md text-on-surface-variant mb-2">Total Revenue</p>
             <p class="font-headline-lg text-headline-lg text-secondary">Rp {{ number_format($rev, 0, ',', '.') }}</p>
         </div>
         {{-- Laba Kotor --}}
-        <div class="bg-surface border border-surface-variant rounded-xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-shadow">
+        <div class="bg-surface border border-surface-variant rounded-xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
             <p class="font-body-md text-body-md text-on-surface-variant mb-2">Laba Kotor</p>
             <p class="font-headline-lg text-headline-lg text-secondary">Rp {{ number_format($gross, 0, ',', '.') }}</p>
         </div>
-        {{-- Total HPP --}}
-        <div class="bg-surface border border-surface-variant rounded-xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-shadow">
-            <p class="font-body-md text-body-md text-on-surface-variant mb-2">Total HPP</p>
-            <p class="font-headline-lg text-headline-lg text-tertiary">Rp {{ number_format($cogs, 0, ',', '.') }}</p>
-        </div>
         {{-- Total Expense --}}
-        <div class="bg-surface border border-surface-variant rounded-xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-shadow">
+        <div class="bg-surface border border-surface-variant rounded-xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
             <p class="font-body-md text-body-md text-on-surface-variant mb-2">Total Expense</p>
             <p class="font-headline-lg text-headline-lg text-error">Rp {{ number_format($exp, 0, ',', '.') }}</p>
         </div>
         {{-- Laba Bersih (Hero) --}}
-        <div class="bg-surface border border-surface-variant border-t-4 border-t-secondary-container rounded-xl p-5 shadow-[0_8px_30px_rgba(253,192,3,0.15)] hover:shadow-[0_8px_30px_rgba(253,192,3,0.25)] transition-shadow lg:col-span-1 md:col-span-2">
+        <div class="bg-surface border border-surface-variant border-t-4 border-t-secondary-container rounded-xl p-5 shadow-[0_8px_30px_rgba(253,192,3,0.15)] hover:shadow-[0_12px_35px_rgba(253,192,3,0.3)] hover:-translate-y-1 transition-all duration-300 md:col-span-2 lg:col-span-1">
             <p class="font-label-caps text-label-caps text-on-surface-variant mb-2 uppercase">Laba Bersih</p>
             <p class="font-headline-lg text-headline-lg font-bold text-secondary">Rp {{ number_format($net, 0, ',', '.') }}</p>
         </div>
@@ -128,49 +145,157 @@
     {{-- ── Main Data Section ────────────────────────────────────────── --}}
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-card-gap">
 
-        {{-- Donut Chart: Pengeluaran Operasional --}}
-        <section class="lg:col-span-1 bg-surface border border-surface-variant rounded-xl p-container-padding shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col">
+        {{-- SVG Donut Chart: Pengeluaran Operasional --}}
+        <section class="lg:col-span-1 bg-surface border border-surface-variant rounded-xl p-container-padding shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col"
+            wire:key="donut-chart-{{ $dari }}-{{ $sampai }}"
+            x-data="{
+                circumference: {{ $circumference }},
+                gajiDash: 0,
+                opsDash: 0,
+                lainDash: 0,
+                gajiOffset: {{ $gajiOffset }},
+                opsOffset: 0,
+                lainOffset: 0,
+                init() {
+                    // Animate: start all at 0, then transition to real values
+                    this.$nextTick(() => {
+                        setTimeout(() => {
+                            this.gajiDash  = {{ $gajiDash }};
+                            this.opsDash   = {{ $opsDash }};
+                            this.lainDash  = {{ $lainDash }};
+                            this.opsOffset  = {{ $opsOffset }};
+                            this.lainOffset = {{ $lainOffset }};
+                        }, 150);
+                    });
+                }
+            }">
             <h3 class="font-headline-md text-headline-md text-on-surface mb-6">Pengeluaran Operasional</h3>
+
+            {{-- SVG Donut --}}
             <div class="flex-1 flex flex-col items-center justify-center relative min-h-[250px]">
-                <div class="w-48 h-48 rounded-full border-[16px] border-surface-container-high relative"
-                     style="background: conic-gradient(#bc000a 0% 45%, #fdc003 45% 75%, #5a5c5e 75% 100%); mask-image: radial-gradient(transparent 55%, black 56%); -webkit-mask-image: radial-gradient(transparent 55%, black 56%);">
-                </div>
-                <div class="absolute inset-0 flex items-center justify-center flex-col">
+                <svg viewBox="0 0 120 120" class="w-48 h-48 -rotate-90" aria-hidden="true">
+                    {{-- Track (background circle) --}}
+                    <circle cx="60" cy="60" r="{{ $r }}"
+                            fill="none"
+                            stroke="currentColor"
+                            class="text-surface-container-high"
+                            stroke-width="14"/>
+
+                    {{-- Segment: Lain-lain (bahan baku + perawatan + lainnya) = abu --}}
+                    <circle cx="60" cy="60" r="{{ $r }}"
+                            fill="none"
+                            stroke="#5a5c5e"
+                            stroke-width="14"
+                            stroke-linecap="round"
+                            :stroke-dasharray="lainDash + ' ' + (circumference - lainDash)"
+                            :stroke-dashoffset="lainOffset"
+                            style="transition: stroke-dasharray 0.9s ease-in-out, stroke-dashoffset 0.9s ease-in-out;"/>
+
+                    {{-- Segment: Operasional = kuning --}}
+                    <circle cx="60" cy="60" r="{{ $r }}"
+                            fill="none"
+                            stroke="#fdc003"
+                            stroke-width="14"
+                            stroke-linecap="round"
+                            :stroke-dasharray="opsDash + ' ' + (circumference - opsDash)"
+                            :stroke-dashoffset="opsOffset"
+                            style="transition: stroke-dasharray 0.9s ease-in-out 0.1s, stroke-dashoffset 0.9s ease-in-out 0.1s;"/>
+
+                    {{-- Segment: Gaji = merah --}}
+                    <circle cx="60" cy="60" r="{{ $r }}"
+                            fill="none"
+                            stroke="#bc000a"
+                            stroke-width="14"
+                            stroke-linecap="round"
+                            :stroke-dasharray="gajiDash + ' ' + (circumference - gajiDash)"
+                            :stroke-dashoffset="gajiOffset"
+                            style="transition: stroke-dasharray 0.9s ease-in-out 0.2s;"/>
+                </svg>
+
+                {{-- Center Label --}}
+                <div class="absolute inset-0 flex items-center justify-center flex-col pointer-events-none">
                     <span class="font-body-md text-body-md text-on-surface-variant">Total</span>
-                    <span class="font-headline-md text-headline-md font-bold text-on-surface">{{ number_format($exp, 0, ',', '.') }}</span>
+                    <span class="font-headline-md text-headline-md font-bold text-on-surface">
+                        <span wire:loading.class="opacity-30 animate-pulse" wire:target="selectedMonth, selectedYear, applyPreset">
+                            {{ number_format($exp, 0, ',', '.') }}
+                        </span>
+                    </span>
                 </div>
             </div>
-            <div class="mt-8 flex flex-col gap-4">
-                <div class="flex items-center justify-between">
+
+            {{-- Legend --}}
+            <div class="mt-6 flex flex-col gap-3">
+                {{-- Gaji --}}
+                <div class="flex items-center justify-between group/leg">
                     <div class="flex items-center gap-2">
-                        <div class="w-3 h-3 rounded-full bg-primary"></div>
+                        <div class="w-3 h-3 rounded-full bg-primary shrink-0"></div>
                         <span class="font-body-md text-body-md text-on-surface">Gaji Karyawan</span>
                     </div>
                     <div class="text-right">
-                        <span class="font-body-md text-body-md font-bold block">{{ $gajiPct ?? '45' }}%</span>
-                        <span class="text-xs text-on-surface-variant">{{ $gajiNominal ?? 'Rp 0' }}</span>
+                        <span class="font-body-md text-body-md font-bold block" wire:loading.class="animate-pulse opacity-40" wire:target="selectedMonth, selectedYear, applyPreset">
+                            {{ $gajiPct }}%
+                        </span>
+                        <span class="text-xs text-on-surface-variant" wire:loading.class="animate-pulse opacity-40" wire:target="selectedMonth, selectedYear, applyPreset">
+                            {{ $gajiNominal }}
+                        </span>
                     </div>
                 </div>
+
+                {{-- Operasional --}}
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
-                        <div class="w-3 h-3 rounded-full bg-secondary-container"></div>
+                        <div class="w-3 h-3 rounded-full bg-secondary-container shrink-0"></div>
                         <span class="font-body-md text-body-md text-on-surface">Operasional &amp; Listrik</span>
                     </div>
                     <div class="text-right">
-                        <span class="font-body-md text-body-md font-bold block">{{ $operasionalPct ?? '30' }}%</span>
-                        <span class="text-xs text-on-surface-variant">{{ $operasionalNominal ?? 'Rp 0' }}</span>
+                        <span class="font-body-md text-body-md font-bold block" wire:loading.class="animate-pulse opacity-40" wire:target="selectedMonth, selectedYear, applyPreset">
+                            {{ $operasionalPct }}%
+                        </span>
+                        <span class="text-xs text-on-surface-variant" wire:loading.class="animate-pulse opacity-40" wire:target="selectedMonth, selectedYear, applyPreset">
+                            {{ $operasionalNominal }}
+                        </span>
                     </div>
                 </div>
+
+                {{-- Lain-lain --}}
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
-                        <div class="w-3 h-3 rounded-full bg-tertiary"></div>
+                        <div class="w-3 h-3 rounded-full bg-[#5a5c5e] shrink-0"></div>
                         <span class="font-body-md text-body-md text-on-surface">Lain-lain</span>
                     </div>
                     <div class="text-right">
-                        <span class="font-body-md text-body-md font-bold block">{{ $lainPct ?? '25' }}%</span>
-                        <span class="text-xs text-on-surface-variant">{{ $lainNominal ?? 'Rp 0' }}</span>
+                        <span class="font-body-md text-body-md font-bold block" wire:loading.class="animate-pulse opacity-40" wire:target="selectedMonth, selectedYear, applyPreset">
+                            {{ $lainPct }}%
+                        </span>
+                        <span class="text-xs text-on-surface-variant" wire:loading.class="animate-pulse opacity-40" wire:target="selectedMonth, selectedYear, applyPreset">
+                            {{ $lainNominal }}
+                        </span>
                     </div>
                 </div>
+
+                {{-- Separator + Breakdown extra --}}
+                @if($bahan > 0 || $rawat > 0)
+                <div class="border-t border-surface-variant pt-3 mt-1 space-y-1.5">
+                    @if($bahan > 0)
+                    <div class="flex justify-between text-xs text-on-surface-variant">
+                        <span class="pl-5">↳ Bahan Baku</span>
+                        <span>Rp {{ number_format($bahan, 0, ',', '.') }}</span>
+                    </div>
+                    @endif
+                    @if($rawat > 0)
+                    <div class="flex justify-between text-xs text-on-surface-variant">
+                        <span class="pl-5">↳ Perawatan</span>
+                        <span>Rp {{ number_format($rawat, 0, ',', '.') }}</span>
+                    </div>
+                    @endif
+                    @if($lainnya > 0)
+                    <div class="flex justify-between text-xs text-on-surface-variant">
+                        <span class="pl-5">↳ Lainnya</span>
+                        <span>Rp {{ number_format($lainnya, 0, ',', '.') }}</span>
+                    </div>
+                    @endif
+                </div>
+                @endif
             </div>
         </section>
 

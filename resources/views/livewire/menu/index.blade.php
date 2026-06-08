@@ -46,17 +46,21 @@
 
         <div class="flex gap-2 w-full sm:w-auto">
             {{-- Status Filter --}}
-            <select wire:model.live="status" class="bg-[#F1F3F5] border-none focus:ring-2 focus:ring-primary rounded-lg font-body-md text-body-md text-on-surface px-4 py-2">
-                <option value="">Semua Status</option>
-                <option value="1">Tersedia</option>
-                <option value="0">Habis</option>
-            </select>
+            <div class="relative">
+                <select wire:model.live="status"
+                        class="appearance-none w-full bg-white border border-gray-200 text-on-surface font-body-md rounded-lg px-4 py-2 pr-9 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-400 transition-all duration-200">
+                    <option value="">Semua Status</option>
+                    <option value="1">Tersedia</option>
+                    <option value="0">Habis</option>
+                </select>
+                <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-[20px]">expand_more</span>
+            </div>
 
             {{-- Search Input --}}
             <div class="relative w-full sm:w-72">
                 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
                 <input wire:model.live.debounce.300ms="search"
-                       class="w-full pl-10 pr-4 py-2 bg-[#F1F3F5] border-none focus:ring-2 focus:ring-primary rounded-lg font-body-md text-body-md text-on-surface transition-shadow"
+                       class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg shadow-sm font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-400 transition-all duration-200"
                        placeholder="Cari nama menu..." type="text">
             </div>
         </div>
@@ -70,7 +74,7 @@
                 $isSisa  = $item->is_available && isset($item->stock) && $item->stock <= 5;
             @endphp
 
-            <div class="bg-surface-container-lowest border border-[#E9ECEF] rounded-xl overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300 group flex flex-col {{ $isHabis ? 'opacity-70 grayscale-[20%]' : '' }}">
+            <div class="bg-surface-container-lowest border border-[#E9ECEF] rounded-xl overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.03)] hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col {{ $isHabis ? 'opacity-70 grayscale-[20%]' : '' }}">
 
                 {{-- Thumbnail --}}
                 <div class="relative h-48 w-full overflow-hidden">
@@ -110,7 +114,7 @@
                         <span class="font-headline-md text-headline-md font-bold {{ $isHabis ? 'text-on-surface-variant' : 'text-primary' }}">
                             Rp {{ number_format($item->price, 0, ',', '.') }}
                         </span>
-                        <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <div class="flex gap-2">
                             <button wire:click="toggleAvailable({{ $item->id }})"
                                     class="p-2 text-on-surface-variant hover:text-primary bg-surface-container-lowest border border-outline-variant rounded-lg hover:border-primary transition-colors"
                                     title="Toggle Tersedia/Habis">

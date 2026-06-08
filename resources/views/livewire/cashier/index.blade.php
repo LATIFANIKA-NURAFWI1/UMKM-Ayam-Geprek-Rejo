@@ -3,7 +3,7 @@
     {{-- ── Top App Bar (Kasir / KDS Antrian) ────────────────────── --}}
     <header class="bg-surface dark:bg-inverse-surface border-b border-outline-variant shadow-sm flex justify-between items-center w-full px-container-padding py-4 sticky top-0 z-40">
         <div class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-primary text-2xl icon-fill">point_of_sale</span>
+            <img src="{{ asset('images/logo.png') }}" alt="Kasir Geprek Rejo" class="h-10 w-auto object-contain drop-shadow-sm">
             <div>
                 <h1 class="text-headline-md font-headline-md font-bold text-on-surface">Kasir — Geprek Rejo</h1>
                 <p class="text-label-caps font-label-caps text-on-surface-variant">Manajemen Pembayaran</p>

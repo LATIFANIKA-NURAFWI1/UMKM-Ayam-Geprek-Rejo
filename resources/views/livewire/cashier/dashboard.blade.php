@@ -1,748 +1,443 @@
-<div wire:poll.5s.keep-alive class="min-h-screen bg-gray-100">
-
-    {{-- ═══════════════════════════════════════════════════════════════════════
-         FLASH MESSAGES
-    ═══════════════════════════════════════════════════════════════════════ --}}
-    @if(session('status'))
-        <div
-            x-data="{ show: true }"
-            x-show="show"
-            x-init="setTimeout(() => show = false, 4000)"
-            x-transition:leave="transition ease-in duration-300"
-            x-transition:leave-start="opacity-100 translate-y-0"
-            x-transition:leave-end="opacity-0 -translate-y-2"
-            class="fixed right-4 top-4 z-50 flex items-center gap-3 rounded-xl bg-green-500 px-5 py-3 text-white shadow-xl"
-        >
-            <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-            </svg>
-            <span class="text-sm font-semibold">{{ session('status') }}</span>
+<div wire:poll.5s.keep-alive class="flex flex-col h-[100dvh] w-full bg-[#f4f6f9] dark:bg-gray-950 text-gray-800 dark:text-gray-100 font-sans antialiased overflow-hidden">
+    
+    {{-- ── TopBar ────────────────────────────────────────────────────────── --}}
+    <header class="bg-[#bc000a] border-b border-[#a00008] flex justify-between items-center w-full px-6 py-4 shadow-[0_4px_20px_rgba(188,0,10,0.25)] z-10 shrink-0">
+        <div class="flex items-center gap-3">
+            <img src="{{ asset('images/logo.png') }}" alt="Ayam Geprek Rejo" class="h-10 w-auto object-contain drop-shadow-md brightness-0 invert">
+            <div>
+                <h1 class="text-md md:text-lg font-extrabold text-white tracking-wider leading-tight">KASIR — GEPREK REJO</h1>
+                <p class="text-[11px] text-red-100/80 font-semibold uppercase tracking-widest">Dashboard Kasir</p>
+            </div>
         </div>
-    @endif
 
-    @if(session('error'))
-        <div
-            x-data="{ show: true }"
-            x-show="show"
-            x-init="setTimeout(() => show = false, 5000)"
-            x-transition:leave="transition ease-in duration-300"
-            x-transition:leave-start="opacity-100 translate-y-0"
-            x-transition:leave-end="opacity-0 -translate-y-2"
-            class="fixed right-4 top-4 z-50 flex max-w-sm items-start gap-3 rounded-xl bg-red-500 px-5 py-3 text-white shadow-xl"
-        >
-            <svg class="mt-0.5 h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-            </svg>
-            <span class="text-sm font-semibold">{{ session('error') }}</span>
-        </div>
-    @endif
-
-    {{-- ═══════════════════════════════════════════════════════════════════════
-         HEADER & STATS BAR
-    ═══════════════════════════════════════════════════════════════════════ --}}
-    <header class="sticky top-0 z-20 border-b border-gray-200 bg-white shadow-sm">
-        <div class="flex flex-wrap items-center justify-between gap-3 px-6 py-3">
-
-            {{-- Title --}}
-            <div class="flex items-center gap-3">
-                <span class="text-2xl leading-none">🧾</span>
-                <div>
-                    <h1 class="text-xl font-bold text-gray-800">Dashboard Kasir</h1>
-                    <p class="text-xs text-gray-400">Geprek Rejo &bull; {{ now()->translatedFormat('l, d F Y') }}</p>
-                </div>
+        {{-- Clock, Theme Toggle, & Logout --}}
+        <div class="flex items-center gap-4 md:gap-6">
+            <div class="text-right hidden sm:block" wire:ignore>
+                <div class="text-xl md:text-2xl font-black text-white tracking-wider leading-none font-mono" id="kds-time">--:--:--</div>
+                <div class="text-[10px] text-red-100/70 font-semibold mt-1 uppercase tracking-wide" id="kds-date">-</div>
             </div>
 
-            {{-- Stats --}}
-            <div class="flex flex-wrap items-center gap-2">
-                <div class="flex items-center gap-2 rounded-lg bg-orange-100 px-4 py-2">
-                    <span class="text-sm font-semibold text-orange-700">
-                        ⏳ Pending:
-                        <span class="ml-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-orange-500 text-xs font-black text-white">
-                            {{ $this->pendingOrders->count() }}
-                        </span>
-                    </span>
-                </div>
+            {{-- Day / Dark Mode Toggle --}}
+            <button
+                id="kds-theme-btn"
+                data-kds-theme-btn
+                onclick="kdsToggleTheme()"
+                class="flex items-center gap-1.5 px-3 py-2 rounded-xl border cursor-pointer text-xs font-bold border-white/30 bg-white/10 text-white hover:bg-white/20"
+                title="Ubah Tema"
+            >
+                <span class="material-symbols-outlined text-[18px]" data-kds-theme-icon>dark_mode</span>
+                <span class="hidden sm:inline uppercase tracking-wider" data-kds-theme-label>Night</span>
+            </button>
 
-                <div class="flex items-center gap-2 rounded-lg bg-blue-100 px-4 py-2">
-                    <span class="text-sm font-semibold text-blue-700">
-                        👨‍🍳 Diproses:
-                        <span class="ml-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-xs font-black text-white">
-                            {{ $this->confirmedOrders->count() }}
-                        </span>
-                    </span>
-                </div>
-
-                <div class="rounded-lg bg-gray-100 px-4 py-2">
-                    <span
-                        class="font-mono text-sm font-medium text-gray-600"
-                        x-data="{
-                            time: '',
-                            init() {
-                                this.tick();
-                                setInterval(() => this.tick(), 1000);
-                            },
-                            tick() {
-                                const d = new Date();
-                                this.time = '🕐 ' + d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-                            }
-                        }"
-                        x-text="time"
-                    >🕐 --:--:--</span>
-                </div>
-
-                @auth
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit"
-                            class="flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs font-medium text-gray-500 transition hover:border-red-300 hover:bg-red-50 hover:text-red-600">
-                            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1"/>
-                            </svg>
-                            Keluar
-                        </button>
-                    </form>
-                @endauth
-            </div>
+            {{-- Logout Button --}}
+            <button wire:click="logout" class="border-2 border-white/40 hover:bg-white/20 text-white px-4 py-2 rounded-xl transition-all font-bold text-xs flex items-center gap-2 cursor-pointer" title="Keluar">
+                <span class="material-symbols-outlined text-sm">logout</span>
+                <span class="hidden sm:inline">Keluar</span>
+            </button>
         </div>
     </header>
 
-    <main class="p-5">
-
-        {{-- ═══════════════════════════════════════════════════════════════════
-             SECTION 1 — PENDING ORDERS (Menunggu Konfirmasi Pembayaran)
-        ═══════════════════════════════════════════════════════════════════ --}}
-        <section class="mb-8">
-            <div class="mb-4 flex items-center gap-3">
-                <h2 class="text-lg font-bold text-gray-700">⏳ Menunggu Konfirmasi Pembayaran</h2>
-                <span class="rounded-full bg-orange-500 px-2.5 py-0.5 text-xs font-black text-white">
-                    {{ $this->pendingOrders->count() }}
-                </span>
+    {{-- ── Main Scrollable Canvas ────────────────────────────────────────── --}}
+    <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 relative">
+        
+        {{-- Flash Messages --}}
+        @if(session('status'))
+            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)"
+                 class="absolute top-4 right-4 z-50 flex items-center gap-3 rounded-xl bg-emerald-500 px-5 py-3 text-white shadow-xl">
+                <span class="material-symbols-outlined">check_circle</span>
+                <span class="text-sm font-bold">{{ session('status') }}</span>
             </div>
+        @endif
+        @if(session('error'))
+            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)"
+                 class="absolute top-4 right-4 z-50 flex items-center gap-3 rounded-xl bg-red-600 px-5 py-3 text-white shadow-xl">
+                <span class="material-symbols-outlined">error</span>
+                <span class="text-sm font-bold">{{ session('error') }}</span>
+            </div>
+        @endif
 
-            @if($this->pendingOrders->isEmpty())
-                <div class="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-white py-14">
-                    <span class="text-5xl">🎉</span>
-                    <p class="mt-3 font-semibold text-gray-400">Tidak ada pesanan yang menunggu konfirmasi</p>
-                    <p class="text-sm text-gray-300">Semua pembayaran sudah dikonfirmasi</p>
+        {{-- TAB 1: PENDING (Menunggu Pembayaran) --}}
+        @if($activeTab === 'pending')
+            <div class="flex flex-col gap-4">
+                <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border-t-4 border-[#bc000a] px-4 py-3 flex justify-between items-center border border-gray-100 dark:border-gray-800">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[#bc000a] text-xl icon-fill">payments</span>
+                        <h2 class="text-sm font-extrabold uppercase tracking-widest text-gray-700 dark:text-gray-300">Menunggu Pembayaran</h2>
+                    </div>
+                    <span class="bg-red-50 dark:bg-red-950/20 text-[#bc000a] px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border border-red-100 dark:border-red-900/30">
+                        {{ $this->pendingOrders->count() }} pesanan
+                    </span>
                 </div>
-            @else
-                <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    @foreach($this->pendingOrders as $order)
-                        <div class="relative flex flex-col overflow-hidden rounded-2xl border-2 border-orange-200 bg-white shadow-sm transition hover:border-orange-300 hover:shadow-md">
 
-                            {{-- Card Header --}}
-                            <div class="flex items-start justify-between bg-gradient-to-r from-orange-50 to-amber-50 px-4 py-3">
-                                <div>
-                                    <span class="text-4xl font-black leading-none text-orange-600">#{{ $order->queue_number }}</span>
-                                    <p class="mt-0.5 font-mono text-xs text-gray-400">{{ $order->order_number }}</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    @forelse($this->pendingOrders as $order)
+                        <div wire:key="pending-{{ $order->id }}" class="bg-white dark:bg-gray-900 rounded-2xl shadow-md border border-gray-200 dark:border-gray-800 overflow-hidden flex flex-col p-4 gap-3 transition-all hover:shadow-lg relative">
+                            {{-- Decorative corner --}}
+                            <div class="absolute top-0 right-0 w-16 h-16 bg-[#bc000a] rounded-bl-full opacity-10 pointer-events-none"></div>
+
+                            <div class="flex justify-between items-start gap-3 z-10">
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-5xl font-black text-[#bc000a] tracking-tighter leading-none">#{{ $order->queue_number }}</div>
+                                    <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-1.5 uppercase tracking-wide">{{ $order->order_number }}</div>
+                                    <div class="mt-2.5 inline-flex items-center gap-1.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-3 py-1 rounded-xl text-xs font-bold">
+                                        <span class="material-symbols-outlined text-[15px]">{{ $order->type === 'takeaway' ? 'local_mall' : 'restaurant' }}</span>
+                                        <span>{{ $order->type === 'takeaway' ? 'Take Away' : 'Dine In' }}{{ $order->table_number ? ' · M-'.$order->table_number : '' }}</span>
+                                    </div>
                                 </div>
                                 <div class="text-right">
-                                    <p class="text-sm font-medium text-gray-500">{{ $order->created_at->format('H:i') }}</p>
-                                    <p class="text-xs text-gray-400">{{ $order->created_at->diffForHumans() }}</p>
-                                    @if($order->type === 'dine_in')
-                                        <span class="mt-1 inline-block rounded-lg bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
-                                            🪑 Meja {{ $order->table_number ?: '?' }}
-                                        </span>
+                                    @if($order->payment_method === 'qris')
+                                        <span class="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 font-bold px-2 py-1 rounded text-[10px] uppercase tracking-wider border border-yellow-200 dark:border-yellow-800">QRIS</span>
                                     @else
-                                        <span class="mt-1 inline-block rounded-lg bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-600">
-                                            📦 Take Away
-                                        </span>
+                                        <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 font-bold px-2 py-1 rounded text-[10px] uppercase tracking-wider border border-blue-200 dark:border-blue-800">TUNAI</span>
                                     @endif
                                 </div>
                             </div>
 
-                            <div class="flex flex-1 flex-col gap-3 p-4">
+                            @if($order->member)
+                                <div class="flex items-center gap-1.5 bg-yellow-50 dark:bg-yellow-950/20 px-3 py-2 rounded-lg text-xs font-semibold text-yellow-800 dark:text-yellow-500 mt-1">
+                                    <span class="material-symbols-outlined text-[14px]">stars</span>
+                                    {{ $order->member->name }}
+                                </div>
+                            @endif
 
-                                {{-- Customer & Payment Badge --}}
-                                <div class="flex items-start justify-between gap-2">
-                                    <div class="min-w-0">
-                                        @if($order->member)
-                                            <p class="truncate text-sm font-semibold text-gray-800">
-                                                ⭐ {{ $order->member->name }}
-                                            </p>
-                                            <p class="text-xs text-gray-400">{{ $order->member->phone }}</p>
-                                        @else
-                                            <p class="text-sm text-gray-400">👤 Pelanggan Umum</p>
+                            <div class="flex items-center justify-between bg-gray-50 dark:bg-gray-800 px-3 py-2 rounded-lg mt-1">
+                                <span class="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Total</span>
+                                <span class="text-lg font-black text-[#bc000a]">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
+                            </div>
+
+                            {{-- Actions --}}
+                            <div class="flex gap-2 mt-auto pt-2 border-t border-gray-100 dark:border-gray-800">
+                                <button wire:click="openCancelModal({{ $order->id }})" class="flex-1 border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 font-bold text-xs py-2.5 rounded-xl transition-colors">Batal</button>
+                                <button wire:click="openConfirmModal({{ $order->id }})" class="flex-[2] bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 rounded-xl transition-colors shadow-sm flex items-center justify-center gap-1">
+                                    <span class="material-symbols-outlined text-[16px]">check_circle</span> Konfirmasi
+                                </button>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="col-span-full py-12 text-center bg-white dark:bg-gray-900 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-800">
+                            <span class="material-symbols-outlined text-4xl text-gray-300 dark:text-gray-600 block mb-2">payments</span>
+                            <p class="text-sm font-semibold text-gray-500 dark:text-gray-400">Tidak ada pesanan menunggu pembayaran.</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        @endif
+
+        {{-- TAB 2: PROSES (Diproses Dapur) --}}
+        @if($activeTab === 'proses')
+            <div class="flex flex-col gap-4">
+                <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border-t-4 border-[#fdc003] px-4 py-3 flex justify-between items-center border border-gray-100 dark:border-gray-800">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[#fdc003] text-xl icon-fill">outdoor_grill</span>
+                        <h2 class="text-sm font-extrabold uppercase tracking-widest text-gray-700 dark:text-gray-300">Diproses Dapur</h2>
+                    </div>
+                    <span class="bg-yellow-50 dark:bg-yellow-950/20 text-[#6c5000] dark:text-yellow-500 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border border-yellow-100 dark:border-yellow-900/30">
+                        {{ $this->confirmedOrders->count() }} pesanan
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    @forelse($this->confirmedOrders as $order)
+                        <div wire:key="proses-{{ $order->id }}" class="bg-white dark:bg-gray-900 rounded-2xl shadow-md border border-gray-200 dark:border-gray-800 overflow-hidden flex flex-col p-4 gap-3 transition-all hover:shadow-lg">
+                            <div class="flex justify-between items-start gap-3">
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-5xl font-black text-gray-800 dark:text-gray-100 tracking-tighter leading-none">#{{ $order->queue_number }}</div>
+                                    <div class="mt-2.5 inline-flex items-center gap-1.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-3 py-1 rounded-xl text-xs font-bold">
+                                        <span class="material-symbols-outlined text-[15px]">{{ $order->type === 'takeaway' ? 'local_mall' : 'restaurant' }}</span>
+                                        <span>{{ $order->type === 'takeaway' ? 'Take Away' : 'Dine In' }}{{ $order->table_number ? ' · M-'.$order->table_number : '' }}</span>
+                                    </div>
+                                </div>
+                                <div class="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-100 dark:border-yellow-900/30 px-3.5 py-2.5 rounded-2xl text-right flex flex-col items-end shrink-0">
+                                    <div class="flex items-center gap-1 text-yellow-700 dark:text-yellow-500 font-extrabold text-[10px] uppercase tracking-wider">
+                                        <span class="material-symbols-outlined text-[14px] animate-pulse">outdoor_grill</span>
+                                        <span>Dimasak</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button wire:click="openDetailModal({{ $order->id }})" class="mt-auto w-full border-2 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 font-bold text-xs py-2.5 rounded-xl transition-colors flex items-center justify-center gap-1">
+                                <span class="material-symbols-outlined text-[16px]">receipt_long</span> Detail Pesanan
+                            </button>
+                        </div>
+                    @empty
+                        <div class="col-span-full py-12 text-center bg-white dark:bg-gray-900 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-800">
+                            <span class="material-symbols-outlined text-4xl text-gray-300 dark:text-gray-600 block mb-2">soup_kitchen</span>
+                            <p class="text-sm font-semibold text-gray-500 dark:text-gray-400">Tidak ada pesanan sedang diproses.</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        @endif
+
+        {{-- TAB 3: RIWAYAT (Selesai/Batal) --}}
+        @if($activeTab === 'riwayat')
+            <div class="flex flex-col gap-4">
+                <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border-t-4 border-emerald-500 px-4 py-3 flex justify-between items-center border border-gray-100 dark:border-gray-800">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-emerald-500 text-xl icon-fill">task_alt</span>
+                        <h2 class="text-sm font-extrabold uppercase tracking-widest text-gray-700 dark:text-gray-300">Riwayat Pesanan Hari Ini</h2>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    @forelse($this->historyOrders as $order)
+                        <div wire:key="riwayat-{{ $order->id }}" class="bg-white dark:bg-gray-900 rounded-2xl shadow-md border border-gray-200 dark:border-gray-800 overflow-hidden flex flex-col p-4 gap-3 transition-all hover:shadow-lg opacity-80 hover:opacity-100">
+                            <div class="flex justify-between items-start gap-3">
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-4xl font-black text-gray-800 dark:text-gray-100 tracking-tighter leading-none">#{{ $order->queue_number }}</div>
+                                    <div class="text-[10px] font-semibold text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wider">{{ $order->order_number }}</div>
+                                </div>
+                                <div class="text-right">
+                                    @if($order->status === 'completed')
+                                        <span class="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-bold px-2 py-1 rounded text-[10px] uppercase tracking-wider border border-emerald-200 dark:border-emerald-800">Selesai</span>
+                                    @elseif($order->status === 'cancelled')
+                                        <span class="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 font-bold px-2 py-1 rounded text-[10px] uppercase tracking-wider border border-red-200 dark:border-red-800">Batal</span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                <span>Total: <strong>Rp {{ number_format($order->total_amount, 0, ',', '.') }}</strong></span>
+                                <span>{{ $order->created_at->format('H:i') }}</span>
+                            </div>
+                            <button wire:click="openDetailModal({{ $order->id }})" class="mt-auto w-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 font-bold text-xs py-2 rounded-xl transition-colors">
+                                Lihat Detail
+                            </button>
+                        </div>
+                    @empty
+                        <div class="col-span-full py-12 text-center bg-white dark:bg-gray-900 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-800">
+                            <span class="material-symbols-outlined text-4xl text-gray-300 dark:text-gray-600 block mb-2">history</span>
+                            <p class="text-sm font-semibold text-gray-500 dark:text-gray-400">Belum ada riwayat pesanan hari ini.</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        @endif
+
+        {{-- Modals ───────────────────────────────────────────────────────── --}}
+        
+        {{-- Detail Modal --}}
+        @if($showDetailModal && $this->selectedOrder)
+            <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+                 x-data x-on:keydown.escape.window="$wire.closeDetailModal()">
+                <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden"
+                     @click.away="$wire.closeDetailModal()">
+                    <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-gray-50 dark:bg-gray-800/50">
+                        <div class="flex items-center gap-4">
+                            <span class="font-black text-4xl text-[#bc000a] dark:text-red-500 tracking-tighter leading-none">#{{ $this->selectedOrder->queue_number }}</span>
+                            <div class="flex flex-col">
+                                <span class="font-bold text-gray-800 dark:text-gray-100">Detail Pesanan</span>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span class="text-[10px] bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-0.5 rounded font-bold uppercase tracking-wider">{{ $this->selectedOrder->type === 'dine_in' ? 'Dine In' : 'Take Away' }}</span>
+                                    @if($this->selectedOrder->payment_method === 'qris')
+                                        <span class="text-[10px] bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 px-2 py-0.5 rounded font-bold uppercase tracking-wider">QRIS</span>
+                                    @else
+                                        <span class="text-[10px] bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-2 py-0.5 rounded font-bold uppercase tracking-wider">TUNAI</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        <button wire:click="closeDetailModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-full p-2 transition-colors bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700">
+                            <span class="material-symbols-outlined block">close</span>
+                        </button>
+                    </div>
+
+                    <div class="flex-1 overflow-y-auto p-6 space-y-4 bg-white dark:bg-gray-900">
+                        @foreach($this->selectedOrder->details as $detail)
+                            <div class="flex justify-between items-start pb-4 border-b border-dashed border-gray-200 dark:border-gray-800 last:border-0 last:pb-0">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-8 h-8 rounded bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-700 dark:text-gray-300 font-black shrink-0">
+                                        {{ $detail->quantity }}
+                                    </div>
+                                    <div class="flex flex-col mt-1">
+                                        <span class="font-bold text-sm text-gray-800 dark:text-gray-200">{{ $detail->menu_item_name }}</span>
+                                        @if($detail->notes)
+                                            <span class="text-[11px] font-medium text-amber-700 dark:text-amber-500 mt-1">Catatan: {{ $detail->notes }}</span>
                                         @endif
                                     </div>
-                                    @if($order->payment_method === 'qris')
-                                        <span class="shrink-0 rounded-full bg-orange-100 px-3 py-0.5 text-xs font-bold text-orange-700">QRIS</span>
-                                    @else
-                                        <span class="shrink-0 rounded-full bg-green-100 px-3 py-0.5 text-xs font-bold text-green-700">Tunai</span>
-                                    @endif
                                 </div>
+                                <span class="font-bold text-sm text-gray-800 dark:text-gray-200 mt-1">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</span>
+                            </div>
+                        @endforeach
+                        
+                        @if($this->selectedOrder->notes)
+                            <div class="bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30 p-3 rounded-xl mt-4">
+                                <p class="text-xs font-bold text-amber-800 dark:text-amber-500">📝 Catatan: {{ $this->selectedOrder->notes }}</p>
+                            </div>
+                        @endif
 
-                                {{-- Items List --}}
-                                @php $details = $order->details; $maxShow = 3; @endphp
-                                <div class="rounded-xl bg-gray-50 p-2.5">
-                                    @foreach($details->take($maxShow) as $detail)
-                                        <div class="flex items-center justify-between py-0.5">
-                                            <span class="truncate pr-2 text-xs text-gray-700">{{ $detail->menu_item_name }}</span>
-                                            <span class="shrink-0 rounded bg-gray-200 px-1.5 py-0.5 text-xs font-bold text-gray-600">
-                                                ×{{ $detail->quantity }}
-                                            </span>
-                                        </div>
-                                    @endforeach
-                                    @if($details->count() > $maxShow)
-                                        <p class="mt-1.5 text-center text-xs text-gray-400">
-                                            + {{ $details->count() - $maxShow }} item lagi
-                                        </p>
-                                    @endif
+                        <div class="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 mt-4 space-y-2">
+                            <div class="flex justify-between items-center text-sm font-semibold text-gray-600 dark:text-gray-400">
+                                <span>Subtotal</span>
+                                <span>Rp {{ number_format($this->selectedOrder->subtotal, 0, ',', '.') }}</span>
+                            </div>
+                            @if($this->selectedOrder->discount_amount > 0)
+                                <div class="flex justify-between items-center text-sm font-semibold text-emerald-600">
+                                    <span>Diskon Voucher</span>
+                                    <span>- Rp {{ number_format($this->selectedOrder->discount_amount, 0, ',', '.') }}</span>
                                 </div>
-
-                                {{-- Notes --}}
-                                @if($order->notes)
-                                    <div class="rounded-lg border border-yellow-200 bg-yellow-50 px-3 py-2">
-                                        <p class="text-xs text-yellow-700">📝 {{ $order->notes }}</p>
-                                    </div>
-                                @endif
-
-                                {{-- Badge Promo Poin Member --}}
-                                @if((int)$order->points_redeemed > 0)
-                                    <div class="flex items-center gap-1.5 rounded-lg bg-amber-50 border border-amber-200 px-3 py-1.5">
-                                        <span class="text-sm">✨</span>
-                                        <span class="text-xs font-bold text-amber-700">Promo Poin Member</span>
-                                        <span class="ml-auto text-xs text-amber-600">{{ $order->points_redeemed }} poin → −Rp {{ number_format($order->points_redeemed_amount, 0, ',', '.') }}</span>
-                                    </div>
-                                @endif
-
-                                {{-- Discount Info (Voucher) --}}
-                                @if($order->discount_amount > 0)
-                                    <div class="rounded-lg bg-green-50 px-3 py-1.5 text-xs text-green-700">
-                                        <span>🎟 Voucher: -Rp {{ number_format($order->discount_amount, 0, ',', '.') }}</span>
-                                    </div>
-                                @endif
-
-                                {{-- Total --}}
-                                <div class="flex items-center justify-between border-t border-gray-100 pt-2">
-                                    <span class="text-sm text-gray-500">Total Bayar</span>
-                                    <span class="text-2xl font-black text-gray-900">
-                                        Rp {{ number_format($order->total_amount, 0, ',', '.') }}
-                                    </span>
+                            @endif
+                            @if($this->selectedOrder->points_redeemed > 0)
+                                <div class="flex justify-between items-center text-sm font-semibold text-emerald-600">
+                                    <span>Diskon Poin ({{ $this->selectedOrder->points_redeemed }})</span>
+                                    <span>- Rp {{ number_format($this->selectedOrder->points_redeemed_amount, 0, ',', '.') }}</span>
                                 </div>
-
-                                {{-- Action Buttons --}}
-                                <div class="flex flex-col gap-2 pt-1">
-                                    <div class="flex gap-2">
-                                        <button
-                                            wire:click="openDetailModal({{ $order->id }})"
-                                            class="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs font-medium text-gray-600 transition hover:bg-gray-50 active:scale-95"
-                                        >
-                                            🔍 Detail
-                                        </button>
-                                        <button
-                                            wire:click="openCancelModal({{ $order->id }})"
-                                            class="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs font-medium text-red-600 transition hover:bg-red-100 active:scale-95"
-                                        >
-                                            ❌ Batal
-                                        </button>
-                                    </div>
-
-                                    <button
-                                        wire:click="openConfirmModal({{ $order->id }})"
-                                        wire:loading.attr="disabled"
-                                        wire:target="openConfirmModal({{ $order->id }}), confirmPayment"
-                                        class="flex w-full items-center justify-center gap-2 rounded-xl bg-green-500 px-4 py-2.5 font-bold text-white shadow-sm transition hover:bg-green-600 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
-                                    >
-                                        <span wire:loading.remove wire:target="openConfirmModal({{ $order->id }})">
-                                            ✅ Konfirmasi Lunas
-                                        </span>
-                                        <span
-                                            wire:loading
-                                            wire:target="openConfirmModal({{ $order->id }})"
-                                            class="flex items-center gap-2"
-                                        >
-                                            <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-                                            </svg>
-                                            Memproses...
-                                        </span>
-                                    </button>
-                                </div>
-
+                            @endif
+                            <div class="border-t border-gray-200 dark:border-gray-700 pt-2 flex justify-between items-center mt-2">
+                                <span class="text-lg font-black text-gray-800 dark:text-gray-100">Total Bayar</span>
+                                <span class="text-2xl font-black text-[#bc000a] dark:text-red-500">Rp {{ number_format($this->selectedOrder->total_amount, 0, ',', '.') }}</span>
                             </div>
                         </div>
-                    @endforeach
-                </div>
-            @endif
-        </section>
+                    </div>
 
-        {{-- ═══════════════════════════════════════════════════════════════════
-             SECTION 2 — CONFIRMED ORDERS (Sedang Diproses Dapur)
-        ═══════════════════════════════════════════════════════════════════ --}}
-        <section>
-            <div class="mb-4 flex items-center gap-3">
-                <h2 class="text-lg font-bold text-gray-700">👨‍🍳 Sedang Diproses Dapur</h2>
-                <span class="rounded-full bg-blue-500 px-2.5 py-0.5 text-xs font-black text-white">
-                    {{ $this->confirmedOrders->count() }}
-                </span>
+                    <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 flex gap-3 justify-end shrink-0">
+                        <button wire:click="closeDetailModal" class="px-5 py-2.5 rounded-xl text-gray-600 dark:text-gray-300 font-bold hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Tutup</button>
+                        @if($this->selectedOrder->isPending())
+                            <button wire:click="openConfirmModal({{ $this->selectedOrder->id }})" class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition-colors shadow-sm flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[18px]">check_circle</span> Konfirmasi
+                            </button>
+                        @endif
+                    </div>
+                </div>
             </div>
+        @endif
 
-            @if($this->confirmedOrders->isEmpty())
-                <div class="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-white py-10">
-                    <span class="text-4xl">🍳</span>
-                    <p class="mt-3 font-semibold text-gray-400">Tidak ada pesanan yang sedang diproses</p>
+        {{-- Confirm Modal --}}
+        @if($confirmingOrderId)
+            <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+                 x-data x-on:keydown.escape.window="$wire.set('confirmingOrderId', null)">
+                <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden text-center p-6"
+                     @click.away="$wire.set('confirmingOrderId', null)">
+                    <div class="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="material-symbols-outlined text-3xl">check_circle</span>
+                    </div>
+                    <h3 class="text-lg font-black text-gray-800 dark:text-gray-100 mb-2">Konfirmasi Pembayaran</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Apakah Anda yakin pesanan ini sudah dibayar lunas?</p>
+                    <div class="flex gap-3">
+                        <button wire:click="$set('confirmingOrderId', null)" class="flex-1 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Batal</button>
+                        <button wire:click="confirmPayment" class="flex-1 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-sm transition-colors flex items-center justify-center gap-2">
+                            <span wire:loading.remove wire:target="confirmPayment">Ya, Lunas</span>
+                            <span wire:loading wire:target="confirmPayment" class="material-symbols-outlined animate-spin">progress_activity</span>
+                        </button>
+                    </div>
                 </div>
-            @else
-                <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-                    @foreach($this->confirmedOrders as $order)
-                        <div class="flex flex-col rounded-xl border border-blue-200 bg-white p-3 shadow-sm">
+            </div>
+        @endif
 
-                            {{-- Header --}}
-                            <div class="mb-1 flex items-center justify-between">
-                                <span class="text-2xl font-black leading-none text-blue-600">#{{ $order->queue_number }}</span>
-                                <span class="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-600">Konfirmasi</span>
-                            </div>
-                            <p class="mb-1 font-mono text-xs text-gray-400">{{ $order->order_number }}</p>
-
-                            {{-- Customer --}}
-                            @if($order->member)
-                                <p class="mb-1 truncate text-xs font-medium text-gray-600">⭐ {{ $order->member->name }}</p>
-                            @endif
-
-                            {{-- Badge Promo Poin --}}
-                            @if((int)$order->points_redeemed > 0)
-                                <span class="mb-1 inline-block rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-700">✨ Promo Poin</span>
-                            @endif
-
-                            {{-- Type --}}
-                            @if($order->type === 'dine_in')
-                                <p class="mb-2 text-xs text-gray-400">🪑 Meja {{ $order->table_number ?: '?' }}</p>
-                            @else
-                                <p class="mb-2 text-xs text-gray-400">📦 Take Away</p>
-                            @endif
-
-                            {{-- Items --}}
-                            <div class="mb-2 flex-1 space-y-0.5 rounded-lg bg-gray-50 p-1.5">
-                                @foreach($order->details->take(3) as $detail)
-                                    <div class="flex items-center justify-between">
-                                        <span class="truncate text-xs text-gray-600">{{ $detail->menu_item_name }}</span>
-                                        <span class="ml-1 shrink-0 text-xs font-bold text-gray-500">×{{ $detail->quantity }}</span>
-                                    </div>
-                                @endforeach
-                                @if($order->details->count() > 3)
-                                    <p class="text-center text-xs text-gray-400">+{{ $order->details->count() - 3 }} lagi</p>
-                                @endif
-                            </div>
-
-                            {{-- Total & Time --}}
-                            <div class="border-t border-gray-100 pt-1.5 text-right">
-                                <p class="text-sm font-bold text-gray-800">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</p>
-                                @if($order->confirmed_at)
-                                    <p class="text-xs text-gray-400">✅ {{ $order->confirmed_at->format('H:i') }}</p>
-                                @endif
-                            </div>
-
+        {{-- Cancel Modal --}}
+        @if($showCancelModal)
+            <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+                 x-data x-on:keydown.escape.window="$wire.closeCancelModal()">
+                <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden p-6"
+                     @click.away="$wire.closeCancelModal()">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-xl">cancel</span>
                         </div>
-                    @endforeach
+                        <h3 class="text-lg font-black text-gray-800 dark:text-gray-100">Batalkan Pesanan</h3>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Alasan Pembatalan</label>
+                        <input wire:model="cancelReason" type="text" placeholder="Masukkan alasan..." class="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-red-500 outline-none">
+                        @error('cancelReason') <span class="text-xs text-red-500 font-medium mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="flex gap-3">
+                        <button wire:click="closeCancelModal" class="flex-1 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Kembali</button>
+                        <button wire:click="cancelOrder" class="flex-1 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold shadow-sm transition-colors flex items-center justify-center gap-2">
+                            <span wire:loading.remove wire:target="cancelOrder">Batalkan</span>
+                            <span wire:loading wire:target="cancelOrder" class="material-symbols-outlined animate-spin">progress_activity</span>
+                        </button>
+                    </div>
                 </div>
-            @endif
-        </section>
-
+            </div>
+        @endif
+        
     </main>
 
-
-    {{-- ═══════════════════════════════════════════════════════════════════════
-         MODAL 1 — DETAIL ORDER
-    ═══════════════════════════════════════════════════════════════════════ --}}
-    <div
-        x-data="{ open: @entangle('showDetailModal') }"
-        x-show="open"
-        x-on:keydown.escape.window="$wire.closeDetailModal()"
-        class="fixed inset-0 z-40 flex items-end justify-center p-4 sm:items-center"
-        style="display: none;"
-    >
-        {{-- Backdrop --}}
-        <div
-            x-show="open"
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0"
-            x-transition:enter-end="opacity-100"
-            x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0"
-            class="fixed inset-0 bg-black/60"
-            x-on:click="$wire.closeDetailModal()"
-        ></div>
-
-        {{-- Panel --}}
-        <div
-            x-show="open"
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-            x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-            x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-            x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-            class="relative z-50 w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl"
-        >
-            @if($this->selectedOrder)
-                {{-- Modal Header --}}
-                <div class="flex items-start justify-between bg-gray-50 px-6 py-4">
-                    <div>
-                        <h3 class="text-xl font-bold text-gray-800">Detail Pesanan</h3>
-                        <p class="font-mono text-sm text-gray-400">{{ $this->selectedOrder->order_number }}</p>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <span class="text-4xl font-black text-gray-700">#{{ $this->selectedOrder->queue_number }}</span>
-                        <button
-                            wire:click="closeDetailModal"
-                            class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-gray-500 transition hover:bg-gray-300"
-                        >
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                {{-- Modal Body --}}
-                <div class="max-h-[60vh] overflow-y-auto px-6 py-4">
-
-                    {{-- Customer Info --}}
-                    @if($this->selectedOrder->member)
-                        <div class="mb-4 flex items-center gap-3 rounded-xl bg-yellow-50 p-3">
-                            <span class="text-2xl">⭐</span>
-                            <div>
-                                <p class="font-semibold text-gray-800">{{ $this->selectedOrder->member->name }}</p>
-                                <p class="text-xs text-gray-500">
-                                    {{ $this->selectedOrder->member->phone }}
-                                    &bull;
-                                    <span class="font-medium text-yellow-600">{{ number_format($this->selectedOrder->member->points) }} poin</span>
-                                </p>
-                            </div>
-                        </div>
-                    @else
-                        <div class="mb-4 rounded-xl bg-gray-50 p-3">
-                            <p class="text-sm text-gray-400">👤 Pelanggan Umum (tanpa akun member)</p>
-                        </div>
-                    @endif
-
-                    {{-- Order Info Grid --}}
-                    <div class="mb-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
-                        <div>
-                            <p class="text-xs uppercase tracking-wide text-gray-400">Tipe</p>
-                            <p class="mt-0.5 font-semibold text-gray-700">
-                                {{ $this->selectedOrder->type === 'dine_in' ? '🪑 Dine In' : '📦 Take Away' }}
-                            </p>
-                        </div>
-                        @if($this->selectedOrder->table_number)
-                            <div>
-                                <p class="text-xs uppercase tracking-wide text-gray-400">Nomor Meja</p>
-                                <p class="mt-0.5 font-semibold text-gray-700">{{ $this->selectedOrder->table_number }}</p>
-                            </div>
-                        @endif
-                        <div>
-                            <p class="text-xs uppercase tracking-wide text-gray-400">Metode Bayar</p>
-                            <div class="mt-0.5">
-                                @if($this->selectedOrder->payment_method === 'qris')
-                                    <span class="inline-block rounded-full bg-orange-100 px-2.5 py-0.5 text-xs font-bold text-orange-700">📱 QRIS</span>
-                                @else
-                                    <span class="inline-block rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-bold text-green-700">💵 Tunai</span>
-                                @endif
-                            </div>
-                        </div>
-                        <div>
-                            <p class="text-xs uppercase tracking-wide text-gray-400">Waktu Order</p>
-                            <p class="mt-0.5 font-semibold text-gray-700">{{ $this->selectedOrder->created_at->format('d/m H:i') }}</p>
-                        </div>
-                    </div>
-
-                    {{-- Items --}}
-                    <div class="mb-4">
-                        <p class="mb-2 text-xs font-bold uppercase tracking-wide text-gray-400">Item Pesanan ({{ $this->selectedOrder->details->count() }})</p>
-                        <div class="space-y-2">
-                            @foreach($this->selectedOrder->details as $detail)
-                                <div class="flex items-start justify-between gap-3 rounded-xl bg-gray-50 px-3.5 py-2.5">
-                                    <div class="min-w-0">
-                                        <p class="font-semibold text-gray-800">{{ $detail->menu_item_name }}</p>
-                                        @if($detail->notes)
-                                            <p class="mt-0.5 text-xs text-gray-400">📝 {{ $detail->notes }}</p>
-                                        @endif
-                                    </div>
-                                    <div class="shrink-0 text-right">
-                                        <p class="rounded bg-gray-200 px-2 py-0.5 text-xs font-bold text-gray-600">×{{ $detail->quantity }}</p>
-                                        <p class="mt-1 text-sm font-semibold text-gray-700">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</p>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    {{-- Notes --}}
-                    @if($this->selectedOrder->notes)
-                        <div class="mb-4 rounded-xl border border-yellow-200 bg-yellow-50 px-4 py-2.5">
-                            <p class="text-sm font-medium text-yellow-700">📝 {{ $this->selectedOrder->notes }}</p>
-                        </div>
-                    @endif
-
-                    {{-- Pricing Summary --}}
-                    <div class="space-y-2 rounded-xl bg-gray-50 p-4 text-sm">
-                        <div class="flex justify-between text-gray-500">
-                            <span>Subtotal</span>
-                            <span>Rp {{ number_format($this->selectedOrder->subtotal, 0, ',', '.') }}</span>
-                        </div>
-                        @if($this->selectedOrder->discount_amount > 0)
-                            <div class="flex justify-between text-green-600">
-                                <span>🎟 Diskon Voucher</span>
-                                <span>− Rp {{ number_format($this->selectedOrder->discount_amount, 0, ',', '.') }}</span>
-                            </div>
-                        @endif
-                        @if($this->selectedOrder->points_redeemed_amount > 0)
-                            <div class="flex justify-between text-green-600">
-                                <span>⭐ Redeem Poin ({{ $this->selectedOrder->points_redeemed }} poin)</span>
-                                <span>− Rp {{ number_format($this->selectedOrder->points_redeemed_amount, 0, ',', '.') }}</span>
-                            </div>
-                        @endif
-                        <div class="flex justify-between border-t border-gray-200 pt-2 text-base font-black text-gray-900">
-                            <span>Total</span>
-                            <span>Rp {{ number_format($this->selectedOrder->total_amount, 0, ',', '.') }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Modal Footer --}}
-                <div class="flex items-center justify-end gap-2 border-t border-gray-100 px-6 py-4">
-                    <button
-                        wire:click="closeDetailModal"
-                        class="rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50"
-                    >
-                        Tutup
-                    </button>
-                    @if($this->selectedOrder->isPending())
-                        <button
-                            wire:click="openConfirmModal({{ $this->selectedOrder->id }})"
-                            class="rounded-lg bg-green-500 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-green-600"
-                        >
-                            ✅ Konfirmasi Lunas
-                        </button>
-                    @endif
-                </div>
-            @else
-                <div class="flex items-center justify-center p-16">
-                    <svg class="h-8 w-8 animate-spin text-gray-300" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-                    </svg>
-                </div>
+    {{-- ── Bottom Navigation Tab Bar ───────────────────────────────────────── --}}
+    <nav class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 px-2 py-2 shadow-lg flex justify-around items-center z-20 shrink-0">
+        
+        {{-- Tab Pending --}}
+        <button wire:click="switchTab('pending')" class="relative flex flex-col items-center gap-1 px-4 py-2 rounded-2xl transition-all cursor-pointer {{ $activeTab === 'pending' ? 'bg-[#bc000a] text-white shadow-md' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
+            @if($this->pendingOrders->count() > 0)
+                <span class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-yellow-500 text-white text-[10px] font-black flex items-center justify-center shadow-sm">{{ $this->pendingOrders->count() > 9 ? '9+' : $this->pendingOrders->count() }}</span>
             @endif
-        </div>
-    </div>
+            <span class="material-symbols-outlined text-[22px] {{ $activeTab === 'pending' ? 'icon-fill' : '' }}">payments</span>
+            <span class="text-[10px] font-bold uppercase tracking-wider">Menunggu</span>
+        </button>
 
-
-    {{-- ═══════════════════════════════════════════════════════════════════════
-         MODAL 2 — KONFIRMASI PEMBAYARAN
-    ═══════════════════════════════════════════════════════════════════════ --}}
-    <div
-        x-data
-        x-show="$wire.confirmingOrderId !== null"
-        x-on:keydown.escape.window="$wire.set('confirmingOrderId', null)"
-        class="fixed inset-0 z-40 flex items-end justify-center p-4 sm:items-center"
-        style="display: none;"
-    >
-        {{-- Backdrop --}}
-        <div
-            x-show="$wire.confirmingOrderId !== null"
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0"
-            x-transition:enter-end="opacity-100"
-            x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0"
-            class="fixed inset-0 bg-black/60"
-            x-on:click="$wire.set('confirmingOrderId', null)"
-        ></div>
-
-        {{-- Panel --}}
-        @if($this->confirmingOrderId)
-            @php
-                $confirmOrder = $this->pendingOrders->firstWhere('id', $this->confirmingOrderId);
-            @endphp
-            @if($confirmOrder)
-                <div
-                    x-show="$wire.confirmingOrderId !== null"
-                    x-transition:enter="transition ease-out duration-200"
-                    x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                    x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                    x-transition:leave="transition ease-in duration-150"
-                    x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                    x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                    class="relative z-50 w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl"
-                >
-                    {{-- Header --}}
-                    <div class="flex items-center gap-4 border-b border-gray-100 px-6 py-5">
-                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-green-100 text-2xl">💳</div>
-                        <div>
-                            <h3 class="text-xl font-bold text-gray-800">Konfirmasi Pembayaran</h3>
-                            <p class="font-mono text-sm text-gray-400">
-                                #{{ $confirmOrder->queue_number }} &bull; {{ $confirmOrder->order_number }}
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="px-6 py-5">
-                        {{-- Total --}}
-                        <div class="mb-6 rounded-2xl bg-gray-50 p-5 text-center">
-                            <p class="text-sm text-gray-500">Total yang harus dibayar</p>
-                            <p class="mt-1 text-5xl font-black tabular-nums text-gray-900">
-                                Rp {{ number_format($confirmOrder->total_amount, 0, ',', '.') }}
-                            </p>
-                            @if($confirmOrder->discount_amount > 0 || $confirmOrder->points_redeemed_amount > 0)
-                                <p class="mt-1.5 text-xs text-green-600">
-                                    Sudah termasuk potongan
-                                    @if($confirmOrder->discount_amount > 0) voucher @endif
-                                    @if($confirmOrder->discount_amount > 0 && $confirmOrder->points_redeemed_amount > 0) & @endif
-                                    @if($confirmOrder->points_redeemed_amount > 0) poin @endif
-                                </p>
-                            @endif
-                        </div>
-
-                        {{-- Payment Method Info (Read Only) --}}
-                        <div class="mb-2">
-                            <p class="mb-2 text-sm font-bold text-gray-600">Metode Pembayaran</p>
-                            @if($confirmOrder->payment_method === 'qris')
-                                <div class="flex items-center gap-3 rounded-2xl border-2 border-orange-200 bg-orange-50 p-4">
-                                    <span class="text-4xl">📱</span>
-                                    <div>
-                                        <p class="text-sm font-bold text-orange-800">QRIS Statis</p>
-                                        <p class="text-xs text-orange-600">Pelanggan membayar via Scan QRIS</p>
-                                    </div>
-                                </div>
-                            @else
-                                <div class="flex items-center gap-3 rounded-2xl border-2 border-green-200 bg-green-50 p-4">
-                                    <span class="text-4xl">💵</span>
-                                    <div>
-                                        <p class="text-sm font-bold text-green-800">Tunai (Cash)</p>
-                                        <p class="text-xs text-green-600">Terima pembayaran tunai di kasir</p>
-                                    </div>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-
-                    {{-- Footer --}}
-                    <div class="flex gap-3 border-t border-gray-100 px-6 py-4">
-                        <button
-                            wire:click="$set('confirmingOrderId', null)"
-                            class="flex-1 rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-50"
-                        >
-                            Batal
-                        </button>
-                        <button
-                            wire:click="confirmPayment"
-                            wire:loading.attr="disabled"
-                            wire:target="confirmPayment"
-                            class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-green-500 px-4 py-3 text-sm font-bold text-white transition hover:bg-green-600 disabled:cursor-not-allowed disabled:opacity-60"
-                        >
-                            <span wire:loading.remove wire:target="confirmPayment">✅ Konfirmasi Lunas</span>
-                            <span wire:loading wire:target="confirmPayment" class="flex items-center gap-2">
-                                <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-                                </svg>
-                                Memproses...
-                            </span>
-                        </button>
-                    </div>
-                </div>
+        {{-- Tab Proses --}}
+        <button wire:click="switchTab('proses')" class="relative flex flex-col items-center gap-1 px-4 py-2 rounded-2xl transition-all cursor-pointer {{ $activeTab === 'proses' ? 'bg-[#fdc003] text-[#5c4000] shadow-md' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
+            @if($this->confirmedOrders->count() > 0)
+                <span class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-orange-500 text-white text-[10px] font-black flex items-center justify-center shadow-sm">{{ $this->confirmedOrders->count() > 9 ? '9+' : $this->confirmedOrders->count() }}</span>
             @endif
-        @endif
-    </div>
+            <span class="material-symbols-outlined text-[22px] {{ $activeTab === 'proses' ? 'icon-fill' : '' }}">outdoor_grill</span>
+            <span class="text-[10px] font-bold uppercase tracking-wider">Diproses</span>
+        </button>
 
+        {{-- Tab Riwayat --}}
+        <button wire:click="switchTab('riwayat')" class="relative flex flex-col items-center gap-1 px-4 py-2 rounded-2xl transition-all cursor-pointer {{ $activeTab === 'riwayat' ? 'bg-emerald-600 text-white shadow-md' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
+            <span class="material-symbols-outlined text-[22px] {{ $activeTab === 'riwayat' ? 'icon-fill' : '' }}">task_alt</span>
+            <span class="text-[10px] font-bold uppercase tracking-wider">Riwayat</span>
+        </button>
 
-    {{-- ═══════════════════════════════════════════════════════════════════════
-         MODAL 3 — BATALKAN ORDER
-    ═══════════════════════════════════════════════════════════════════════ --}}
-    <div
-        x-data="{ open: @entangle('showCancelModal') }"
-        x-show="open"
-        x-on:keydown.escape.window="$wire.closeCancelModal()"
-        class="fixed inset-0 z-40 flex items-end justify-center p-4 sm:items-center"
-        style="display: none;"
-    >
-        {{-- Backdrop --}}
-        <div
-            x-show="open"
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0"
-            x-transition:enter-end="opacity-100"
-            x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0"
-            class="fixed inset-0 bg-black/60"
-            x-on:click="$wire.closeCancelModal()"
-        ></div>
+    </nav>
 
-        {{-- Panel --}}
-        <div
-            x-show="open"
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-            x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-            x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-            x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-            class="relative z-50 w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl"
-        >
-            {{-- Header --}}
-            <div class="flex items-center gap-4 border-b border-gray-100 px-6 py-5">
-                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-red-100 text-2xl">⚠️</div>
-                <div>
-                    <h3 class="text-xl font-bold text-gray-800">Batalkan Pesanan</h3>
-                    <p class="text-sm text-gray-400">Tindakan ini tidak dapat dibatalkan</p>
-                </div>
-            </div>
+    @push('scripts')
+    <script>
+        // ── Live Clock (persists across Livewire polls) ──────────────
+        let kdsClockInterval = null;
 
-            {{-- Body --}}
-            <div class="px-6 py-5">
-                <label class="block">
-                    <span class="mb-2 block text-sm font-bold text-gray-600">
-                        Alasan Pembatalan
-                        <span class="ml-0.5 text-red-500">*</span>
-                    </span>
-                    <textarea
-                        wire:model="cancelReason"
-                        rows="4"
-                        placeholder="Contoh: Pelanggan membatalkan pesanan, stok habis, dll. (min. 3 karakter)"
-                        class="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 text-sm text-gray-700 placeholder-gray-400 outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-100"
-                    ></textarea>
-                    @error('cancelReason')
-                        <p class="mt-1.5 flex items-center gap-1 text-xs font-medium text-red-500">
-                            <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                            </svg>
-                            {{ $message }}
-                        </p>
-                    @enderror
-                </label>
-            </div>
+        function updateKdsClock() {
+            const now = new Date();
+            const timeEl = document.getElementById('kds-time');
+            const dateEl = document.getElementById('kds-date');
+            if (timeEl) {
+                const hh = String(now.getHours()).padStart(2, '0');
+                const mm = String(now.getMinutes()).padStart(2, '0');
+                const ss = String(now.getSeconds()).padStart(2, '0');
+                timeEl.textContent = `${hh}.${mm}.${ss}`;
+            }
+            if (dateEl) {
+                dateEl.textContent = now.toLocaleDateString('id-ID', {
+                    weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'
+                });
+            }
+        }
 
-            {{-- Footer --}}
-            <div class="flex gap-3 border-t border-gray-100 px-6 py-4">
-                <button
-                    wire:click="closeCancelModal"
-                    class="flex-1 rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-50"
-                >
-                    Tutup
-                </button>
-                <button
-                    wire:click="cancelOrder"
-                    wire:loading.attr="disabled"
-                    wire:target="cancelOrder"
-                    class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-500 px-4 py-3 text-sm font-bold text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                    <span wire:loading.remove wire:target="cancelOrder">Batalkan Pesanan</span>
-                    <span wire:loading wire:target="cancelOrder" class="flex items-center gap-2">
-                        <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-                        </svg>
-                        Memproses...
-                    </span>
-                </button>
-            </div>
-        </div>
-    </div>
+        function startKdsClock() {
+            updateKdsClock();
+            if (!kdsClockInterval) {
+                kdsClockInterval = setInterval(updateKdsClock, 1000);
+            }
+        }
 
+        startKdsClock();
+        document.addEventListener('livewire:update', function () {
+            if (!document.getElementById('kds-time')) return;
+            updateKdsClock(); 
+        });
+
+        // ── Simple Theme Toggle ──────────────────────────────────────
+        function applyKdsTheme(theme) {
+            const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            document.documentElement.classList.toggle('dark', isDark);
+            const icon = document.querySelector('[data-kds-theme-icon]');
+            const label = document.querySelector('[data-kds-theme-label]');
+            if (icon && label) {
+                icon.textContent = isDark ? 'light_mode' : 'dark_mode';
+                label.textContent = isDark ? 'Light' : 'Night';
+            }
+        }
+
+        function kdsToggleTheme() {
+            const current = localStorage.getItem('kds-theme') || 'system';
+            const next = current === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('kds-theme', next);
+            applyKdsTheme(next);
+        }
+
+        const storedTheme = localStorage.getItem('kds-theme') || 'system';
+        applyKdsTheme(storedTheme);
+    </script>
+    @endpush
 </div>

@@ -3,6 +3,7 @@
 namespace App\Livewire\Kds;
 
 use App\Models\Order;
+use App\Models\StockIngredient;
 use App\Services\OrderService;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -16,6 +17,15 @@ class Display extends Component
     public string $activeTab = 'antrian';
     public string $searchQuery = '';
     public ?int $completingOrderId = null;
+
+    // ─── Stok Inventory ──────────────────────────────────────────────────────
+
+    public string $stokSearch = '';
+    public string $stokFilter = ''; // '' | 'low' | 'ok'
+    public bool $showRestockModal = false;
+    public ?int $restockingId = null;
+    public float $restockQty = 0;
+    public string $restockNote = '';
 
     // ─── Computed Properties ─────────────────────────────────────────────────
 
@@ -33,7 +43,7 @@ class Display extends Component
 
     public function switchTab(string $tab): void
     {
-        if (in_array($tab, ['antrian', 'proses', 'riwayat', 'menu'])) {
+        if (in_array($tab, ['antrian', 'proses', 'riwayat', 'menu', 'stok'])) {
             $activeTabBefore = $this->activeTab;
             $this->activeTab = $tab;
             if ($activeTabBefore !== $tab) {
@@ -105,6 +115,40 @@ class Display extends Component
         return "{$hours}j {$mins}m";
     }
 
+    // ─── Stok Actions (Dapur) ─────────────────────────────────────────────────
+
+    public function openRestock(int $id): void
+    {
+        $this->restockingId     = $id;
+        $this->restockQty       = 0;
+        $this->restockNote      = '';
+        $this->showRestockModal = true;
+    }
+
+    public function applyRestock(): void
+    {
+        $this->validate([
+            'restockQty' => 'required|numeric|min:0.01',
+        ], [
+            'restockQty.required' => 'Jumlah restock wajib diisi.',
+            'restockQty.min'      => 'Jumlah restock harus lebih dari 0.',
+        ]);
+
+        $ingredient = StockIngredient::findOrFail($this->restockingId);
+        $ingredient->increment('current_stock', $this->restockQty);
+
+        session()->flash('stok_status', "Restock {$ingredient->name}: +{$this->restockQty} {$ingredient->unit} berhasil.");
+
+        $this->showRestockModal = false;
+        $this->reset(['restockingId', 'restockQty', 'restockNote']);
+    }
+
+    public function closeRestockModal(): void
+    {
+        $this->showRestockModal = false;
+        $this->reset(['restockingId', 'restockQty', 'restockNote']);
+        $this->resetValidation();
+    }
 
     public function logout(\App\Livewire\Actions\Logout $logout): void
     {
@@ -115,9 +159,9 @@ class Display extends Component
 
     public function render()
     {
-        $antrianMasak = $this->kitchenOrders->where('status', 'confirmed');
+        $antrianMasak  = $this->kitchenOrders->where('status', 'confirmed');
         $sedangDimasak = $this->kitchenOrders->where('status', 'preparing');
-        
+
         $riwayatPesanan = Order::with(['details'])
             ->where('status', 'completed')
             ->today()
@@ -132,14 +176,21 @@ class Display extends Component
             ->get()
             ->groupBy(fn($item) => $item->category ? $item->category->name : 'Lainnya');
 
+        $stokIngredients = StockIngredient::query()
+            ->when($this->stokSearch, fn($q) => $q->where('name', 'like', "%{$this->stokSearch}%"))
+            ->when($this->stokFilter === 'low', fn($q) => $q->whereColumn('current_stock', '<=', 'minimum_stock'))
+            ->when($this->stokFilter === 'ok',  fn($q) => $q->whereColumn('current_stock', '>', 'minimum_stock'))
+            ->orderBy('name')
+            ->get();
+
         return view('livewire.kds.display', [
-            'antrianMasak'   => $antrianMasak,
-            'sedangDimasak'  => $sedangDimasak,
-            'antrianCount'   => $antrianMasak->count(),
-            'masakCount'     => $sedangDimasak->count(),
-            'riwayatPesanan' => $riwayatPesanan,
-            'menuItemsGroup' => $menuItems,
+            'antrianMasak'    => $antrianMasak,
+            'sedangDimasak'   => $sedangDimasak,
+            'antrianCount'    => $antrianMasak->count(),
+            'masakCount'      => $sedangDimasak->count(),
+            'riwayatPesanan'  => $riwayatPesanan,
+            'menuItemsGroup'  => $menuItems,
+            'stokIngredients' => $stokIngredients,
         ]);
     }
 }
-

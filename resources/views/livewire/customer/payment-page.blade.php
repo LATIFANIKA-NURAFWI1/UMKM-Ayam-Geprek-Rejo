@@ -196,25 +196,55 @@
     @endif
 
     {{-- =====================================================================
-         BOTTOM: ORDER INFO BAR
+         BOTTOM: ORDER INFO BAR (Redesigned - Interactive)
          ===================================================================== --}}
     <div class="sticky bottom-0 bg-white border-t border-gray-200 shadow-[0_-4px_16px_rgba(0,0,0,0.06)]">
-        <div class="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
-            <div>
-                <p class="font-inter text-xs text-gray-400">Nomor Pesanan</p>
-                <p class="font-jakarta text-sm font-bold text-gray-900 tracking-wide">{{ $order->order_number }}</p>
-            </div>
-            <div class="h-8 w-px bg-gray-200"></div>
-            <div class="text-right">
-                <p class="text-xs text-gray-400">Pelanggan</p>
-                <p class="text-sm font-semibold text-gray-900">{{ $customerName }}</p>
-            </div>
-            <div class="h-8 w-px bg-gray-200"></div>
-            <div class="text-right">
-                <p class="text-xs text-gray-400">Metode</p>
-                <p class="text-sm font-semibold text-gray-900 uppercase">
-                    {{ $order->payment_method === 'qris' ? 'QRIS' : 'Tunai' }}
-                </p>
+        <div class="max-w-lg mx-auto px-4 py-3">
+            <div class="flex items-center gap-3">
+                {{-- Order Number --}}
+                <div class="flex-1 flex items-center gap-2.5 bg-gradient-to-br from-[#fff8f7] to-[#ffeee8] rounded-xl px-3 py-2.5 border border-[#ffdad5]">
+                    <div class="w-8 h-8 rounded-lg bg-[#bc000a] flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/>
+                        </svg>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="font-inter text-[9px] text-gray-400 uppercase tracking-wider font-semibold">Pesanan</p>
+                        <p class="font-jakarta text-xs font-bold text-gray-900 truncate">{{ $order->order_number }}</p>
+                    </div>
+                </div>
+
+                {{-- Customer --}}
+                <div class="flex-1 flex items-center gap-2.5 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl px-3 py-2.5 border border-gray-200">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#e61919] to-[#bc000a] flex items-center justify-center flex-shrink-0">
+                        <span class="text-white font-bold text-xs">{{ strtoupper(substr($customerName, 0, 1)) }}</span>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="font-inter text-[9px] text-gray-400 uppercase tracking-wider font-semibold">Pelanggan</p>
+                        <p class="text-xs font-bold text-gray-900 truncate">{{ $customerName }}</p>
+                    </div>
+                </div>
+
+                {{-- Payment Method --}}
+                <div class="flex items-center gap-2.5 bg-gradient-to-br {{ $order->payment_method === 'qris' ? 'from-blue-50 to-indigo-50 border-blue-200' : 'from-green-50 to-emerald-50 border-green-200' }} rounded-xl px-3 py-2.5 border">
+                    <div class="w-8 h-8 rounded-lg {{ $order->payment_method === 'qris' ? 'bg-blue-500' : 'bg-green-500' }} flex items-center justify-center flex-shrink-0">
+                        @if($order->payment_method === 'qris')
+                            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12v.01M12 3.01V3M4 20h4m-4 0V4m0 0h4m12 0h-4m4 0v4m0 12v-4M4 8h4V4M4 4h4m12 0h-4m4 0v4m-4 16v-4m0 4h-4"/>
+                            </svg>
+                        @else
+                            <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                        @endif
+                    </div>
+                    <div>
+                        <p class="font-inter text-[9px] text-gray-400 uppercase tracking-wider font-semibold">Bayar</p>
+                        <p class="text-xs font-bold {{ $order->payment_method === 'qris' ? 'text-blue-700' : 'text-green-700' }} uppercase">
+                            {{ $order->payment_method === 'qris' ? 'QRIS' : 'Tunai' }}
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

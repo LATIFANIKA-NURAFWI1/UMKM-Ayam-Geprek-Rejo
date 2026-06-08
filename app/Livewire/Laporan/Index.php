@@ -19,7 +19,7 @@ class Index extends Component
     public string $sampai = '';
 
     #[Url]
-    public string $preset = 'hari_ini';
+    public string $preset = 'bulanan';
 
     /** Bulan yang dipilih saat preset = 'bulanan' (format: 1-12) */
     #[Url]
@@ -51,8 +51,19 @@ class Index extends Component
         $this->resolveRange();
     }
 
-    public function updatedSelectedMonth(): void { $this->resolveRange(); }
-    public function updatedSelectedYear(): void  { $this->resolveRange(); }
+    public function updatedSelectedMonth(): void 
+    { 
+        $this->preset = 'bulanan';
+        $this->resolveRange(); 
+    }
+    
+    public function updatedSelectedYear(): void  
+    { 
+        if ($this->preset === 'hari_ini' || $this->preset === 'minggu_ini') {
+            $this->preset = 'bulanan';
+        }
+        $this->resolveRange(); 
+    }
 
     // =========================================================================
     // COMPUTED
@@ -126,8 +137,8 @@ class Index extends Component
             'hari_ini'   => [$this->dari, $this->sampai] = [today()->toDateString(), today()->toDateString()],
             'minggu_ini' => [$this->dari, $this->sampai] = [now()->startOfWeek()->toDateString(), now()->endOfWeek()->toDateString()],
             'bulanan'    => [$this->dari, $this->sampai] = [
-                now()->setMonth($this->selectedMonth)->startOfMonth()->toDateString(),
-                now()->setMonth($this->selectedMonth)->endOfMonth()->toDateString(),
+                now()->setYear($this->selectedYear)->setMonth($this->selectedMonth)->startOfMonth()->toDateString(),
+                now()->setYear($this->selectedYear)->setMonth($this->selectedMonth)->endOfMonth()->toDateString(),
             ],
             'tahun'      => [$this->dari, $this->sampai] = [
                 now()->setYear($this->selectedYear)->startOfYear()->toDateString(),

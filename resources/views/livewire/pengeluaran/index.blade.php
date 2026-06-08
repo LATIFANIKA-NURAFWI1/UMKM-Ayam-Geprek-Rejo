@@ -7,7 +7,7 @@
             <p class="text-body-md font-body-md text-on-surface-variant mt-1">Catat dan pantau semua biaya operasional warung</p>
         </div>
         <button wire:click="openCreate()"
-                class="bg-primary hover:bg-on-error-container text-on-primary px-6 py-3 rounded-lg flex items-center gap-2 transition-colors shadow-[0_2px_8px_rgba(188,0,10,0.2)] active:scale-95 duration-150 w-full md:w-auto justify-center">
+                class="bg-primary hover:bg-on-error-container text-on-primary px-6 py-3 rounded-lg flex items-center gap-2 transition-all duration-300 shadow-[0_2px_8px_rgba(188,0,10,0.2)] active:scale-95 hover:-translate-y-0.5 hover:shadow-lg w-full md:w-auto justify-center">
             <span class="material-symbols-outlined">add</span>
             <span class="font-body-lg font-semibold">Catat Pengeluaran</span>
         </button>
@@ -16,7 +16,7 @@
     {{-- ── Summary Cards Bento Grid ────────────────────────────────── --}}
     <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-card-gap">
         {{-- Total Card (Hero) --}}
-        <div class="col-span-1 md:col-span-2 lg:col-span-1 bg-surface-container-lowest rounded-xl p-5 border border-outline-variant shadow-[0_8px_24px_rgba(0,0,0,0.04)] relative overflow-hidden group">
+        <div class="col-span-1 md:col-span-2 lg:col-span-1 bg-surface-container-lowest rounded-xl p-5 border border-outline-variant shadow-[0_8px_24px_rgba(0,0,0,0.04)] hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
             <div class="absolute top-0 left-0 w-full h-1 bg-primary"></div>
             <div class="flex items-start justify-between">
                 <div>
@@ -42,7 +42,7 @@
             ];
         @endphp
         @foreach($categories as $cat)
-            <div class="bg-surface-container-lowest rounded-xl p-5 border border-surface-variant shadow-[0_2px_8px_rgba(0,0,0,0.02)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] transition-shadow">
+            <div class="bg-surface-container-lowest rounded-xl p-5 border border-surface-variant shadow-[0_2px_8px_rgba(0,0,0,0.02)] hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                 <div class="flex items-center gap-3 mb-3">
                     <span class="material-symbols-outlined text-secondary-fixed-dim">{{ $cat['icon'] }}</span>
                     <p class="text-body-md font-body-md text-on-surface-variant font-medium">{{ $cat['label'] }}</p>
@@ -105,7 +105,7 @@
                             <td class="px-6 py-4 text-on-surface max-w-[200px] truncate">{{ $expense->description }}</td>
                             <td class="px-6 py-4 text-right text-primary font-bold">Rp {{ number_format($expense->amount, 0, ',', '.') }}</td>
                             <td class="px-6 py-4">
-                                <div class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div class="flex items-center justify-center gap-2">
                                     <button wire:click="openEdit({{ $expense->id }})"
                                             class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-secondary-fixed-dim hover:bg-secondary-fixed/20 transition-colors" title="Edit">
                                         <span class="material-symbols-outlined text-[20px]">edit</span>

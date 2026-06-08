@@ -65,16 +65,22 @@ class ProfitLossService
 
         // ── 2. Total Expenses per kategori ──────────────────────────────────
         $expensesByCategory = Expense::whereBetween('expense_date', [
-            Carbon::parse($from),
-            Carbon::parse($to),
+            Carbon::parse($from)->startOfDay()->toDateString(),
+            Carbon::parse($to)->endOfDay()->toDateString(),
         ])
             ->select('category', DB::raw('COALESCE(SUM(amount), 0) as total'))
             ->groupBy('category')
             ->pluck('total', 'category')
-            ->map(fn ($v) => (float) $v)
+            ->mapWithKeys(function ($v, $k) {
+                $key = strtolower(str_replace(' ', '_', $k));
+                return [$key => (float) $v];
+            })
             ->toArray();
 
-        $totalExpenses = array_sum($expensesByCategory);
+        $totalExpenses = (float) Expense::whereBetween('expense_date', [
+            Carbon::parse($from)->startOfDay()->toDateString(),
+            Carbon::parse($to)->endOfDay()->toDateString(),
+        ])->sum('amount');
 
         // ── 3. Net Profit ───────────────────────────────────────────────────
         $netProfit    = $grossProfit - $totalExpenses;
