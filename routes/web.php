@@ -34,7 +34,7 @@ Route::get('/redirect-by-role', function () {
 })->middleware('auth')->name('redirect.by.role');
 
 // ── Customer Self-Order (public, no auth) ─────────────────────────────────────
-Route::prefix("customer")
+Route::prefix("order")
     ->name("order.")
     ->group(function () {
         Route::get("/", MenuPage::class)->name("menu");
@@ -42,6 +42,13 @@ Route::prefix("customer")
         Route::get("/payment/{order}", PaymentPage::class)->name("payment");
         Route::get("/success/{order}", SuccessPage::class)->name("success");
     });
+
+// ── Redirect /customer/* → /order/* (backward compat) ────────────────────────
+Route::redirect("/customer", "/order")->name("order.customer_alias");
+Route::redirect("/customer/checkout", "/order/checkout");
+Route::get("/customer/payment/{order}", fn($order) => redirect("/order/payment/{$order}"));
+Route::get("/customer/success/{order}", fn($order) => redirect("/order/success/{$order}"));
+
 
 // ── Owner / Admin Panel (hanya role: owner) ───────────────────────────────────
 Route::middleware(["auth", "verified", "role:owner"])->group(function () {
