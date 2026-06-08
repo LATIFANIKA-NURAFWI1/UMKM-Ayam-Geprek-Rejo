@@ -3,15 +3,16 @@
     <head>
         @include('partials.head')
         <style>
-            html, body { height: 100%; overflow: hidden; }
+            html, body { height: 100%; margin: 0; padding: 0; }
         </style>
     </head>
     <body class="h-screen overflow-hidden antialiased"
-        :class="isDark ? 'bg-gray-950 text-white' : 'bg-gray-100 text-gray-900'">
+        :class="isDark ? 'bg-gray-950' : 'bg-gray-100'">
 
         {{ $slot }}
 
         @fluxScripts
+        @stack('scripts')
 
         <script>
             function kdsTheme() {
