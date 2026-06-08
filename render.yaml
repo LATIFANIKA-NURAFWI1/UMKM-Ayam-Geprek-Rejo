@@ -26,17 +26,17 @@ services:
 
       # ── Database: MySQL dari Aiven.io ──────────────────────────────────────
       - key: DB_CONNECTION
-        value: mysql           # ← Tetap MySQL! Tidak perlu ubah migration
+        value: mysql
       - key: DB_HOST
-        sync: false            # Isi manual dari dashboard Aiven
+        value: mysql-geprek-latifanika-7a32.g.aivencloud.com
       - key: DB_PORT
-        sync: false            # Port dari Aiven (biasanya 5-digit, bukan 3306)
+        value: "10921"
       - key: DB_DATABASE
-        sync: false            # Nama database dari Aiven (biasanya "defaultdb")
+        value: defaultdb
       - key: DB_USERNAME
-        sync: false            # Username dari Aiven (biasanya "avnadmin")
+        value: avnadmin
       - key: DB_PASSWORD
-        sync: false            # Password dari Aiven
+        sync: false            # ← Isi manual di Render Dashboard (jangan tulis di sini!)
 
       # SSL wajib untuk Aiven MySQL
       - key: MYSQL_ATTR_SSL_CA
