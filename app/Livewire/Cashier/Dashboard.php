@@ -15,6 +15,9 @@ use Livewire\Component;
 #[Title('Dashboard Kasir')]
 class Dashboard extends Component
 {
+    public string $activeTab = 'pending';
+    public string $searchQuery = '';
+
     // ─── Detail Modal ────────────────────────────────────────────────────────
 
     public ?int $selectedOrderId = null;
@@ -68,6 +71,25 @@ class Dashboard extends Component
 
         return Order::with(['details.menuItem', 'member'])
             ->find($this->selectedOrderId);
+    }
+
+    // ─── Tab & Header Actions ──────────────────────────────────────────────────
+
+    public function switchTab(string $tab): void
+    {
+        if (in_array($tab, ['pending', 'proses', 'riwayat'])) {
+            $activeTabBefore = $this->activeTab;
+            $this->activeTab = $tab;
+            if ($activeTabBefore !== $tab) {
+                $this->reset('searchQuery');
+            }
+        }
+    }
+
+    public function logout(\App\Livewire\Actions\Logout $logout): void
+    {
+        $logout();
+        $this->redirect('/', navigate: true);
     }
 
     // ─── Detail Modal Actions ─────────────────────────────────────────────────
