@@ -17,9 +17,16 @@
                 <div class="text-[10px] text-gray-500 dark:text-gray-400 font-semibold mt-1 uppercase tracking-wide" id="kds-date">-</div>
             </div>
 
-            {{-- Dark Mode Toggle --}}
-            <button @click="toggle()" class="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors shadow-xs cursor-pointer" title="Ubah Tema">
-                <span class="material-symbols-outlined" x-text="isDark ? 'light_mode' : 'dark_mode'">dark_mode</span>
+            {{-- Day / Dark Mode Toggle --}}
+            <button
+                id="kds-theme-btn"
+                data-kds-theme-btn
+                onclick="kdsToggleTheme()"
+                class="flex items-center gap-1.5 px-3 py-2 rounded-xl border cursor-pointer text-xs font-bold border-gray-300 bg-gray-100 text-gray-600 hover:bg-gray-200"
+                title="Ubah Tema"
+            >
+                <span class="material-symbols-outlined text-[18px]" data-kds-theme-icon>dark_mode</span>
+                <span class="hidden sm:inline uppercase tracking-wider" data-kds-theme-label>Night</span>
             </button>
 
             {{-- Logout Button --}}

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html class="light" lang="id" style="">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Checkout — Geprek Rejo</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;700&amp;display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed": "#261a00",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#e61919",
+                        "surface-container-low": "#f1f4f9",
+                        "on-primary-container": "#fffbff",
+                        "surface-dim": "#d7dadf",
+                        "inverse-primary": "#ffb4aa",
+                        "primary-fixed": "#ffdad5",
+                        "tertiary-fixed-dim": "#c5c7c8",
+                        "on-primary-fixed-variant": "#930006",
+                        "background": "#f7f9ff",
+                        "surface-container-high": "#e5e8ee",
+                        "on-background": "#181c20",
+                        "surface-variant": "#e0e3e8",
+                        "primary-fixed-dim": "#ffb4aa",
+                        "on-surface-variant": "#5e3f3b",
+                        "on-primary-fixed": "#410001",
+                        "secondary-fixed-dim": "#fabd00",
+                        "tertiary-container": "#737576",
+                        "secondary-fixed": "#ffdf9e",
+                        "on-surface": "#181c20",
+                        "primary": "#bc000a",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#2d3135",
+                        "outline-variant": "#e8bcb6",
+                        "error": "#ba1a1a",
+                        "on-error-container": "#93000a",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#fdc003",
+                        "on-tertiary-fixed-variant": "#454748",
+                        "surface-container": "#ebeef3",
+                        "tertiary-fixed": "#e1e3e4",
+                        "secondary": "#785900",
+                        "inverse-on-surface": "#eef1f6",
+                        "surface": "#f7f9ff",
+                        "outline": "#936e69",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-container": "#fcfdfe",
+                        "on-secondary-fixed-variant": "#5b4300",
+                        "surface-tint": "#c0000b",
+                        "on-tertiary-fixed": "#191c1d",
+                        "surface-container-highest": "#e0e3e8",
+                        "on-secondary-container": "#6c5000",
+                        "tertiary": "#5a5c5e",
+                        "surface-bright": "#f7f9ff",
+                        "on-secondary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-margin": "32px",
+                        "base": "8px",
+                        "card-gap": "16px",
+                        "container-padding": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "order-number": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-caps": ["Inter"],
+                        "headline-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+                        "order-number": ["48px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "headline-lg": ["24px", { "lineHeight": "32px", "fontWeight": "700" }]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Icon font rendering — tidak bisa direpresentasikan dengan Tailwind */
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        /* Custom scrollbar — tidak ada dukungan native di Tailwind v3 */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e0e3e8;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body class="bg-background font-body-md text-on-background min-h-screen">
+    <!-- Top AppBar Component -->
+    <header
+        class="w-full top-0 sticky bg-surface dark:bg-on-background shadow-sm z-50 flex justify-between items-center px-container-padding py-base">
+        <div class="flex items-center gap-4">
+            <button
+                class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-surface-container-low transition-colors active:scale-95 duration-150">
+                <span class="material-symbols-outlined text-primary">arrow_back</span>
+            </button>
+            <h1 class="text-headline-md font-headline-md text-on-surface">Pesanan Saya</h1>
+        </div>
+        <div class="bg-secondary-container px-3 py-1 rounded-full">
+            <span class="text-label-caps font-label-caps text-on-secondary-container">1 ITEM</span>
+        </div>
+    </header>
+    <main class="max-w-2xl mx-auto px-4 mt-6 space-y-4">
+        <!-- Ringkasan Pesanan Section -->
+        <section
+            class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 overflow-hidden">
+            <div class="px-5 py-4 border-b border-outline-variant/20 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[20px]">shopping_bag</span>
+                <h2 class="font-headline-md text-[16px] text-on-surface">Ringkasan Pesanan</h2>
+            </div>
+            <div class="p-5">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-16 h-16 rounded-lg bg-surface-container overflow-hidden aspect-square">
+                        <img alt="Ayam Geprek" class="w-full h-full object-cover"
+                            data-alt="A delicious serving of Indonesian Ayam Geprek, featuring crispy golden fried chicken topped with vibrant red chili sambal, served in a modern minimalist culinary setting. The lighting is bright and clean, highlighting the textures of the crispy chicken and the fresh ingredients against a sterile white surface with subtle warm gold accents."
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBY_ZlpGgmCzs2oannIVTlv9aOJ_-Ut6D_ecxxXmuemDvKpLvyyuyX4XknuEYd6WCEul1lpvKZV1qw59T6-mzLAQdCUS5FOPxF-IBCoMO5ZtZK3XXgCdm_JctfdplCEb1xHrTjdkh9WbfUcGHA6OOFVpFmbcHd80aEEtBvqVK2Zczoshr4U8XZ7sPKGYHiVOX4h6HjVIo531rgzq3_n45nS_3gSnXQobZn7ChTKh_AvXMkH015gXC2ZRWRWgR-AMSRXjKU3RWM7-7E">
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex flex-col gap-2">
+                            <div>
+                                <h3
+                                    class="font-body-lg text-on-surface whitespace-nowrap overflow-hidden text-ellipsis">
+                                    Ayam Geprek Banyumas</h3>
+                                <p class="text-body-md text-on-surface-variant">Rp 14.000 / porsi</p>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2"><button
+                                        class="w-6 h-6 rounded-full border border-outline text-outline hover:bg-surface-variant flex items-center justify-center transition-all text-xs">-</button><span
+                                        class="font-semibold w-4 text-center text-sm">1</span><button
+                                        class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center hover:bg-opacity-90 transition-all text-xs">+</button>
+                                </div><span class="font-bold text-primary">Rp 14.000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pt-4 border-t border-dashed border-outline-variant/50 flex justify-between items-center">
+                    <span class="text-body-md text-on-surface-variant">Subtotal (1 Item)</span>
+                    <span class="font-bold text-on-surface text-lg">Rp 14.000</span>
+                </div>
+            </div>
+        </section>
+        <!-- Informasi Pesanan Section -->
+        <section
+            class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 p-5 space-y-5">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="material-symbols-outlined text-primary text-[20px]">person</span>
+                <h2 class="font-headline-md text-[16px] text-on-surface">Informasi Pesanan</h2>
+            </div>
+            <div class="space-y-2">
+                <label class="text-label-caps font-label-caps text-on-surface-variant">NAMA PELANGGAN <span
+                        class="text-primary">*</span></label>
+                <input
+                    class="w-full p-3 rounded-lg bg-surface-container-low border-none text-body-md focus:ring-2 focus:ring-primary/20 transition-all"
+                    placeholder="Contoh: Budi Santoso" type="text">
+            </div>
+            <div class="space-y-2">
+                <label class="text-label-caps font-label-caps text-on-surface-variant">JENIS PESANAN</label>
+                <div class="grid gap-2 p-1 bg-surface-container-low rounded-xl">
+                    <button
+                        class="flex items-center justify-center gap-2 py-2.5 rounded-lg text-body-md font-bold transition-all bg-white text-primary shadow-sm"
+                        id="takeaway-btn">
+                        <span class="material-symbols-outlined text-[18px]">shopping_basket</span>
+                        Bawa Pulang
+                    </button>
+                </div>
+            </div>
+            <div class="space-y-2">
+                <label class="text-label-caps font-label-caps text-on-surface-variant">CATATAN (OPSIONAL)</label>
+                <textarea
+                    class="w-full p-3 rounded-lg bg-surface-container-low border-none text-body-md focus:ring-2 focus:ring-primary/20 transition-all resize-none"
+                    placeholder="Misal: tidak pedas, extra nasi, sambal terpisah..." rows="2"></textarea>
+            </div>
+        </section>
+        <!-- Program Member Accordion -->
+        <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 overflow-hidden">
+            <div class="p-4 bg-secondary-fixed/10 flex items-center gap-3 border-b border-outline-variant/20">
+                <div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center">
+                    <span class="material-symbols-outlined text-on-secondary-fixed"
+                        style="font-variation-settings: 'FILL' 1;">stars</span>
+                </div>
+                <div>
+                    <h3 class="text-body-lg font-bold text-on-surface">Program Member</h3>
+                    <p class="text-xs text-on-surface-variant">Dapatkan poin &amp; diskon khusus member</p>
+                </div>
+            </div>
+            <div class="p-4">
+                <div class="flex bg-surface-container-low p-1 rounded-lg mb-4">
+                    <button class="flex-1 py-2 text-sm font-bold rounded-md bg-white text-primary shadow-sm"
+                        id="tab-login">Masuk</button>
+                    <button class="flex-1 py-2 text-sm font-medium text-on-surface-variant"
+                        id="tab-register">Daftar</button>
+                </div>
+                <!-- Login Form -->
+                <div class="space-y-3" id="form-login">
+                    <div class="space-y-1">
+                        <label class="text-label-caps text-on-surface-variant">NOMOR HP</label>
+                        <input
+                            class="w-full p-3 rounded-lg bg-surface-container-low border-none text-body-md focus:ring-2 focus:ring-primary/20"
+                            placeholder="Contoh: 08123456789" type="text">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-label-caps text-on-surface-variant">PIN</label>
+                        <input
+                            class="w-full p-3 rounded-lg bg-surface-container-low border-none text-body-md focus:ring-2 focus:ring-primary/20"
+                            placeholder="••••••" type="password">
+                    </div>
+                    <button
+                        class="w-full bg-primary text-white py-3 rounded-lg font-bold text-body-md hover:bg-opacity-90 transition-all mt-2">Masuk
+                        Member</button>
+                </div>
+                <!-- Register Form (Hidden by default) -->
+                <div class="space-y-3 hidden" id="form-register">
+                    <div class="space-y-1"><label class="text-label-caps text-on-surface-variant">NAMA
+                            LENGKAP</label><input
+                            class="w-full p-3 rounded-lg bg-surface-container-low border-none text-body-md focus:ring-2 focus:ring-primary/20"
+                            placeholder="Contoh: Budi Santoso" type="text"></div>
+                    <div class="space-y-1"><label class="text-label-caps text-on-surface-variant">NOMOR HP</label><input
+                            class="w-full p-3 rounded-lg bg-surface-container-low border-none text-body-md focus:ring-2 focus:ring-primary/20"
+                            placeholder="Contoh: 08123456789" type="tel"></div>
+                    <div class="space-y-1"><label class="text-label-caps text-on-surface-variant">PIN BARU</label><input
+                            class="w-full p-3 rounded-lg bg-surface-container-low border-none text-body-md focus:ring-2 focus:ring-primary/20"
+                            placeholder="••••••" type="password"></div>
+                    <div class="space-y-1"><label class="text-label-caps text-on-surface-variant">KONFIRMASI
+                            PIN</label><input
+                            class="w-full p-3 rounded-lg bg-surface-container-low border-none text-body-md focus:ring-2 focus:ring-primary/20"
+                            placeholder="••••••" type="password"></div><button
+                        class="w-full bg-primary text-white py-3 rounded-lg font-bold text-body-md hover:bg-opacity-90 transition-all mt-2">Daftar
+                        Member</button>
+                </div>
+            </div>
+        </div>
+        <!-- Voucher Section -->
+        <section class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 p-5">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="material-symbols-outlined text-primary text-[20px]">confirmation_number</span>
+                <h2 class="font-headline-md text-[16px] text-on-surface">Voucher</h2>
+            </div>
+            <div class="flex gap-2">
+                <input
+                    class="flex-1 p-3 rounded-lg bg-surface-container-low border-none text-body-md font-bold uppercase tracking-wider"
+                    placeholder="KODE VOUCHER" type="text">
+                <button
+                    class="bg-primary text-white px-6 rounded-lg font-bold text-body-md hover:bg-primary-container active:scale-95 transition-all">Pakai</button>
+            </div>
+        </section>
+        <!-- Metode Pembayaran Section -->
+        <section class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 p-5">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="material-symbols-outlined text-primary text-[20px]">payments</span>
+                <h2 class="font-headline-md text-[16px] text-on-surface">Metode Pembayaran</h2>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="relative border-2 border-primary bg-primary/5 rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all"
+                    id="pay-qris">
+                    <div
+                        class="absolute top-2 right-2 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
+                        <span class="material-symbols-outlined text-white text-[14px]">check</span>
+                    </div>
+                    <span class="material-symbols-outlined text-primary text-3xl">qr_code_scanner</span>
+                    <div class="text-center">
+                        <p class="font-bold text-on-surface text-sm">QRIS</p>
+                        <p class="text-[10px] text-on-surface-variant uppercase tracking-tighter">Scan QR Code</p>
+                    </div>
+                </div>
+                <div class="border-2 border-outline-variant/20 bg-transparent rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/50 transition-all"
+                    id="pay-cash">
+                    <span class="material-symbols-outlined text-on-surface-variant text-3xl">payments</span>
+                    <div class="text-center">
+                        <p class="font-bold text-on-surface text-sm">Tunai</p>
+                        <p class="text-[10px] text-on-surface-variant uppercase tracking-tighter">Bayar ke Kasir</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Rincian Biaya Section -->
+        <section
+            class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 p-5 space-y-3">
+            <div class="flex items-center gap-2 mb-1">
+                <span class="material-symbols-outlined text-primary text-[20px]">list_alt</span>
+                <h2 class="font-headline-md text-[16px] text-on-surface">Rincian Biaya</h2>
+            </div>
+            <div class="flex justify-between text-body-md">
+                <span class="text-on-surface-variant">Subtotal</span>
+                <span class="text-on-surface">Rp 14.000</span>
+            </div>
+            <div class="flex justify-between text-body-md">
+                <span class="text-on-surface-variant">Voucher Diskon</span>
+                <span class="text-primary">- Rp 0</span>
+            </div>
+            <div class="pt-3 border-t border-outline-variant/20 flex justify-between items-center">
+                <span class="font-bold text-on-surface">Total Bayar</span>
+                <span class="text-xl font-extrabold text-primary">Rp 14.000</span>
+            </div>
+        </section>
+        <div class="mt-6">
+            <button
+                class="w-full bg-primary-container text-white py-4 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all duration-150">
+                <span class="material-symbols-outlined">shopping_cart_checkout</span>
+                <span class="font-headline-lg text-[18px]">Pesan Sekarang — Rp 14.000</span>
+            </button>
+        </div>
+    </main>
+    <!-- Footer Component -->
+    <!-- Bottom Action Bar -->
+    <script>
+        // Micro-interactions for Selection States
+        const takeawayBtn = document.getElementById('takeaway-btn');
+        const dineinBtn = document.getElementById('dinein-btn');
+
+        takeawayBtn.addEventListener('click', () => {
+            takeawayBtn.classList.add('bg-white', 'text-primary', 'shadow-sm', 'font-bold');
+            takeawayBtn.classList.remove('text-on-surface-variant', 'font-medium');
+            dineinBtn.classList.remove('bg-white', 'text-primary', 'shadow-sm', 'font-bold');
+            dineinBtn.classList.add('text-on-surface-variant', 'font-medium');
+        });
+
+        dineinBtn.addEventListener('click', () => {
+            dineinBtn.classList.add('bg-white', 'text-primary', 'shadow-sm', 'font-bold');
+            dineinBtn.classList.remove('text-on-surface-variant', 'font-medium');
+            takeawayBtn.classList.remove('bg-white', 'text-primary', 'shadow-sm', 'font-bold');
+            takeawayBtn.classList.add('text-on-surface-variant', 'font-medium');
+        });
+
+        const qris = document.getElementById('pay-qris');
+        const cash = document.getElementById('pay-cash');
+
+        function selectPayment(selected, other) {
+            selected.classList.add('border-primary', 'bg-primary/5');
+            selected.classList.remove('border-outline-variant/20', 'bg-transparent');
+
+            // Add checkmark
+            if (!selected.querySelector('.checkmark')) {
+                const check = document.createElement('div');
+                check.className = 'checkmark absolute top-2 right-2 w-5 h-5 bg-primary rounded-full flex items-center justify-center';
+                check.innerHTML = '<span class="material-symbols-outlined text-white text-[14px]">check</span>';
+                selected.appendChild(check);
+            }
+
+            // Remove from other
+            other.classList.remove('border-primary', 'bg-primary/5');
+            other.classList.add('border-outline-variant/20', 'bg-transparent');
+            const otherCheck = other.querySelector('.checkmark');
+            if (otherCheck) otherCheck.remove();
+        }
+
+        qris.addEventListener('click', () => selectPayment(qris, cash));
+        cash.addEventListener('click', () => selectPayment(cash, qris));
+    </script>
+
+
+</body>
+
+</html>

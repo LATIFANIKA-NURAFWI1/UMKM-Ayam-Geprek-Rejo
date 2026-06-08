@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html class="light" lang="id" style="">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Pembayaran QRIS - Geprek Rejo</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#c5c7c8",
+                        "secondary": "#785900",
+                        "outline": "#936e69",
+                        "on-surface": "#181c20",
+                        "error": "#ba1a1a",
+                        "on-tertiary-container": "#fcfdfe",
+                        "primary": "#bc000a",
+                        "on-secondary-fixed-variant": "#5b4300",
+                        "primary-container": "#e61919",
+                        "inverse-primary": "#ffb4aa",
+                        "surface": "#f7f9ff",
+                        "outline-variant": "#e8bcb6",
+                        "on-surface-variant": "#5e3f3b",
+                        "surface-variant": "#e0e3e8",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#eef1f6",
+                        "secondary-container": "#fdc003",
+                        "surface-bright": "#f7f9ff",
+                        "on-tertiary-fixed": "#191c1d",
+                        "on-secondary-container": "#6c5000",
+                        "on-primary": "#ffffff",
+                        "primary-fixed-dim": "#ffb4aa",
+                        "surface-container-highest": "#e0e3e8",
+                        "inverse-surface": "#2d3135",
+                        "on-tertiary-fixed-variant": "#454748",
+                        "surface-container-low": "#f1f4f9",
+                        "surface-container": "#ebeef3",
+                        "surface-container-high": "#e5e8ee",
+                        "tertiary-container": "#737576",
+                        "primary-fixed": "#ffdad5",
+                        "on-primary-container": "#fffbff",
+                        "secondary-fixed": "#ffdf9e",
+                        "error-container": "#ffdad6",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#410001",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#c0000b",
+                        "background": "#f7f9ff",
+                        "surface-dim": "#d7dadf",
+                        "secondary-fixed-dim": "#fabd00",
+                        "on-secondary-fixed": "#261a00",
+                        "tertiary-fixed": "#e1e3e4",
+                        "tertiary": "#5a5c5e",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#930006",
+                        "on-background": "#181c20"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-padding": "24px",
+                        "section-margin": "32px",
+                        "card-gap": "16px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Inter"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "order-number": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-lg": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "order-number": ["48px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Icon font rendering — tidak bisa direpresentasikan dengan Tailwind */
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-background font-body-md text-body-md overflow-x-hidden min-h-screen pb-24">
+    <!-- Header / TopAppBar -->
+    <header class="bg-surface dark:bg-background w-full top-0 sticky z-50">
+        <div class="flex items-center justify-between px-container-padding h-16 w-full max-w-7xl mx-auto">
+            <button class="active:scale-95 transition-transform hover:opacity-80">
+                <span class="material-symbols-outlined text-primary">arrow_back</span>
+            </button>
+            <h1 class="font-headline-lg text-headline-lg font-bold text-primary">Geprek Rejo</h1>
+            <button class="active:scale-95 transition-transform hover:opacity-80">
+                <span class="material-symbols-outlined text-on-surface-variant">more_vert</span>
+            </button>
+        </div>
+    </header>
+    <main class="max-w-xl mx-auto px-container-padding mt-4 flex flex-col gap-card-gap">
+        <!-- Payment Instruction -->
+        <div class="text-center py-4">
+            <div
+                class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-secondary-container mb-3 shadow-sm">
+                <span class="material-symbols-outlined text-on-secondary-container"
+                    style="font-variation-settings: 'FILL' 1;">qr_code_scanner</span>
+            </div>
+            <h2 class="font-headline-md text-headline-md text-on-surface">Scan QRIS Untuk Membayar</h2>
+            <p class="text-on-surface-variant text-body-md mt-1">Bayar melalui aplikasi dompet digital Anda</p>
+        </div>
+        <!-- Total Payment Card -->
+        <section
+            class="bg-surface-container-lowest rounded-xl p-6 text-center border border-[#E9ECEF] shadow-[0_4px_20px_rgba(0,0,0,0.05)]">
+            <p class="text-on-surface-variant font-label-caps text-label-caps uppercase tracking-widest mb-1">Total
+                Pembayaran</p>
+            <div class="font-order-number text-order-number text-on-surface">
+                Rp 14.000
+            </div>
+            <p class="text-on-surface-variant font-body-md mt-1">Order #GR-20260607-0009</p>
+        </section>
+        <!-- QR Code Section -->
+        <section
+            class="bg-surface-container-lowest rounded-xl p-6 flex flex-col items-center border border-[#E9ECEF] shadow-[0_4px_20px_rgba(0,0,0,0.05)]">
+            <div
+                class="relative w-full max-w-[280px] aspect-square rounded-lg overflow-hidden border border-outline-variant bg-white p-4">
+                <img alt="QRIS Geprek Rejo" class="w-full h-full object-contain"
+                    src="https://lh3.googleusercontent.com/aida/AP1WRLvGB1aVE44hVpfKMd69mBYcLSiJGJp2lOt690qZYqLvWrpDA0YCk_i0dqsUqZNE3CP4oI6i-SngmMfpL0S4EF4i3ilyHogxfNJXS9p67XdAlDr37mP3ofpsEMiWFEIwT18KQMn4M3rm7Wi3zIAmB5fhF4jfl78Fm3AFVKM390EPjEKJ2gRDpfYlLfcI4w2oawqVxBlK_Srf83Y-qVKQrvzxe9shkCRmanYG9nGCiO9DRMzP7iCMHlP2E_c">
+            </div>
+            <button
+                class="mt-6 w-full py-3 px-6 bg-primary text-on-primary rounded-xl font-headline-md text-headline-md flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-md">
+                <span class="material-symbols-outlined">download</span>
+                Simpan QR Code
+            </button>
+            <p class="mt-4 text-on-surface-variant text-body-md text-center italic">
+                Simpan gambar QR untuk pembayaran offline atau berbagi
+            </p>
+        </section>
+        <!-- Payment Steps -->
+        <section
+            class="bg-surface-container-lowest rounded-xl p-6 border border-[#E9ECEF] shadow-[0_4px_20px_rgba(0,0,0,0.05)]">
+            <h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-4">CARA PEMBAYARAN</h3>
+            <ul class="flex flex-col gap-4">
+                <li class="flex gap-4">
+                    <div
+                        class="flex-shrink-0 w-6 h-6 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-[12px]">
+                        1</div>
+                    <p class="text-on-surface text-body-md">Buka aplikasi dompet digital (GoPay, OVO, Dana, dll.)</p>
+                </li>
+                <li class="flex gap-4">
+                    <div
+                        class="flex-shrink-0 w-6 h-6 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-[12px]">
+                        2</div>
+                    <p class="text-on-surface text-body-md">Pilih fitur <b>Scan QR</b> atau <b>QRIS</b></p>
+                </li>
+                <li class="flex gap-4">
+                    <div
+                        class="flex-shrink-0 w-6 h-6 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-[12px]">
+                        3</div>
+                    <p class="text-on-surface text-body-md">Arahkan kamera ke QR Code di atas</p>
+                </li>
+                <li class="flex gap-4">
+                    <div
+                        class="flex-shrink-0 w-6 h-6 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-[12px]">
+                        4</div>
+                    <p class="text-on-surface text-body-md">Masukkan nominal <b>Rp 14.000</b></p>
+                </li>
+                <li class="flex gap-4">
+                    <div
+                        class="flex-shrink-0 w-6 h-6 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-[12px]">
+                        5</div>
+                    <p class="text-on-surface text-body-md">Konfirmasi &amp; selesaikan pembayaran</p>
+                </li>
+            </ul>
+        </section>
+        <!-- Status & Details Footer -->
+        <div class="mt-4 mb-8">
+            <div
+                class="bg-secondary-container/20 border border-secondary/20 rounded-xl p-4 flex items-center gap-4 animate-pulse">
+                <div class="relative">
+                    <div class="w-3 h-3 bg-secondary rounded-full"></div>
+                    <div class="absolute inset-0 w-3 h-3 bg-secondary rounded-full animate-ping opacity-75"></div>
+                </div>
+                <div>
+                    <p class="font-headline-md text-headline-md text-on-secondary-container">Menunggu konfirmasi
+                        kasir...</p>
+                    <p class="text-on-secondary-container/80 text-body-md">Tunjukkan bukti bayar kepada kasir</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+    <!-- Bottom Navigation (Shell Only) -->
+    <nav
+        class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface-container-lowest shadow-lg border-t border-outline-variant/10">
+
+    </nav>
+    <script>
+        // Micro-interaction for the "Simpan QR Code" button
+        document.querySelector('button').addEventListener('click', function () {
+            const btn = this;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> Menyimpan...';
+            btn.classList.add('opacity-80');
+
+            setTimeout(() => {
+                btn.innerHTML = '<span class="material-symbols-outlined">check_circle</span> Tersimpan!';
+                btn.classList.remove('bg-primary');
+                btn.classList.add('bg-green-600');
+
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('bg-green-600', 'opacity-80');
+                    btn.classList.add('bg-primary');
+                }, 2000);
+            }, 1000);
+        });
+    </script>
+
+
+</body>
+
+</html>
