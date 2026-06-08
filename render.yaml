@@ -1,12 +1,11 @@
 services:
-  # ── Web Service (Laravel App) ────────────────────────────────────────────────
+  # ── Web Service (Laravel App — Docker) ──────────────────────────────────────
   - type: web
     name: geprek-rejo
-    runtime: php
-    plan: free            # Ganti ke "starter" atau "standard" untuk production
-    region: singapore     # Pilih server terdekat (singapore paling dekat ke Indonesia)
-    buildCommand: "chmod +x ./render-build.sh && ./render-build.sh"
-    startCommand: "php artisan serve --host=0.0.0.0 --port=$PORT"
+    runtime: docker          # ← Render build dari Dockerfile otomatis
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
     healthCheckPath: /
     envVars:
       - key: APP_NAME
