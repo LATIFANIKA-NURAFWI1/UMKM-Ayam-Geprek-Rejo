@@ -17,6 +17,7 @@ class Dashboard extends Component
 {
     public string $activeTab = 'pending';
     public string $searchQuery = '';
+    public int $lastPendingCount = -1;
 
     // ─── Detail Modal ────────────────────────────────────────────────────────
 
@@ -48,7 +49,7 @@ class Dashboard extends Component
         return Order::with(['details', 'member'])
             ->pending()
             ->today()
-            ->latest()
+            ->orderBy('queue_number', 'asc')
             ->get();
     }
 
@@ -58,7 +59,7 @@ class Dashboard extends Component
         return Order::with(['details', 'member'])
             ->confirmed()
             ->today()
-            ->latest()
+            ->orderBy('queue_number', 'asc')
             ->get();
     }
 
@@ -190,6 +191,20 @@ class Dashboard extends Component
 
     public function render()
     {
+        $pending   = $this->pendingOrders;
+        $confirmed = $this->confirmedOrders;
+
+        // Notif pesanan baru: bandingkan dengan count sebelumnya
+        $currentCount = $pending->count();
+        if ($this->lastPendingCount >= 0 && $currentCount > $this->lastPendingCount) {
+            $newest = $pending->first();
+            $this->dispatch('new-order', [
+                'queue_number' => $newest ? $newest->queue_number : '?',
+                'order_number' => $newest ? $newest->order_number : '',
+            ]);
+        }
+        $this->lastPendingCount = $currentCount;
+
         return view('livewire.cashier.dashboard');
     }
 }

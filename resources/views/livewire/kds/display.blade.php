@@ -1,20 +1,20 @@
 <div wire:poll.5s.keep-alive class="flex flex-col h-screen w-full bg-[#f4f6f9] dark:bg-gray-950 text-gray-800 dark:text-gray-100 font-sans antialiased overflow-hidden">
     
     {{-- ── TopBar ────────────────────────────────────────────────── --}}
-    <header class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center w-full px-6 py-4 shadow-sm z-10 shrink-0">
+    <header class="bg-[#bc000a] border-b border-[#a00008] flex justify-between items-center w-full px-6 py-4 shadow-md z-10 shrink-0">
         <div class="flex items-center gap-3">
-            <img src="{{ asset('images/logo.png') }}" alt="Ayam Geprek Rejo" class="h-12 w-auto object-contain">
+            <img src="{{ asset('images/logo.png') }}" alt="Ayam Geprek Rejo" class="h-12 w-auto object-contain drop-shadow-md">
             <div>
-                <h1 class="text-md md:text-lg font-extrabold text-gray-800 dark:text-gray-100 tracking-wider leading-tight">DAPUR — GEPREK REJO</h1>
-                <p class="text-[11px] text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-widest">Kitchen Display System</p>
+                <h1 class="text-md md:text-lg font-extrabold text-white tracking-wider leading-tight">DAPUR — GEPREK REJO</h1>
+                <p class="text-[11px] text-white/70 font-semibold uppercase tracking-widest">Kitchen Display System</p>
             </div>
         </div>
 
         {{-- Clock, Theme Toggle, & Logout --}}
         <div class="flex items-center gap-4 md:gap-6">
             <div class="text-right hidden sm:block" wire:ignore>
-                <div class="text-xl md:text-2xl font-black text-[#bc000a] dark:text-red-500 tracking-wider leading-none font-mono" id="kds-time">--.--.--</div>
-                <div class="text-[10px] text-gray-500 dark:text-gray-400 font-semibold mt-1 uppercase tracking-wide" id="kds-date">-</div>
+                <div class="text-xl md:text-2xl font-black text-[#fabd00] dark:text-yellow-400 tracking-wider leading-none font-mono" id="kds-time">--.--.--</div>
+                <div class="text-[10px] text-white/60 font-semibold mt-1 uppercase tracking-wide" id="kds-date">-</div>
             </div>
 
             {{-- Day / Dark Mode Toggle --}}
@@ -22,7 +22,7 @@
                 id="kds-theme-btn"
                 data-kds-theme-btn
                 onclick="kdsToggleTheme()"
-                class="flex items-center gap-1.5 px-3 py-2 rounded-xl border cursor-pointer text-xs font-bold border-gray-300 bg-gray-100 text-gray-600 hover:bg-gray-200"
+                class="flex items-center gap-1.5 px-3 py-2 rounded-xl border cursor-pointer text-xs font-bold border-white/40 bg-white/10 text-white hover:bg-white/20"
                 title="Ubah Tema"
             >
                 <span class="material-symbols-outlined text-[18px]" data-kds-theme-icon>dark_mode</span>
@@ -30,7 +30,7 @@
             </button>
 
             {{-- Logout Button --}}
-            <button wire:click="logout" class="border-2 border-[#bc000a] hover:bg-red-50 dark:hover:bg-red-950/20 text-[#bc000a] dark:text-red-500 px-4 py-2 rounded-xl transition-all font-bold text-xs flex items-center gap-2 shadow-xs cursor-pointer" title="Keluar">
+            <button wire:click="logout" class="border-2 border-white/40 hover:bg-white/20 text-white px-4 py-2 rounded-xl transition-all font-bold text-xs flex items-center gap-2 shadow-xs cursor-pointer" title="Keluar">
                 <span class="material-symbols-outlined text-sm">logout</span>
                 <span class="hidden sm:inline">Keluar</span>
             </button>
@@ -49,8 +49,47 @@
             </div>
         @endif
 
+
+        {{-- 🔔 Toast Notif Antrian Baru --}}
+        <div
+            x-data="{
+                show: false,
+                queue_number: '',
+                order_number: '',
+                timer: null,
+                init() {
+                    $wire.on('new-order', (data) => {
+                        this.queue_number = data.queue_number;
+                        this.order_number = data.order_number;
+                        this.show = true;
+                        if (this.timer) clearTimeout(this.timer);
+                        this.timer = setTimeout(() => this.show = false, 6000);
+                    });
+                }
+            }"
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 translate-y-4"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 translate-y-4"
+            class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 bg-[#bc000a] text-white px-6 py-4 rounded-2xl shadow-2xl min-w-[280px]"
+            style="display:none"
+        >
+            <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[22px] icon-fill">notifications_active</span>
+            </div>
+            <div>
+                <p class="font-black text-sm leading-tight">🔔 Antrian Baru Masuk!</p>
+                <p class="text-white/80 text-xs mt-0.5" x-text="`Antrian #${queue_number} — ${order_number}`"></p>
+            </div>
+            <button @click="show = false" class="ml-auto text-white/70 hover:text-white">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+            </button>
+        </div>
+
         
-        {{-- TAB 1: ANTRIAN --}}
         @if($activeTab === 'antrian')
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
                 
@@ -68,54 +107,68 @@
 
                     <div class="flex flex-col gap-4">
                         @forelse($antrianMasak as $order)
-                            <div wire:key="antrian-{{ $order->id }}" class="bg-white dark:bg-gray-900 rounded-2xl shadow-md border border-gray-200 dark:border-gray-800 overflow-hidden flex flex-col p-4 gap-3 transition-all hover:shadow-lg">
-                                <div class="flex justify-between items-start gap-3">
-                                    <div class="flex-1 min-w-0">
-                                        <div class="text-5xl font-black text-[#bc000a] dark:text-red-500 tracking-tighter leading-none">#{{ $order->queue_number }}</div>
-                                        <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-1.5 uppercase tracking-wide">{{ $order->order_number }}</div>
-                                        <div class="mt-2.5 inline-flex items-center gap-1.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-3 py-1 rounded-xl text-xs font-bold">
-                                            <span class="material-symbols-outlined text-[15px]">{{ $order->type === 'takeaway' ? 'local_mall' : 'restaurant' }}</span>
-                                            <span>{{ $order->type === 'takeaway' ? 'Take Away' : 'Dine In' }}</span>
+                            @php $isFirst = $loop->first; @endphp
+                            <div wire:key="antrian-{{ $order->id }}" class="relative rounded-2xl overflow-hidden transition-all {{ $isFirst ? 'bg-white dark:bg-gray-900 shadow-md border border-gray-200 dark:border-gray-800 hover:shadow-lg' : 'bg-gray-50 dark:bg-gray-900/50 border border-dashed border-gray-300 dark:border-gray-700 opacity-70' }}">
+                                {{-- LOCKOUT overlay untuk antrian ke-2 dst --}}
+                                @unless($isFirst)
+                                    <div class="absolute inset-0 z-10 bg-gray-100/80 dark:bg-gray-900/80 backdrop-blur-[1px] flex items-center justify-center rounded-2xl">
+                                        <div class="text-center px-4">
+                                            <span class="material-symbols-outlined text-4xl text-gray-400 dark:text-gray-600 block mb-2">lock</span>
+                                            <p class="text-xs font-bold text-gray-500 dark:text-gray-400">Selesaikan antrian</p>
+                                            <p class="text-sm font-black text-[#bc000a]">#{{ $antrianMasak->first()->queue_number }} terlebih dahulu</p>
                                         </div>
                                     </div>
-                                    
-                                    {{-- Waiting Time Widget --}}
-                                    <div class="bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 px-3.5 py-2.5 rounded-2xl text-right flex flex-col items-end min-w-[115px] shrink-0">
-                                        <div class="flex items-center gap-1 text-[#bc000a] dark:text-red-500 font-extrabold text-[10px] uppercase tracking-wider">
-                                            <span class="material-symbols-outlined text-[14px]">schedule</span>
-                                            <span>Menunggu</span>
-                                        </div>
-                                        <div class="text-xl font-black text-[#bc000a] dark:text-red-500 mt-0.5 leading-none">{{ $this->getWaitingTime($order) }}</div>
-                                        <div class="text-[9px] font-semibold text-gray-500 dark:text-gray-400 mt-1 uppercase">sejak {{ $order->confirmed_at ? $order->confirmed_at->format('H:i') : '-' }}</div>
-                                    </div>
-                                </div>
-
-                                {{-- Items List --}}
-                                <div class="space-y-1.5 mt-1">
-                                    @foreach($order->details as $detail)
-                                        <div class="flex justify-between items-center bg-gray-50 dark:bg-gray-950 border border-gray-100 dark:border-gray-800 px-3.5 py-2.5 rounded-xl">
-                                            <span class="font-bold text-gray-800 dark:text-gray-200 text-sm leading-tight">{{ $detail->menu_item_name }}</span>
-                                            <span class="bg-[#fabd00] text-[#5b4300] px-2.5 py-1 rounded-lg text-xs font-black shrink-0 ml-2">x{{ $detail->quantity }}</span>
-                                        </div>
-                                        @if(filled($detail->notes))
-                                            <div class="text-[11px] font-medium text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 px-3 py-1.5 rounded-lg border border-amber-100 dark:border-amber-900/30 flex items-center gap-1">
-                                                <span class="material-symbols-outlined text-[13px]">edit_note</span>
-                                                <span>{{ $detail->notes }}</span>
+                                @endunless
+                                <div class="flex flex-col p-4 gap-3">
+                                    <div class="flex justify-between items-start gap-3">
+                                        <div class="flex-1 min-w-0">
+                                            <div class="text-5xl font-black {{ $isFirst ? 'text-[#bc000a] dark:text-red-500' : 'text-gray-400 dark:text-gray-600' }} tracking-tighter leading-none">#{{ $order->queue_number }}</div>
+                                            <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-1.5 uppercase tracking-wide">{{ $order->order_number }}</div>
+                                            <div class="mt-2.5 inline-flex items-center gap-1.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-3 py-1 rounded-xl text-xs font-bold">
+                                                <span class="material-symbols-outlined text-[15px]">{{ $order->type === 'takeaway' ? 'local_mall' : 'restaurant' }}</span>
+                                                <span>{{ $order->type === 'takeaway' ? 'Take Away' : 'Dine In' }}</span>
                                             </div>
-                                        @endif
-                                    @endforeach
-                                </div>
+                                        </div>
+                                        
+                                        {{-- Waiting Time Widget --}}
+                                        <div class="bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 px-3.5 py-2.5 rounded-2xl text-right flex flex-col items-end min-w-[115px] shrink-0">
+                                            <div class="flex items-center gap-1 text-[#bc000a] dark:text-red-500 font-extrabold text-[10px] uppercase tracking-wider">
+                                                <span class="material-symbols-outlined text-[14px]">schedule</span>
+                                                <span>Menunggu</span>
+                                            </div>
+                                            <div class="text-xl font-black text-[#bc000a] dark:text-red-500 mt-0.5 leading-none">{{ $this->getWaitingTime($order) }}</div>
+                                            <div class="text-[9px] font-semibold text-gray-500 dark:text-gray-400 mt-1 uppercase">sejak {{ $order->confirmed_at ? $order->confirmed_at->format('H:i') : '-' }}</div>
+                                        </div>
+                                    </div>
 
-                                {{-- Action Button --}}
-                                <button wire:click="mulaiMasak({{ $order->id }})"
-                                        wire:loading.attr="disabled"
-                                        wire:target="mulaiMasak({{ $order->id }})"
-                                        class="w-full bg-[#bc000a] hover:bg-[#a00008] disabled:opacity-70 text-white py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-all active:scale-[0.98] cursor-pointer mt-1">
-                                    <span wire:loading.remove wire:target="mulaiMasak({{ $order->id }})" class="material-symbols-outlined icon-fill text-[18px]">play_arrow</span>
-                                    <span wire:loading wire:target="mulaiMasak({{ $order->id }})" class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
-                                    <span wire:loading.remove wire:target="mulaiMasak({{ $order->id }})">Mulai Masak</span>
-                                    <span wire:loading wire:target="mulaiMasak({{ $order->id }})">Memproses...</span>
-                                </button>
+                                    {{-- Items List --}}
+                                    <div class="space-y-1.5 mt-1">
+                                        @foreach($order->details as $detail)
+                                            <div class="flex justify-between items-center bg-gray-50 dark:bg-gray-950 border border-gray-100 dark:border-gray-800 px-3.5 py-2.5 rounded-xl">
+                                                <span class="font-bold text-gray-800 dark:text-gray-200 text-sm leading-tight">{{ $detail->menu_item_name }}</span>
+                                                <span class="bg-[#fabd00] text-[#5b4300] px-2.5 py-1 rounded-lg text-xs font-black shrink-0 ml-2">x{{ $detail->quantity }}</span>
+                                            </div>
+                                            @if(filled($detail->notes))
+                                                <div class="text-[11px] font-medium text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 px-3 py-1.5 rounded-lg border border-amber-100 dark:border-amber-900/30 flex items-center gap-1">
+                                                    <span class="material-symbols-outlined text-[13px]">edit_note</span>
+                                                    <span>{{ $detail->notes }}</span>
+                                                </div>
+                                            @endif
+                                        @endforeach
+                                    </div>
+
+                                    {{-- Action Button --}}
+                                    <button wire:click="mulaiMasak({{ $order->id }})"
+                                            wire:loading.attr="disabled"
+                                            wire:target="mulaiMasak({{ $order->id }})"
+                                            {{ !$isFirst ? 'disabled' : '' }}
+                                            class="w-full {{ $isFirst ? 'bg-[#bc000a] hover:bg-[#a00008] cursor-pointer' : 'bg-gray-300 dark:bg-gray-700 cursor-not-allowed' }} disabled:opacity-70 text-white py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-all active:scale-[0.98] mt-1">
+                                        <span wire:loading.remove wire:target="mulaiMasak({{ $order->id }})" class="material-symbols-outlined icon-fill text-[18px]">play_arrow</span>
+                                        <span wire:loading wire:target="mulaiMasak({{ $order->id }})" class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+                                        <span wire:loading.remove wire:target="mulaiMasak({{ $order->id }})">Mulai Masak</span>
+                                        <span wire:loading wire:target="mulaiMasak({{ $order->id }})">Memproses...</span>
+                                    </button>
+                                </div>
                             </div>
                         @empty
                             <div class="bg-white dark:bg-gray-900 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-800 flex flex-col items-center justify-center p-10 text-center">
@@ -470,7 +523,7 @@
                     <div class="flex flex-col divide-y divide-gray-100 dark:divide-gray-800">
                         @forelse($stokIngredients as $item)
                             @php
-                                $isRendah = $item->current_stock <= $item->minimum_stock;
+                                $isRendah = $item->current_stock < $item->minimum_stock;
                                 $pct = $item->minimum_stock > 0
                                     ? min(100, round(($item->current_stock / ($item->minimum_stock * 2)) * 100))
                                     : 100;

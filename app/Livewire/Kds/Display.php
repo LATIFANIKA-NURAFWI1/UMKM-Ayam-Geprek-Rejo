@@ -17,6 +17,7 @@ class Display extends Component
     public string $activeTab = 'antrian';
     public string $searchQuery = '';
     public ?int $completingOrderId = null;
+    public int $lastAntrianCount = -1;
 
     // ─── Stok Inventory ──────────────────────────────────────────────────────
 
@@ -35,7 +36,7 @@ class Display extends Component
         return Order::with(['details'])
             ->whereIn('status', ['confirmed', 'preparing'])
             ->today()
-            ->orderBy('confirmed_at')
+            ->orderBy('queue_number', 'asc')
             ->get();
     }
 
@@ -162,6 +163,17 @@ class Display extends Component
         $antrianMasak  = $this->kitchenOrders->where('status', 'confirmed');
         $sedangDimasak = $this->kitchenOrders->where('status', 'preparing');
 
+        // Notif antrian baru masuk (poll-based)
+        $currentCount = $antrianMasak->count();
+        if ($this->lastAntrianCount >= 0 && $currentCount > $this->lastAntrianCount) {
+            $newest = $antrianMasak->first();
+            $this->dispatch('new-order', [
+                'queue_number' => $newest ? $newest->queue_number : '?',
+                'order_number' => $newest ? $newest->order_number : '',
+            ]);
+        }
+        $this->lastAntrianCount = $currentCount;
+
         $riwayatPesanan = Order::with(['details'])
             ->where('status', 'completed')
             ->today()
@@ -176,10 +188,11 @@ class Display extends Component
             ->get()
             ->groupBy(fn($item) => $item->category ? $item->category->name : 'Lainnya');
 
+        // Stok (sinkron dengan owner: paginate 20 per halaman, tapi KDS pakai all)
         $stokIngredients = StockIngredient::query()
             ->when($this->stokSearch, fn($q) => $q->where('name', 'like', "%{$this->stokSearch}%"))
-            ->when($this->stokFilter === 'low', fn($q) => $q->whereColumn('current_stock', '<=', 'minimum_stock'))
-            ->when($this->stokFilter === 'ok',  fn($q) => $q->whereColumn('current_stock', '>', 'minimum_stock'))
+            ->when($this->stokFilter === 'low', fn($q) => $q->whereColumn('current_stock', '<', 'minimum_stock'))
+            ->when($this->stokFilter === 'ok',  fn($q) => $q->whereColumn('current_stock', '>=', 'minimum_stock'))
             ->orderBy('name')
             ->get();
 

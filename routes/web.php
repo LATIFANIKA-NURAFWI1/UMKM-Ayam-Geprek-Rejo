@@ -34,7 +34,7 @@ Route::get('/redirect-by-role', function () {
 })->middleware('auth')->name('redirect.by.role');
 
 // ── Customer Self-Order (public, no auth) ─────────────────────────────────────
-Route::prefix("order")
+Route::prefix("customer")
     ->name("order.")
     ->group(function () {
         Route::get("/", MenuPage::class)->name("menu");

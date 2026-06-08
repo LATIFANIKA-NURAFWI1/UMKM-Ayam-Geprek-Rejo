@@ -95,6 +95,48 @@ spacing:
   section-margin: 32px
 ---
 
+<div class="w-96 h-[917px] relative bg-white overflow-hidden">
+    <div class="w-72 h-[770px] left-[61px] top-[165px] absolute bg-red-800 rounded-3xl"></div>
+    <div class="w-72 h-[770px] left-[61px] top-[165px] absolute bg-red-800 rounded-3xl"></div>
+    <div data-size="iPhone 16 Pro and 16 Max" class="w-[473px] px-4 py-5 left-[-31px] top-[-6px] absolute inline-flex justify-center items-center gap-40">
+        <div class="flex-1 h-5 pt-0.5 flex justify-center items-center gap-2.5">
+            <div class="text-center justify-start text-Labels-Primary text-base font-['SF_Pro'] leading-5">9:41</div>
+        </div>
+        <div class="flex-1 h-5 pt-px flex justify-center items-center gap-1.5">
+            <div class="w-5 h-3 bg-Labels-Primary"></div>
+            <div class="w-4 h-3 bg-Labels-Primary"></div>
+            <div class="w-6 h-3 opacity-30 rounded-sm border border-Labels-Primary"></div>
+            <div class="w-[1.33px] h-1 opacity-40 bg-Labels-Primary"></div>
+            <div class="w-5 h-2 bg-Labels-Primary rounded-xs"></div>
+        </div>
+    </div>
+    <div class="w-52 h-3.5 left-[102px] top-[282px] absolute text-center justify-start text-amber-400 text-2xl font-bold font-['SF_Pro'] leading-5">Ayam Geprek Rejo</div>
+    <div class="w-96 h-64 left-[27px] top-[331px] absolute bg-white rounded-[20px] border border-zinc-400"></div>
+    <div class="w-80 h-6 left-[51px] top-[378px] absolute bg-neutral-200 rounded-[10px] border border-zinc-400"></div>
+    <div class="left-[51px] top-[351px] absolute justify-start text-black text-xs font-bold font-['SF_Pro'] leading-5">Account</div>
+    <div class="w-80 h-6 left-[51px] top-[438px] absolute bg-neutral-200 rounded-[10px] border border-zinc-400"></div>
+    <div class="left-[52px] top-[411px] absolute justify-start text-black text-xs font-bold font-['SF_Pro'] leading-5">Password</div>
+    <div class="left-[61px] top-[380px] absolute opacity-40 justify-start text-black text-xs font-normal font-['SF_Pro'] leading-5">atminrejo@gmail.com</div>
+    <div class="left-[61px] top-[439px] absolute opacity-40 justify-start text-black text-xs font-normal font-['SF_Pro'] leading-5">*****</div>
+    <div class="w-80 h-8 left-[52px] top-[483px] absolute bg-amber-400 rounded-[10px] border border-zinc-400"></div>
+    <div class="left-[186px] top-[488px] absolute text-center justify-start text-black text-sm font-bold font-['SF_Pro'] leading-5">Login</div>
+    <div class="size-6 left-[52px] top-[534px] absolute bg-white rounded-[10px] border border-zinc-400"></div>
+    <div class="left-[85px] top-[536px] absolute justify-start text-black text-xs font-normal font-['SF_Pro'] leading-5">Remember me</div>
+    <div class="size-24 left-[156px] top-[114px] absolute bg-amber-400 rounded-full"></div>
+    <div class="size-24 left-[156px] top-[114px] absolute bg-amber-400 rounded-full"></div>
+    <img class="w-32 h-28 left-[142px] top-[121px] absolute" src="https://placehold.co/133x113" />
+    <img class="w-32 h-28 left-[142px] top-[121px] absolute" src="https://placehold.co/133x113" />
+    <img class="w-32 h-28 left-[142px] top-[121px] absolute" src="https://placehold.co/133x113" />
+    <img class="w-32 h-28 left-[142px] top-[121px] absolute" src="https://placehold.co/133x113" />
+</div>
+
+Implement this design from Figma.
+@https://www.figma.com/design/kyuzBAkUA7ad7dbtExu3Yw/mockup-ads?node-id=368-267&m=dev
+
+
+
+
+
 ## Brand & Style
 
 This design system reimagines the kitchen display and cashier dashboard with a **Clean Modern** aesthetic that balances high-intensity operational needs with a welcoming, professional atmosphere. By replacing dated gradients and harsh contrasts with a refined palette of Strong Red and Gold against a sterile White backdrop, the UI shifts from "utility software" to a "modern culinary tool."

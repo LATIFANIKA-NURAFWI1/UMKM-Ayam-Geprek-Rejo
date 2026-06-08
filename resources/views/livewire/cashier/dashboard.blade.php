@@ -3,7 +3,7 @@
     {{-- ── TopBar ────────────────────────────────────────────────────────── --}}
     <header class="bg-[#bc000a] border-b border-[#a00008] flex justify-between items-center w-full px-6 py-4 shadow-[0_4px_20px_rgba(188,0,10,0.25)] z-10 shrink-0">
         <div class="flex items-center gap-3">
-            <img src="{{ asset('images/logo.png') }}" alt="Ayam Geprek Rejo" class="h-10 w-auto object-contain drop-shadow-md brightness-0 invert">
+            <img src="{{ asset('images/logo.png') }}" alt="Ayam Geprek Rejo" class="h-10 w-auto object-contain drop-shadow-md">
             <div>
                 <h1 class="text-md md:text-lg font-extrabold text-white tracking-wider leading-tight">KASIR — GEPREK REJO</h1>
                 <p class="text-[11px] text-red-100/80 font-semibold uppercase tracking-widest">Dashboard Kasir</p>
@@ -55,6 +55,45 @@
                 <span class="text-sm font-bold">{{ session('error') }}</span>
             </div>
         @endif
+
+        {{-- 🔔 Toast Notif Pesanan Baru --}}
+        <div
+            x-data="{
+                show: false,
+                queue_number: '',
+                order_number: '',
+                timer: null,
+                init() {
+                    $wire.on('new-order', (data) => {
+                        this.queue_number = data.queue_number;
+                        this.order_number = data.order_number;
+                        this.show = true;
+                        if (this.timer) clearTimeout(this.timer);
+                        this.timer = setTimeout(() => this.show = false, 6000);
+                    });
+                }
+            }"
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 translate-y-4"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 translate-y-4"
+            class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 bg-[#bc000a] text-white px-6 py-4 rounded-2xl shadow-2xl min-w-[280px]"
+            style="display:none"
+        >
+            <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[22px] icon-fill">notifications_active</span>
+            </div>
+            <div>
+                <p class="font-black text-sm leading-tight">🔔 Pesanan Baru Masuk!</p>
+                <p class="text-white/80 text-xs mt-0.5" x-text="`Antrian #${queue_number} — ${order_number}`"></p>
+            </div>
+            <button @click="show = false" class="ml-auto text-white/70 hover:text-white">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+            </button>
+        </div>
 
         {{-- TAB 1: PENDING (Menunggu Pembayaran) --}}
         @if($activeTab === 'pending')

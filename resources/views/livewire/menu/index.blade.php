@@ -48,7 +48,7 @@
             {{-- Status Filter --}}
             <div class="relative">
                 <select wire:model.live="status"
-                        class="appearance-none w-full bg-white border border-gray-200 text-on-surface font-body-md rounded-lg px-4 py-2 pr-9 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-400 transition-all duration-200">
+                        class="appearance-none w-full bg-white dark:bg-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-600 text-gray-900 font-body-md rounded-lg px-4 py-2 pr-9 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-400 transition-all duration-200">
                     <option value="">Semua Status</option>
                     <option value="1">Tersedia</option>
                     <option value="0">Habis</option>
@@ -60,7 +60,7 @@
             <div class="relative w-full sm:w-72">
                 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
                 <input wire:model.live.debounce.300ms="search"
-                       class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg shadow-sm font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-400 transition-all duration-200"
+                       class="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-400 border border-gray-200 dark:border-gray-600 rounded-lg shadow-sm font-body-md text-body-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-400 transition-all duration-200"
                        placeholder="Cari nama menu..." type="text">
             </div>
         </div>

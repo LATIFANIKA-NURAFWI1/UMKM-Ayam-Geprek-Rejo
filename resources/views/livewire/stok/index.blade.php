@@ -1,9 +1,10 @@
 <div class="flex h-full w-full flex-1 flex-col gap-6 p-6 bg-surface text-on-surface font-body-md antialiased">
 
     @php
-        $totalBahan   = ($ingredients ?? collect())->count();
-        $stokRendah   = ($ingredients ?? collect())->filter(fn($s) => $s->current_stock < $s->minimum_stock)->count();
-        $stokAman     = $totalBahan - $stokRendah;
+        // Akumulasi dari SELURUH stok (bukan hanya halaman aktif)
+        $totalBahan = \App\Models\StockIngredient::count();
+        $stokRendah = \App\Models\StockIngredient::whereColumn('current_stock', '<', 'minimum_stock')->count();
+        $stokAman   = $totalBahan - $stokRendah;
     @endphp
 
     {{-- ── Header ─────────────────────────────────────────────────── --}}

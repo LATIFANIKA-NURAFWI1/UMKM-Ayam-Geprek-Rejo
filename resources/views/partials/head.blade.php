@@ -2,12 +2,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <title>
-    {{ filled($title ?? null) ? $title.' - '.config('app.name', 'Laravel') : config('app.name', 'Laravel') }}
+    {{ filled($title ?? null) ? $title.' — Ayam Geprek Rejo' : 'Ayam Geprek Rejo' }}
 </title>
+<meta name="description" content="Sistem manajemen Ayam Geprek Rejo — Lezat, Gurih, Halal">
 
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+{{-- Favicon: Logo Geprek Rejo --}}
+<link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
+<link rel="apple-touch-icon" href="{{ asset('images/logo.png') }}">
+<meta name="theme-color" content="#bc000a">
 
 {{-- Google Fonts: Plus Jakarta Sans (display) + Inter (body) + Material Symbols --}}
 <link rel="preconnect" href="https://fonts.googleapis.com">

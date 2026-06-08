@@ -153,8 +153,8 @@ class Index extends Component
                 $this->search,
                 fn($q) => $q->where("name", "like", "%{$this->search}%"),
             )
-            ->when($this->filterStatus === 'low', fn($q) => $q->whereColumn('current_stock', '<=', 'minimum_stock'))
-            ->when($this->filterStatus === 'ok',  fn($q) => $q->whereColumn('current_stock', '>', 'minimum_stock'))
+            ->when($this->filterStatus === 'low', fn($q) => $q->whereColumn('current_stock', '<', 'minimum_stock'))
+            ->when($this->filterStatus === 'ok',  fn($q) => $q->whereColumn('current_stock', '>=', 'minimum_stock'))
             ->orderBy("name")
             ->paginate(20);
 
