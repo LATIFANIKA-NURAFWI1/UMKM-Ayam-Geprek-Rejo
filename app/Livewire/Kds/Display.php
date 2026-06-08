@@ -78,13 +78,15 @@ class Display extends Component
         if (!$order->confirmed_at) {
             return '-';
         }
-        $diffInMinutes = $order->confirmed_at->diffInMinutes(now());
-        if ($diffInMinutes < 60) {
-            return $diffInMinutes . ' menit';
+        $diffInSeconds = (int) $order->confirmed_at->diffInSeconds(now());
+        if ($diffInSeconds < 3600) {
+            $mins = str_pad((int) floor($diffInSeconds / 60), 2, '0', STR_PAD_LEFT);
+            $secs = str_pad($diffInSeconds % 60, 2, '0', STR_PAD_LEFT);
+            return "{$mins}:{$secs}";
         }
-        $hours = floor($diffInMinutes / 60);
-        $mins = $diffInMinutes % 60;
-        return "{$hours} j {$mins} m";
+        $hours = (int) floor($diffInSeconds / 3600);
+        $mins = str_pad((int) floor(($diffInSeconds % 3600) / 60), 2, '0', STR_PAD_LEFT);
+        return "{$hours}j {$mins}m";
     }
 
     public function getCookingTime(Order $order): string
@@ -92,13 +94,15 @@ class Display extends Component
         if ($order->status !== 'preparing' || !$order->updated_at) {
             return '-';
         }
-        $diffInMinutes = $order->updated_at->diffInMinutes(now());
-        if ($diffInMinutes < 60) {
-            return $diffInMinutes . ' menit';
+        $diffInSeconds = (int) $order->updated_at->diffInSeconds(now());
+        if ($diffInSeconds < 3600) {
+            $mins = str_pad((int) floor($diffInSeconds / 60), 2, '0', STR_PAD_LEFT);
+            $secs = str_pad($diffInSeconds % 60, 2, '0', STR_PAD_LEFT);
+            return "{$mins}:{$secs}";
         }
-        $hours = floor($diffInMinutes / 60);
-        $mins = $diffInMinutes % 60;
-        return "{$hours} j {$mins} m";
+        $hours = (int) floor($diffInSeconds / 3600);
+        $mins = str_pad((int) floor(($diffInSeconds % 3600) / 60), 2, '0', STR_PAD_LEFT);
+        return "{$hours}j {$mins}m";
     }
 
 
