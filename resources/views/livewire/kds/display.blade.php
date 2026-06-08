@@ -14,7 +14,7 @@
 
         {{-- Clock, Theme Toggle, & Logout --}}
         <div class="flex items-center gap-4 md:gap-6">
-            <div class="text-right hidden sm:block">
+            <div class="text-right hidden sm:block" wire:ignore>
                 <div class="text-xl md:text-2xl font-black text-[#bc000a] dark:text-red-500 tracking-wider leading-none font-mono" id="kds-time">--.--.--</div>
                 <div class="text-[10px] text-gray-500 dark:text-gray-400 font-semibold mt-1 uppercase tracking-wide" id="kds-date">-</div>
             </div>
@@ -33,7 +33,7 @@
     </header>
 
     {{-- ── Main Scrollable Canvas ───────────────────────────────── --}}
-    <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-28">
+    <main class="flex-1 overflow-y-auto p-4 md:p-6">
         
         {{-- TAB 1: ANTRIAN --}}
         @if($activeTab === 'antrian')
@@ -390,7 +390,7 @@
     </main>
 
     {{-- ── Bottom Navigation Tab Bar ────────────────────────────── --}}
-    <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 px-2 py-2 shadow-lg flex justify-around items-center z-20 shrink-0">
+    <nav class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 px-2 py-2 shadow-lg flex justify-around items-center z-20 shrink-0">
         
         {{-- Tab Antrian --}}
         <button wire:click="switchTab('antrian')" class="relative flex flex-col items-center gap-1 px-5 py-2 rounded-2xl transition-all cursor-pointer {{ $activeTab === 'antrian' ? 'bg-[#bc000a] text-white shadow-md' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
