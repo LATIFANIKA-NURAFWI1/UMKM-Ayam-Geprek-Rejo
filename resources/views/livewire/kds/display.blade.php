@@ -39,6 +39,16 @@
 
     {{-- ── Main Scrollable Canvas ───────────────────────────────── --}}
     <main class="flex-1 overflow-y-auto p-4 md:p-6">
+
+        {{-- Flash Stok Status --}}
+        @if(session('stok_status'))
+            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)"
+                 class="fixed top-4 right-4 z-50 flex items-center gap-3 rounded-xl bg-emerald-500 px-5 py-3 text-white shadow-xl">
+                <span class="material-symbols-outlined">check_circle</span>
+                <span class="text-sm font-bold">{{ session('stok_status') }}</span>
+            </div>
+        @endif
+
         
         {{-- TAB 1: ANTRIAN --}}
         @if($activeTab === 'antrian')
@@ -391,7 +401,210 @@
                 </div>
             </div>
         @endif
-        
+
+        {{-- TAB 5: STOK BAHAN --}}
+        @if($activeTab === 'stok')
+            @php
+                $totalBahan = $stokIngredients->count();
+                $stokRendah = $stokIngredients->filter(fn($s) => $s->current_stock <= $s->minimum_stock)->count();
+                $stokAman   = $totalBahan - $stokRendah;
+            @endphp
+            <div class="flex flex-col gap-4">
+
+                {{-- Header --}}
+                <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border-t-4 border-[#bc000a] px-4 py-3 flex justify-between items-center border border-gray-100 dark:border-gray-800">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[#bc000a] text-xl icon-fill">inventory_2</span>
+                        <h2 class="text-sm font-extrabold uppercase tracking-widest text-gray-700 dark:text-gray-300">Stok Bahan Baku</h2>
+                    </div>
+                    <span class="text-[10px] font-semibold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full">View-only dapur</span>
+                </div>
+
+                {{-- Summary Cards --}}
+                <div class="grid grid-cols-3 gap-3">
+                    {{-- Total --}}
+                    <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 flex flex-col gap-1">
+                        <p class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Bahan</p>
+                        <p class="text-2xl font-black text-gray-800 dark:text-gray-100">{{ $totalBahan }}</p>
+                    </div>
+                    {{-- Stok Aman --}}
+                    <div class="bg-white dark:bg-gray-900 border-t-4 border-t-emerald-500 border border-gray-200 dark:border-gray-800 rounded-xl p-4 flex flex-col gap-1">
+                        <p class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Stok Aman</p>
+                        <p class="text-2xl font-black text-emerald-600 dark:text-emerald-400">{{ $stokAman }}</p>
+                    </div>
+                    {{-- Stok Rendah --}}
+                    <div class="bg-red-50 dark:bg-red-950/20 border-t-4 border-t-[#bc000a] border border-red-100 dark:border-red-900/30 rounded-xl p-4 flex flex-col gap-1 {{ $stokRendah > 0 ? 'animate-pulse' : '' }}">
+                        <p class="text-[10px] font-bold text-[#bc000a] uppercase tracking-wider">Stok Rendah</p>
+                        <p class="text-2xl font-black text-[#bc000a]">{{ $stokRendah }}</p>
+                    </div>
+                </div>
+
+                {{-- Filters --}}
+                <div class="flex gap-3">
+                    <div class="relative flex-1">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[18px]">search</span>
+                        <input wire:model.live.debounce.300ms="stokSearch" type="text" placeholder="Cari bahan baku..."
+                               class="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#bc000a] transition-all text-gray-800 dark:text-gray-200">
+                    </div>
+                    <div class="relative min-w-[140px]">
+                        <select wire:model.live="stokFilter"
+                                class="w-full pl-4 pr-10 py-2.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-[#bc000a] transition-all text-gray-800 dark:text-gray-200">
+                            <option value="">Semua Status</option>
+                            <option value="ok">Stok Aman</option>
+                            <option value="low">Stok Rendah</option>
+                        </select>
+                        <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-[18px]">expand_more</span>
+                    </div>
+                </div>
+
+                {{-- Data List --}}
+                <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm overflow-hidden">
+                    {{-- Desktop Header --}}
+                    <div class="hidden md:grid grid-cols-12 gap-4 p-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        <div class="col-span-4">Nama Bahan</div>
+                        <div class="col-span-3 text-center">Stok Saat Ini</div>
+                        <div class="col-span-2 text-center">Status</div>
+                        <div class="col-span-3 text-right">Aksi</div>
+                    </div>
+
+                    <div class="flex flex-col divide-y divide-gray-100 dark:divide-gray-800">
+                        @forelse($stokIngredients as $item)
+                            @php
+                                $isRendah = $item->current_stock <= $item->minimum_stock;
+                                $pct = $item->minimum_stock > 0
+                                    ? min(100, round(($item->current_stock / ($item->minimum_stock * 2)) * 100))
+                                    : 100;
+                            @endphp
+                            <div class="p-4 flex flex-col md:grid md:grid-cols-12 md:items-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors">
+                                {{-- Nama --}}
+                                <div class="flex items-center gap-3 md:col-span-4">
+                                    <div class="w-10 h-10 rounded-xl {{ $isRendah ? 'bg-red-100 dark:bg-red-950/40' : 'bg-gray-100 dark:bg-gray-800' }} flex items-center justify-center shrink-0 text-lg">
+                                        {{ $isRendah ? '⚠️' : '📦' }}
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-sm text-gray-800 dark:text-gray-200 flex items-center gap-1">
+                                            {{ $item->name }}
+                                            @if($isRendah)
+                                                <span class="material-symbols-outlined text-[#bc000a] text-sm">error</span>
+                                            @endif
+                                        </p>
+                                        <p class="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5 md:hidden">Min: {{ number_format($item->minimum_stock, 2) }} {{ $item->unit }}</p>
+                                    </div>
+                                </div>
+
+                                {{-- Stok --}}
+                                <div class="flex flex-col md:col-span-3 md:items-center">
+                                    <span class="text-sm font-bold {{ $isRendah ? 'text-[#bc000a]' : 'text-gray-800 dark:text-gray-200' }} mb-1">
+                                        {{ number_format($item->current_stock, 2) }} {{ $item->unit }}
+                                    </span>
+                                    <div class="w-full md:w-3/4 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                        <div class="h-full {{ $isRendah ? 'bg-[#bc000a]' : 'bg-emerald-500' }}"
+                                             style="width: {{ $pct }}%"></div>
+                                    </div>
+                                    <span class="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">
+                                        Min: {{ number_format($item->minimum_stock, 2) }} {{ $item->unit }}
+                                    </span>
+                                </div>
+
+                                {{-- Status Badge --}}
+                                <div class="md:col-span-2 flex md:justify-center">
+                                    @if($isRendah)
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-100 dark:bg-red-950/40 text-[#bc000a] text-[10px] font-black uppercase tracking-wider">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[#bc000a]"></span> Rendah
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 text-[10px] font-black uppercase tracking-wider">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aman
+                                        </span>
+                                    @endif
+                                </div>
+
+                                {{-- Action: Restock Only --}}
+                                <div class="md:col-span-3 flex justify-end">
+                                    <button wire:click="openRestock({{ $item->id }})"
+                                            class="flex items-center justify-center gap-1.5 px-4 py-2 {{ $isRendah ? 'bg-[#bc000a] text-white hover:bg-[#a00008] shadow-sm' : 'border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-emerald-500 hover:text-emerald-600 dark:hover:text-emerald-400' }} rounded-xl text-xs font-bold transition-colors">
+                                        <span class="material-symbols-outlined text-[15px]">add_circle</span>
+                                        Restock
+                                    </button>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="py-16 text-center">
+                                <span class="material-symbols-outlined text-5xl text-gray-300 dark:text-gray-600 block mb-3">inventory_2</span>
+                                <p class="text-gray-500 dark:text-gray-400 font-semibold text-sm">Belum ada bahan baku terdaftar.</p>
+                                <p class="text-gray-400 dark:text-gray-600 text-xs mt-1">Tambahkan bahan melalui panel owner.</p>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+
+            </div>
+
+            {{-- Modal Restock --}}
+            @if($showRestockModal)
+                <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+                     x-data x-on:keydown.escape.window="$wire.closeRestockModal()">
+                    <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden"
+                         @click.away="$wire.closeRestockModal()">
+                        {{-- Header --}}
+                        <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-gray-50 dark:bg-gray-800/50">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-[#bc000a]/10 dark:bg-red-950/40 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-[#bc000a] text-[20px] icon-fill">add_circle</span>
+                                </div>
+                                <h3 class="font-bold text-gray-800 dark:text-gray-100">Restock Bahan</h3>
+                            </div>
+                            <button wire:click="closeRestockModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-full p-1 transition-colors">
+                                <span class="material-symbols-outlined">close</span>
+                            </button>
+                        </div>
+
+                        {{-- Body --}}
+                        <form wire:submit.prevent="applyRestock" class="p-6">
+                            <div class="mb-5">
+                                <label class="block text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Jumlah Ditambahkan</label>
+                                <div class="flex items-center gap-2">
+                                    <button type="button" wire:click="$set('restockQty', [restockQty] > 1 ? [restockQty] - 1 : 0)"
+                                            class="w-11 h-11 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 font-black text-lg transition-colors">
+                                        -
+                                    </button>
+                                    <input wire:model="restockQty" type="number" step="0.01" min="0.01"
+                                           class="flex-1 px-4 py-3 text-center bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-lg font-black text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-[#bc000a] outline-none">
+                                    <button type="button" wire:click="$set('restockQty', [restockQty] + 1)"
+                                            class="w-11 h-11 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 font-black text-lg transition-colors">
+                                        +
+                                    </button>
+                                </div>
+                                @error('restockQty')
+                                    <span class="text-xs text-red-500 font-medium mt-1.5 block text-center">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="mb-6">
+                                <label class="block text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">Catatan (opsional)</label>
+                                <input wire:model="restockNote" type="text" placeholder="Misal: Belanja pagi hari ini..."
+                                       class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-[#bc000a] outline-none">
+                            </div>
+
+                            <div class="flex gap-3">
+                                <button type="button" wire:click="closeRestockModal"
+                                        class="flex-1 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                                    Batal
+                                </button>
+                                <button type="submit"
+                                        class="flex-[2] py-3 rounded-xl bg-[#bc000a] hover:bg-[#a00008] text-white font-bold shadow-sm transition-colors flex items-center justify-center gap-2">
+                                    <span wire:loading.remove wire:target="applyRestock" class="material-symbols-outlined text-[18px]">add_circle</span>
+                                    <span wire:loading wire:target="applyRestock" class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+                                    <span wire:loading.remove wire:target="applyRestock">Tambah Stok</span>
+                                    <span wire:loading wire:target="applyRestock">Menyimpan...</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            @endif
+        @endif
+
     </main>
 
     {{-- ── Bottom Navigation Tab Bar ────────────────────────────── --}}
@@ -422,9 +635,21 @@
         </button>
 
         {{-- Tab Menu --}}
-        <button wire:click="switchTab('menu')" class="relative flex flex-col items-center gap-1 px-5 py-2 rounded-2xl transition-all cursor-pointer {{ $activeTab === 'menu' ? 'bg-[#bc000a] text-white shadow-md' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
+        <button wire:click="switchTab('menu')" class="relative flex flex-col items-center gap-1 px-3 py-2 rounded-2xl transition-all cursor-pointer {{ $activeTab === 'menu' ? 'bg-[#bc000a] text-white shadow-md' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
             <span class="material-symbols-outlined text-[22px] {{ $activeTab === 'menu' ? 'icon-fill' : '' }}">restaurant_menu</span>
             <span class="text-[10px] font-bold uppercase tracking-wider">Menu</span>
+        </button>
+
+        {{-- Tab Stok --}}
+        <button wire:click="switchTab('stok')" class="relative flex flex-col items-center gap-1 px-3 py-2 rounded-2xl transition-all cursor-pointer {{ $activeTab === 'stok' ? 'bg-[#bc000a] text-white shadow-md' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
+            @php
+                $stokRendahCount = \App\Models\StockIngredient::whereColumn('current_stock', '<=', 'minimum_stock')->count();
+            @endphp
+            @if($stokRendahCount > 0)
+                <span class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#bc000a] text-white text-[10px] font-black flex items-center justify-center shadow-sm">{{ $stokRendahCount > 9 ? '9+' : $stokRendahCount }}</span>
+            @endif
+            <span class="material-symbols-outlined text-[22px] {{ $activeTab === 'stok' ? 'icon-fill' : '' }}">inventory_2</span>
+            <span class="text-[10px] font-bold uppercase tracking-wider">Stok</span>
         </button>
 
     </nav>
