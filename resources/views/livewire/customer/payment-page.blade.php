@@ -41,7 +41,7 @@
                              alt="QRIS Geprek Rejo"
                              id="qris-image"
                              class="w-64 h-64 object-contain rounded-xl">
-                        <p class="text-xs text-gray-400 mt-3">Arahkan kamera ke QR di atas</p>
+                        <p class="text-xs text-gray-400 mt-3">Masukkan QR code di atas</p>
 
                         {{-- Download / Screenshot buttons --}}
                         <div class="flex gap-2 mt-3 w-full">
