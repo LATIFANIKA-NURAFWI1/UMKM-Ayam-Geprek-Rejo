@@ -6,40 +6,45 @@
     <div class="sticky top-0 z-40 bg-white shadow-sm">
 
         {{-- Navbar --}}
-        <header class="flex justify-between items-center px-6 py-2 border-b border-[#e0e3e8]">
-            {{-- Brand --}}
-            <div class="flex flex-col">
-                <span class="font-inter text-[10px] tracking-widest text-[#5e3f3b] uppercase font-bold leading-tight">SELF ORDER</span>
-                <div class="flex items-center gap-2 mt-1">
-                    <img src="{{ asset('images/logo.png') }}" alt="Geprek Rejo" class="h-10 w-auto object-contain">
+        <header class="border-b border-[#e0e3e8]">
+            <div class="max-w-7xl mx-auto px-6 py-2 flex justify-between items-center">
+                {{-- Brand --}}
+                <div class="flex flex-col">
+                    <span class="font-inter text-[8px] sm:text-[10px] tracking-widest text-[#5e3f3b] uppercase font-bold leading-tight">SELF ORDER</span>
+                    <div class="flex items-center gap-2 mt-1">
+                        <img src="{{ asset('images/logo.png') }}" alt="Geprek Rejo" class="h-8 sm:h-10 w-auto object-contain">
+                    </div>
                 </div>
-            </div>
 
-            {{-- Right Controls: Member + Cart --}}
-            <div class="flex items-center gap-3">
-                {{-- Member Button --}}
-                @if($loggedInMemberId)
-                    <button wire:click="$set('showMemberModal', true)"
-                            class="font-inter flex items-center gap-1.5 rounded-full bg-[#fdc003] text-[#6c5000] px-3 py-1.5 text-[10px] font-bold shadow-sm transition active:scale-95 hover:opacity-90">
-                        <span class="material-symbols-outlined text-[14px]">star</span>
-                        <span>{{ explode(' ', $loggedInMemberName)[0] }} · {{ number_format($loggedInMemberPoints, 0, ',', '.') }} P</span>
-                    </button>
-                @else
-                    <button wire:click="$set('showMemberModal', true)"
-                            class="font-inter bg-[#bc000a] text-white py-1.5 px-3 rounded-full transition-all active:scale-95 flex items-center gap-1 shadow-sm text-[10px] font-bold tracking-wide hover:bg-[#c0000b]">
-                        DAFTAR / LOGIN
-                    </button>
-                @endif
-
-                {{-- Cart Icon --}}
-                <div wire:click="goToCheckout"
-                     class="relative p-2 hover:bg-[#e5e8ee] rounded-full transition-colors cursor-pointer">
-                    <span class="material-symbols-outlined text-[28px]">shopping_cart</span>
-                    @if($this->cartCount > 0)
-                        <span class="font-inter absolute top-0 right-0 bg-[#fdc003] text-[#6c5000] w-5 h-5 rounded-full text-[10px] flex items-center justify-center font-bold border-2 border-white">
-                            {{ $this->cartCount }}
-                        </span>
+                {{-- Right Controls: Member + Cart --}}
+                <div class="flex items-center gap-3">
+                    {{-- Member Button --}}
+                    @if($loggedInMemberId)
+                        <button wire:click="$set('showMemberModal', true)"
+                                class="font-inter flex items-center gap-1 sm:gap-1.5 rounded-full bg-[#fdc003] text-[#6c5000] px-2.5 py-1.5 sm:px-3 sm:py-1.5 text-[9px] sm:text-[10px] font-bold shadow-sm transition active:scale-95 hover:opacity-90">
+                            <span class="material-symbols-outlined text-[13px] sm:text-[14px]">star</span>
+                            <span class="hidden min-[380px]:inline">{{ explode(' ', $loggedInMemberName)[0] }} · </span>
+                            <span>{{ number_format($loggedInMemberPoints, 0, ',', '.') }} P</span>
+                        </button>
+                    @else
+                        <button wire:click="$set('showMemberModal', true)"
+                                class="font-inter bg-[#bc000a] text-white py-1.5 px-2.5 sm:px-3 rounded-full transition-all active:scale-95 flex items-center gap-1 shadow-sm text-[9px] sm:text-[10px] font-bold tracking-wide hover:bg-[#c0000b]">
+                            <span class="material-symbols-outlined text-[13px] sm:text-[14px]">account_circle</span>
+                            <span class="hidden min-[380px]:inline">DAFTAR / LOGIN</span>
+                            <span class="min-[380px]:hidden">LOGIN</span>
+                        </button>
                     @endif
+
+                    {{-- Cart Icon --}}
+                    <div wire:click="goToCheckout"
+                         class="relative p-1.5 sm:p-2 hover:bg-[#e5e8ee] rounded-full transition-colors cursor-pointer flex-shrink-0">
+                        <span class="material-symbols-outlined text-[24px] sm:text-[28px]">shopping_cart</span>
+                        @if($this->cartCount > 0)
+                            <span class="font-inter absolute top-0.5 right-0.5 bg-[#fdc003] text-[#6c5000] w-4 h-4 sm:w-5 sm:h-5 rounded-full text-[8px] sm:text-[10px] flex items-center justify-center font-bold border-2 border-white">
+                                {{ $this->cartCount }}
+                            </span>
+                        @endif
+                    </div>
                 </div>
             </div>
         </header>
@@ -48,14 +53,14 @@
         <div class="max-w-7xl mx-auto px-6 pt-3 pb-2">
             {{-- Search bar --}}
             <div class="relative group">
-                <div class="absolute inset-y-0 left-5 flex items-center pointer-events-none">
+                <div class="absolute inset-y-0 left-4 sm:left-5 flex items-center pointer-events-none">
                     <span class="material-symbols-outlined text-[#5e3f3b] group-focus-within:text-[#bc000a] transition-colors">search</span>
                 </div>
                 <input
                     type="text"
                     wire:model.live.debounce.300ms="searchQuery"
                     placeholder="Cari menu favoritmu..."
-                    class="w-full font-jakarta bg-white border-none rounded-xl py-4 pl-14 pr-10 shadow-[0_4px_16px_-6px_rgba(0,0,0,0.08)] focus:ring-2 focus:ring-[#bc000a]/20 text-[15px] leading-[22px] font-medium placeholder:text-[#5e3f3b]/50 transition-all outline-none"
+                    class="w-full font-jakarta bg-white border-none rounded-xl py-3 sm:py-4 pl-12 sm:pl-14 pr-10 shadow-[0_4px_16px_-6px_rgba(0,0,0,0.08)] focus:ring-2 focus:ring-[#bc000a]/20 text-sm sm:text-[15px] leading-[22px] font-medium placeholder:text-[#5e3f3b]/50 transition-all outline-none"
                 >
                 {{-- Clear search --}}
                 @if($searchQuery)
