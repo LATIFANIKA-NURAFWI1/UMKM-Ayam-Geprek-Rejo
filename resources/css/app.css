@@ -11,6 +11,51 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
+    /* ── Customer UI Design Tokens ────────────────────────────────── */
+    --font-customer-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-customer-display: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+
+    /* Color palette (dari uiux/dashboard.html) */
+    --color-brand-background: #f7f9ff;
+    --color-brand-surface: #f7f9ff;
+    --color-brand-surface-lowest: #ffffff;
+    --color-brand-surface-low: #f1f4f9;
+    --color-brand-surface-container: #ebeef3;
+    --color-brand-surface-high: #e5e8ee;
+    --color-brand-surface-highest: #e0e3e8;
+    --color-brand-surface-dim: #d7dadf;
+    --color-brand-surface-bright: #f7f9ff;
+    --color-brand-surface-variant: #e0e3e8;
+    --color-brand-on-surface: #181c20;
+    --color-brand-on-surface-variant: #5e3f3b;
+    --color-brand-outline: #936e69;
+    --color-brand-outline-variant: #e8bcb6;
+    --color-brand-primary: #bc000a;
+    --color-brand-primary-container: #e61919;
+    --color-brand-primary-fixed: #ffdad5;
+    --color-brand-primary-fixed-dim: #ffb4aa;
+    --color-brand-primary-tint: #c0000b;
+    --color-brand-on-primary: #ffffff;
+    --color-brand-on-primary-container: #fffbff;
+    --color-brand-on-primary-fixed: #410001;
+    --color-brand-on-primary-fixed-variant: #930006;
+    --color-brand-secondary: #785900;
+    --color-brand-secondary-container: #fdc003;
+    --color-brand-secondary-fixed: #ffdf9e;
+    --color-brand-secondary-fixed-dim: #fabd00;
+    --color-brand-on-secondary: #ffffff;
+    --color-brand-on-secondary-container: #6c5000;
+    --color-brand-on-secondary-fixed: #261a00;
+    --color-brand-on-secondary-fixed-variant: #5b4300;
+    --color-brand-error: #ba1a1a;
+    --color-brand-error-container: #ffdad6;
+    --color-brand-on-error: #ffffff;
+    --color-brand-on-error-container: #93000a;
+    --color-brand-inverse-surface: #2d3135;
+    --color-brand-inverse-on-surface: #eef1f6;
+    --color-brand-inverse-primary: #ffb4aa;
+
+    /* Zinc palette (tetap untuk komponen admin) */
     --color-zinc-50: #fafafa;
     --color-zinc-100: #f5f5f5;
     --color-zinc-200: #e5e5e5;

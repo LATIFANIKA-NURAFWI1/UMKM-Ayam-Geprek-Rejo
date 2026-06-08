@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Geprek Rejo - Self Order</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#e5e8ee",
+                        "on-surface": "#181c20",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#e0e3e8",
+                        "on-primary-fixed-variant": "#930006",
+                        "on-secondary-container": "#6c5000",
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "on-tertiary-container": "#fcfdfe",
+                        "surface-tint": "#c0000b",
+                        "primary-fixed-dim": "#ffb4aa",
+                        "tertiary-fixed": "#e1e3e4",
+                        "surface-dim": "#d7dadf",
+                        "on-secondary-fixed": "#261a00",
+                        "on-secondary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#e0e3e8",
+                        "surface-bright": "#f7f9ff",
+                        "surface-container-low": "#f1f4f9",
+                        "inverse-surface": "#2d3135",
+                        "secondary-container": "#fdc003",
+                        "on-tertiary-fixed": "#191c1d",
+                        "surface-container": "#ebeef3",
+                        "background": "#f7f9ff",
+                        "on-primary-fixed": "#410001",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#5e3f3b",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#5b4300",
+                        "inverse-on-surface": "#eef1f6",
+                        "surface": "#f7f9ff",
+                        "outline-variant": "#e8bcb6",
+                        "primary-container": "#e61919",
+                        "tertiary-fixed-dim": "#c5c7c8",
+                        "primary": "#bc000a",
+                        "on-primary-container": "#fffbff",
+                        "secondary-fixed": "#ffdf9e",
+                        "on-tertiary-fixed-variant": "#454748",
+                        "secondary": "#785900",
+                        "outline": "#936e69",
+                        "tertiary-container": "#737576",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#ffdad5",
+                        "inverse-primary": "#ffb4aa",
+                        "tertiary": "#5a5c5e",
+                        "on-background": "#181c20",
+                        "secondary-fixed-dim": "#fabd00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-padding": "24px",
+                        "card-gap": "16px",
+                        "base": "8px",
+                        "section-margin": "32px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "order-number": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "label-caps": ["Inter"],
+                        "headline-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "order-number": ["48px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "headline-lg": ["24px", { "lineHeight": "32px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Icon font — tidak bisa direpresentasikan dengan Tailwind utility */
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        /* Scrollbar utilities — tidak ada dukungan native di Tailwind v3 */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<!-- body: min-h-screen diganti min-h-[max(884px,100dvh)] dari CSS "body { min-height: max(884px,100dvh) }" -->
+
+<body class="bg-background text-on-background font-body-md min-h-[max(884px,100dvh)]">
+
+    <!-- Top AppBar Component -->
+    <header
+        class="bg-surface-container-lowest dark:bg-surface-dim text-primary dark:text-primary-fixed-dim font-headline-lg text-headline-lg w-full top-0 sticky z-40 border-b border-surface-variant dark:border-outline-variant shadow-sm flex justify-between items-center px-container-padding py-base">
+        <div class="flex flex-col">
+            <span class="text-[10px] tracking-widest text-on-surface-variant uppercase font-bold leading-tight">SELF
+                ORDER</span>
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary" data-icon="restaurant_menu">restaurant_menu</span>
+                <span class="font-headline-md text-headline-md">Geprek Rejo</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <button
+                class="bg-primary text-on-primary font-label-caps py-1.5 px-3 rounded-full hover:bg-surface-tint transition-all active:scale-95 flex items-center gap-1 shadow-sm text-[10px]">DAFTAR
+                / LOGIN</button>
+            <div class="relative p-2 hover:bg-surface-container-high rounded-full transition-colors cursor-pointer">
+                <span class="material-symbols-outlined text-[28px]" data-icon="shopping_cart">shopping_cart</span>
+                <span
+                    class="absolute top-0 right-0 bg-secondary-container text-on-secondary-container w-5 h-5 rounded-full text-[10px] flex items-center justify-center font-bold border-2 border-surface-container-lowest">1</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-container-padding pb-32">
+        <!-- Search Bar Section -->
+        <section class="mt-section-margin">
+            <div class="relative group">
+                <div class="absolute inset-y-0 left-5 flex items-center pointer-events-none">
+                    <span
+                        class="material-symbols-outlined text-on-surface-variant group-focus-within:text-primary transition-colors"
+                        data-icon="search">search</span>
+                </div>
+                <!-- soft-card-shadow → shadow-[0_10px_30px_-12px_rgba(0,0,0,0.08)] -->
+                <input
+                    class="w-full bg-surface-container-lowest border-none rounded-xl py-5 pl-14 pr-6 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.08)] focus:ring-2 focus:ring-primary/20 text-body-lg font-body-lg placeholder:text-on-surface-variant/50 transition-all outline-none"
+                    placeholder="Cari menu favoritmu..." type="text">
+            </div>
+        </section>
+
+        <!-- Categories Slider -->
+        <section
+            class="mt-base overflow-x-auto hide-scrollbar -mx-container-padding px-container-padding py-4 flex gap-3 sticky top-[72px] bg-background/95 backdrop-blur-sm z-30">
+            <button
+                class="whitespace-nowrap px-6 py-2.5 rounded-full font-label-caps text-label-caps bg-primary text-on-primary shadow-lg shadow-primary/20 transition-all">SEMUA</button>
+            <button
+                class="whitespace-nowrap px-6 py-2.5 rounded-full font-label-caps text-label-caps bg-surface-container-lowest text-on-surface hover:bg-surface-container-high transition-all border border-surface-variant">AYAM
+                GEPREK</button>
+            <button
+                class="whitespace-nowrap px-6 py-2.5 rounded-full font-label-caps text-label-caps bg-surface-container-lowest text-on-surface hover:bg-surface-container-high transition-all border border-surface-variant">CAMILAN</button>
+            <button
+                class="whitespace-nowrap px-6 py-2.5 rounded-full font-label-caps text-label-caps bg-surface-container-lowest text-on-surface hover:bg-surface-container-high transition-all border border-surface-variant">EKSTRA</button>
+            <button
+                class="whitespace-nowrap px-6 py-2.5 rounded-full font-label-caps text-label-caps bg-surface-container-lowest text-on-surface hover:bg-surface-container-high transition-all border border-surface-variant">MINUMAN</button>
+            <button
+                class="whitespace-nowrap px-6 py-2.5 rounded-full font-label-caps text-label-caps bg-surface-container-lowest text-on-surface hover:bg-surface-container-high transition-all border border-surface-variant">PAKET
+                NASI</button>
+        </section>
+
+        <!-- Menu Grid -->
+        <section class="mt-base grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-card-gap">
+
+            <!-- Item 1 -->
+            <!-- soft-card-shadow → shadow-[0_10px_30px_-12px_rgba(0,0,0,0.08)] -->
+            <div
+                class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_10px_30px_-12px_rgba(0,0,0,0.08)] border border-surface-variant/50 flex flex-col hover:-translate-y-1 transition-transform duration-300">
+                <div class="aspect-[4/3] w-full relative overflow-hidden">
+                    <img class="w-full h-full object-cover" alt="Ayam Geprek Sambal Bawang"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCO6LOCIc9v32sm-mAngFWZ9Vnik5lcRVy_WLdFWnYDtSIYh2nlhdqWfHndapahOzt_E2Mv-bVUS-OvWT6ZJ0eRXRSmSs9hzNQSwAvVA1yE5js6F3S7RvyhawhwPAL9kaInk9o6OlY0PMSwF9DqP8mgrObDm5r9JQfcqJrulgr-9pfZwRKYqmwIwvdissEO2iun4uxmCnG2tcdnQ5UTkmSpH3OQ1csRMslnjdyHFRIoyX16f-7i0ZzXS7LRDWrqecmNAtW2tbVDj0s">
+                </div>
+                <div class="p-3 flex flex-col flex-grow">
+                    <h3 class="font-headline-md text-sm text-on-surface mb-1 line-clamp-1">Ayam Geprek Sambal Bawang
+                    </h3>
+                    <p class="text-on-surface-variant text-[10px] leading-tight mb-2 line-clamp-2">Ayam goreng krispi
+                        dibalut sambal bawang pedas nampol.</p>
+                    <div class="mt-auto flex justify-between items-center">
+                        <span class="font-bold text-primary text-sm">Rp 15.000</span>
+                        <button
+                            class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center hover:bg-surface-tint active:scale-90 transition-all shadow-md">
+                            <span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 2 -->
+            <div
+                class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_10px_30px_-12px_rgba(0,0,0,0.08)] border border-surface-variant/50 flex flex-col hover:-translate-y-1 transition-transform duration-300">
+                <div class="aspect-[4/3] w-full relative overflow-hidden">
+                    <img class="w-full h-full object-cover" alt="Es Teh Manis"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlC_sB6tXO4EE8Go95gLwIOBmo3zJNvfMUgGA6IVreugu3QfICalCp-exT1DpvM-KEIuWhJqQ-LGZCxGgCc2hXOsOPfsTWp-BKnZiWDEL2cDtYulYQmTai9tBj7Bs7vO8XyQwSqFnUmbDi5boxxLTUpYOC6TXq_CtrS4g3hJr2ZmvCy4WGOsT24ptv3rEm2brbWX2i53bbSofZbVQ5c9Fy53rc70BkzcYLjkDteDwRicMIC5BNONkVylhz53q1nc56svry9BrQdnE">
+                </div>
+                <div class="p-3 flex flex-col flex-grow">
+                    <h3 class="font-headline-md text-sm text-on-surface mb-1 line-clamp-1">Es Teh Manis</h3>
+                    <p class="text-on-surface-variant text-[10px] leading-tight mb-2 line-clamp-2">Segar dan manis,
+                        pelengkap sempurna.</p>
+                    <div class="mt-auto flex justify-between items-center">
+                        <span class="font-bold text-primary text-sm">Rp 5.000</span>
+                        <button
+                            class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center hover:bg-surface-tint active:scale-90 transition-all shadow-md">
+                            <span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 3 -->
+            <div
+                class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_10px_30px_-12px_rgba(0,0,0,0.08)] border border-surface-variant/50 flex flex-col hover:-translate-y-1 transition-transform duration-300">
+                <div class="aspect-[4/3] w-full relative overflow-hidden">
+                    <img class="w-full h-full object-cover" alt="Mendoan Krispi"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1OCuCKERlXoyUg4JUrtNL4_-WSkK3_AkYBD8w9CghSwJUTjGWBxP0olCbQHxhcuM8KY0KH6uPN3WOqIbgbv0_2mu-p8Uxj_b7MD6HJaThoGiOMi2Etjw4nzzNtQ_SgU9AoPTDQMj28CEK1LHdxPTCrmVMsxJWq41PLpo_B0EdGpI0KW0kNQkA9PddcpVO_9Y6eEDXoSIsLcALALjpckmimO4szvIbhl40EfUxPlswWm5mS7RQnQQwLaW7AKDu3-ff5cLZvO4fvJ0">
+                </div>
+                <div class="p-3 flex flex-col flex-grow">
+                    <h3 class="font-headline-md text-sm text-on-surface mb-1 line-clamp-1">Mendoan Krispi</h3>
+                    <p class="text-on-surface-variant text-[10px] leading-tight mb-2 line-clamp-2">Tempe mendoan tipis
+                        yang digoreng renyah.</p>
+                    <div class="mt-auto flex justify-between items-center">
+                        <span class="font-bold text-primary text-sm">Rp 8.000</span>
+                        <div class="flex items-center gap-1 bg-surface-container rounded-lg p-0.5">
+                            <button
+                                class="w-6 h-6 rounded-md bg-surface-container-lowest text-primary flex items-center justify-center hover:bg-white shadow-sm transition-all">
+                                <span class="material-symbols-outlined text-[12px]" data-icon="remove">remove</span>
+                            </button>
+                            <span class="font-bold text-on-surface text-xs px-0.5">1</span>
+                            <button
+                                class="w-6 h-6 rounded-md bg-primary text-on-primary flex items-center justify-center hover:bg-surface-tint shadow-sm transition-all">
+                                <span class="material-symbols-outlined text-[12px]" data-icon="add">add</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 4 -->
+            <div
+                class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_10px_30px_-12px_rgba(0,0,0,0.08)] border border-surface-variant/50 flex flex-col hover:-translate-y-1 transition-transform duration-300">
+                <div class="aspect-[4/3] w-full relative overflow-hidden">
+                    <img class="w-full h-full object-cover" alt="Paket Nasi Geprek Komplit"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0M1bXb0owCUXXiaG5ZSp_eKna94tDLcpiiovW_eNcKuDpQFwTZ5ak3nlqF_y5X-mE7EtKTDh7E5o0H8hZl4_SbFKRV8u7uWoS6Cdz8h2Dl-Lkgi-kBJT3oZNPoRUWtiUbAw5l7Pe1B9-oC6JpLYNKckY1i138bONT5e1ds84TOn3YvOYzBxPuHVzIb01l057QLZ_qLgxej3i5rK5AvMMgtja9V4yt7ZLSAYNmsigurV2mDr9vX7LaeYE7ltmgSwRQo_W6cN3Mjt0">
+                </div>
+                <div class="p-3 flex flex-col flex-grow">
+                    <h3 class="font-headline-md text-sm text-on-surface mb-1 line-clamp-1">Paket Nasi Geprek Komplit
+                    </h3>
+                    <p class="text-on-surface-variant text-[10px] leading-tight mb-2 line-clamp-2">Nasi, Ayam Geprek,
+                        Tempe, dan Lalapan.</p>
+                    <div class="mt-auto flex justify-between items-center">
+                        <span class="font-bold text-primary text-sm">Rp 22.000</span>
+                        <button
+                            class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center hover:bg-surface-tint active:scale-90 transition-all shadow-md">
+                            <span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 5: Es Jeruk Segar -->
+            <div
+                class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_10px_30px_-12px_rgba(0,0,0,0.08)] border border-surface-variant/50 flex flex-col hover:-translate-y-1 transition-transform duration-300">
+                <div class="aspect-[4/3] w-full relative overflow-hidden">
+                    <img class="w-full h-full object-cover" alt="Es Jeruk Segar"
+                        src="https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&q=80&w=800">
+                </div>
+                <div class="p-3 flex flex-col flex-grow">
+                    <h3 class="font-headline-md text-sm text-on-surface mb-1 line-clamp-1">Es Jeruk Segar</h3>
+                    <p class="text-on-surface-variant text-[10px] leading-tight mb-2 line-clamp-2">Perasan jeruk asli
+                        yang segar dan kaya vitamin C.</p>
+                    <div class="mt-auto flex justify-between items-center">
+                        <span class="font-bold text-primary text-sm">Rp 7.000</span>
+                        <button
+                            class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center hover:bg-surface-tint active:scale-90 transition-all shadow-md">
+                            <span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 6: Kulit Ayam Krispi -->
+            <div
+                class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_10px_30px_-12px_rgba(0,0,0,0.08)] border border-surface-variant/50 flex flex-col hover:-translate-y-1 transition-transform duration-300">
+                <div class="aspect-[4/3] w-full relative overflow-hidden">
+                    <img class="w-full h-full object-cover" alt="Kulit Ayam Krispi"
+                        src="https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&q=80&w=800">
+                </div>
+                <div class="p-3 flex flex-col flex-grow">
+                    <h3 class="font-headline-md text-sm text-on-surface mb-1 line-clamp-1">Kulit Ayam Krispi</h3>
+                    <p class="text-on-surface-variant text-[10px] leading-tight mb-2 line-clamp-2">Kulit ayam goreng
+                        super renyah dengan bumbu rahasia.</p>
+                    <div class="mt-auto flex justify-between items-center">
+                        <span class="font-bold text-primary text-sm">Rp 12.000</span>
+                        <button
+                            class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center hover:bg-surface-tint active:scale-90 transition-all shadow-md">
+                            <span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 7: Cah Kangkung -->
+            <div
+                class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-[0_10px_30px_-12px_rgba(0,0,0,0.08)] border border-surface-variant/50 flex flex-col hover:-translate-y-1 transition-transform duration-300">
+                <div class="aspect-[4/3] w-full relative overflow-hidden">
+                    <img class="w-full h-full object-cover" alt="Cah Kangkung"
+                        src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=800">
+                </div>
+                <div class="p-3 flex flex-col flex-grow">
+                    <h3 class="font-headline-md text-sm text-on-surface mb-1 line-clamp-1">Cah Kangkung</h3>
+                    <p class="text-on-surface-variant text-[10px] leading-tight mb-2 line-clamp-2">Tumis kangkung segar
+                        dengan bawang putih dan terasi.</p>
+                    <div class="mt-auto flex justify-between items-center">
+                        <span class="font-bold text-primary text-sm">Rp 10.000</span>
+                        <button
+                            class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center hover:bg-surface-tint active:scale-90 transition-all shadow-md">
+                            <span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Sticky Bottom Bar -->
+    <div class="fixed bottom-0 left-0 w-full z-50 p-container-padding pointer-events-none">
+        <div
+            class="max-w-3xl mx-auto w-full bg-primary-container dark:bg-primary-container text-on-primary dark:text-on-primary-container rounded-xl shadow-[0_-4px_30px_rgba(230,25,25,0.4)] flex justify-between items-center px-6 py-4 pointer-events-auto cursor-pointer active:translate-y-0.5 transition-transform group">
+            <div class="flex items-center gap-4">
+                <div
+                    class="bg-surface-container-lowest text-primary w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-sm">
+                    1</div>
+                <span class="font-headline-md text-body-lg tracking-wide font-bold">Lihat Keranjang</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="font-headline-md text-body-lg">Rp 14.000</span>
+                <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform"
+                    data-icon="arrow_forward">arrow_forward</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Background Decoration for Modern Feel -->
+    <div class="fixed top-0 left-0 w-full h-full -z-10 opacity-30 pointer-events-none">
+        <div class="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px]"></div>
+        <div
+            class="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-secondary-container/5 rounded-full blur-[120px]">
+        </div>
+    </div>
+
+    <script>
+        // Micro-interaction: Active category toggling
+        const categoryButtons = document.querySelectorAll('section button.whitespace-nowrap');
+        categoryButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                categoryButtons.forEach(b => {
+                    b.classList.remove('bg-primary', 'text-on-primary', 'shadow-lg', 'shadow-primary/20');
+                    b.classList.add('bg-surface-container-lowest', 'text-on-surface', 'border', 'border-surface-variant');
+                });
+                btn.classList.add('bg-primary', 'text-on-primary', 'shadow-lg', 'shadow-primary/20');
+                btn.classList.remove('bg-surface-container-lowest', 'text-on-surface', 'border', 'border-surface-variant');
+            });
+        });
+    </script>
+
+</body>
+
+</html>
