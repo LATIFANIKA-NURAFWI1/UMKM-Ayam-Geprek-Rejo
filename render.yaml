@@ -23,28 +23,25 @@ services:
         value: stderr
       - key: LOG_LEVEL
         value: error
+
+      # ── Database: MySQL dari Aiven.io ──────────────────────────────────────
       - key: DB_CONNECTION
-        value: pgsql           # Render pakai PostgreSQL
+        value: mysql           # ← Tetap MySQL! Tidak perlu ubah migration
       - key: DB_HOST
-        fromDatabase:
-          name: geprek-rejo-db
-          property: host
+        sync: false            # Isi manual dari dashboard Aiven
       - key: DB_PORT
-        fromDatabase:
-          name: geprek-rejo-db
-          property: port
+        sync: false            # Port dari Aiven (biasanya 5-digit, bukan 3306)
       - key: DB_DATABASE
-        fromDatabase:
-          name: geprek-rejo-db
-          property: database
+        sync: false            # Nama database dari Aiven (biasanya "defaultdb")
       - key: DB_USERNAME
-        fromDatabase:
-          name: geprek-rejo-db
-          property: user
+        sync: false            # Username dari Aiven (biasanya "avnadmin")
       - key: DB_PASSWORD
-        fromDatabase:
-          name: geprek-rejo-db
-          property: password
+        sync: false            # Password dari Aiven
+
+      # SSL wajib untuk Aiven MySQL
+      - key: MYSQL_ATTR_SSL_CA
+        value: /etc/ssl/certs/ca-certificates.crt
+
       - key: SESSION_DRIVER
         value: database
       - key: CACHE_STORE
@@ -52,10 +49,5 @@ services:
       - key: QUEUE_CONNECTION
         value: sync
 
-  # ── PostgreSQL Database ──────────────────────────────────────────────────────
-databases:
-  - name: geprek-rejo-db
-    plan: free              # Free tier: 1GB, max 97 koneksi, 90 hari (gratis)
-    region: singapore
-    databaseName: geprek_rejo
-    user: geprek_user
+# Tidak perlu blok "databases:" karena pakai Aiven eksternal
+
