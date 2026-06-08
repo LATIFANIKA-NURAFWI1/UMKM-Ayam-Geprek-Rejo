@@ -85,7 +85,7 @@ class OrderService
             }
         }
 
-        DB::statement('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
+        $this->setRepeatableRead();
         return DB::transaction(function () use ($data, $cartItems, $voucherData, $redemptionData, $member) {
             // 1. Hitung finansial
             $subtotal          = $this->calculateSubtotal($data['cart']);
@@ -167,7 +167,7 @@ class OrderService
      */
     public function confirmPayment(int $orderId, string $paymentMethod, ?int $confirmedBy = null): Order
     {
-        DB::statement('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
+        $this->setRepeatableRead();
         return DB::transaction(function () use ($orderId, $paymentMethod, $confirmedBy) {
 
             // Pessimistic lock pada order untuk cegah double confirm
@@ -252,7 +252,7 @@ class OrderService
      */
     public function startPreparing(int $orderId): Order
     {
-        DB::statement('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
+        $this->setRepeatableRead();
         return DB::transaction(function () use ($orderId) {
             $order = Order::lockForUpdate()->findOrFail($orderId);
 
@@ -273,7 +273,7 @@ class OrderService
      */
     public function completeOrder(int $orderId): Order
     {
-        DB::statement('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
+        $this->setRepeatableRead();
         return DB::transaction(function () use ($orderId) {
             $order = Order::lockForUpdate()->findOrFail($orderId);
 
@@ -298,7 +298,7 @@ class OrderService
      */
     public function cancelOrder(int $orderId, string $reason = ''): Order
     {
-        DB::statement('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
+        $this->setRepeatableRead();
         return DB::transaction(function () use ($orderId, $reason) {
             $order = Order::lockForUpdate()->with('details')->findOrFail($orderId);
 
@@ -384,6 +384,17 @@ class OrderService
             'order_number' => $orderNumber,
             'queue_number' => $queueNumber,
         ];
+    }
+
+    /**
+     * Set isolation level ke REPEATABLE READ jika driver mendukung.
+     * SQLite tidak mendukung perintah ini (sudah serializable by default).
+     */
+    private function setRepeatableRead(): void
+    {
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
+        }
     }
 
     /**
