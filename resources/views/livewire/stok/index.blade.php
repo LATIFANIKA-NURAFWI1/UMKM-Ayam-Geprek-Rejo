@@ -1,287 +1,273 @@
-<div class="flex h-full w-full flex-1 flex-col gap-6 p-6">
+<div class="flex h-full w-full flex-1 flex-col gap-6 p-6 bg-surface text-on-surface font-body-md antialiased">
 
-    @if(session('status'))
-        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3500)"
-            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-            class="fixed right-6 top-6 z-50 flex items-center gap-3 rounded-2xl bg-green-500 px-5 py-3.5 text-white shadow-2xl">
-            <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-            <span class="text-sm font-semibold">{{ session('status') }}</span>
-        </div>
-    @endif
+    @php
+        $totalBahan   = ($ingredients ?? collect())->count();
+        $stokRendah   = ($ingredients ?? collect())->filter(fn($s) => $s->current_stock < $s->minimum_stock)->count();
+        $stokAman     = $totalBahan - $stokRendah;
+    @endphp
 
-    {{-- Header --}}
-    <div class="flex flex-wrap items-start justify-between gap-4">
+    {{-- ── Header ─────────────────────────────────────────────────── --}}
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-            <flux:heading size="xl" level="1">Stok Bahan Baku</flux:heading>
-            <flux:text class="mt-1">Pantau dan kelola persediaan bahan baku dapur</flux:text>
+            <h1 class="text-headline-lg font-headline-lg font-bold text-on-surface mb-1 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1">inventory_2</span>
+                Stok Bahan Baku
+            </h1>
+            <p class="text-body-md font-body-md text-on-surface-variant">Pantau dan kelola persediaan bahan baku dapur</p>
         </div>
-        <button wire:click="openCreate"
-            class="flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-orange-600 active:scale-95">
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+        <button wire:click="openCreate()"
+                class="bg-primary-container text-on-primary-container hover:opacity-90 active:scale-95 transition-all px-5 py-2.5 rounded-lg flex items-center gap-2 shadow-sm font-label-caps font-bold w-full md:w-auto justify-center">
+            <span class="material-symbols-outlined text-sm">add</span>
             Tambah Bahan
         </button>
     </div>
 
-    {{-- Summary Cards --}}
-    @php
-        $total     = $ingredients->total();
-        $lowCount  = $ingredients->filter(fn($i) => $i->current_stock <= $i->minimum_stock)->count();
-        $okCount   = $total - $lowCount;
-    @endphp
-    <div class="grid grid-cols-3 gap-4">
-        <div class="flex items-center gap-4 rounded-2xl border border-zinc-200 bg-white p-5">
-            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-100 text-2xl">📦</div>
-            <div>
-                <p class="text-xs text-zinc-500">Total Bahan</p>
-                <p class="text-2xl font-black text-zinc-900">{{ $total }}</p>
+    {{-- ── Summary Cards ────────────────────────────────────────────── --}}
+    <div class="flex overflow-x-auto hide-scrollbar gap-4 pb-2 md:grid md:grid-cols-3 md:overflow-visible md:pb-0 snap-x">
+        {{-- Total --}}
+        <div class="min-w-[240px] md:min-w-0 bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:-translate-y-1 transition-transform snap-center flex-shrink-0">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-label-caps font-label-caps text-on-surface-variant mb-1 uppercase tracking-wider">Total Bahan</p>
+                    <p class="text-headline-lg font-headline-lg font-bold text-on-surface">{{ $totalBahan }}</p>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-secondary-container/20 flex items-center justify-center text-secondary-container">
+                    <span class="material-symbols-outlined text-2xl">package</span>
+                </div>
             </div>
         </div>
-        <div class="flex items-center gap-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
-            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-2xl">✅</div>
-            <div>
-                <p class="text-xs text-emerald-600">Stok Aman</p>
-                <p class="text-2xl font-black text-emerald-800">{{ $okCount }}</p>
+        {{-- Stok Aman --}}
+        <div class="min-w-[240px] md:min-w-0 bg-surface-container-lowest border-t-4 border-t-secondary-container border border-outline-variant rounded-xl p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:-translate-y-1 transition-transform snap-center flex-shrink-0 relative overflow-hidden">
+            <div class="absolute -right-4 -top-4 w-24 h-24 bg-secondary-container/5 rounded-full blur-xl"></div>
+            <div class="flex items-start justify-between relative z-10">
+                <div>
+                    <p class="text-label-caps font-label-caps text-on-surface-variant mb-1 uppercase tracking-wider">Stok Aman</p>
+                    <p class="text-headline-lg font-headline-lg font-bold text-on-surface">{{ $stokAman }}</p>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container shadow-sm">
+                    <span class="material-symbols-outlined text-2xl">check_circle</span>
+                </div>
             </div>
         </div>
-        <div class="flex items-center gap-4 rounded-2xl border border-red-200 bg-red-50 p-5">
-            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-red-100 text-2xl">⚠️</div>
-            <div>
-                <p class="text-xs text-red-600">Stok Rendah</p>
-                <p class="text-2xl font-black text-red-800">{{ $lowCount }}</p>
+        {{-- Stok Rendah --}}
+        <div class="min-w-[240px] md:min-w-0 bg-error-container/20 border border-primary-container rounded-xl p-5 shadow-[0_4px_20px_-4px_rgba(230,25,25,0.1)] hover:-translate-y-1 transition-transform snap-center flex-shrink-0 {{ $stokRendah > 0 ? 'animate-[pulse-border_2s_infinite]' : '' }}">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-label-caps font-label-caps text-primary-container mb-1 uppercase tracking-wider font-bold">Stok Rendah</p>
+                    <p class="text-headline-lg font-headline-lg font-bold text-primary-container">{{ $stokRendah }}</p>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container shadow-sm">
+                    <span class="material-symbols-outlined text-2xl">warning</span>
+                </div>
             </div>
         </div>
     </div>
 
-    {{-- Filter --}}
-    <div class="flex flex-wrap items-center gap-3">
-        <div class="relative flex-1 max-w-xs">
-            <svg class="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-            </svg>
-            <input type="text" wire:model.live.debounce.300ms="search" placeholder="Cari bahan baku…"
-                class="w-full rounded-xl border border-zinc-300 py-2 pl-10 pr-4 text-sm text-zinc-700 placeholder-zinc-400 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200"/>
+    {{-- ── Filters ─────────────────────────────────────────────────── --}}
+    <div class="flex flex-col sm:flex-row gap-3">
+        <div class="relative flex-1">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+            <input wire:model.live.debounce.300ms="search" type="text" placeholder="Cari bahan baku..."
+                   class="w-full pl-10 pr-4 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-lg text-body-md focus:outline-none focus:ring-2 focus:ring-secondary-container transition-all">
         </div>
-        <select wire:model.live="filterStatus"
-            class="rounded-xl border border-zinc-300 px-4 py-2 text-sm text-zinc-700 focus:border-orange-400 focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200">
-            <option value="">Semua Status</option>
-            <option value="low">⚠️ Stok Rendah</option>
-            <option value="ok">✅ Stok Aman</option>
-        </select>
+        <div class="relative min-w-[160px]">
+            <select wire:model.live="filterStatus"
+                    class="w-full pl-4 pr-10 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-lg text-body-md appearance-none focus:outline-none focus:ring-2 focus:ring-secondary-container transition-all">
+                <option value="">Semua Status</option>
+                <option value="ok">Stok Aman</option>
+                <option value="low">Stok Rendah</option>
+            </select>
+            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+        </div>
     </div>
 
+    {{-- ── Data List ───────────────────────────────────────────────── --}}
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
+        {{-- Desktop Header --}}
+        <div class="hidden md:grid grid-cols-12 gap-4 p-4 border-b border-outline-variant bg-surface-container/50 text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider">
+            <div class="col-span-3">Nama Bahan</div>
+            <div class="col-span-3 text-center">Stok Saat Ini</div>
+            <div class="col-span-2 text-center">Status</div>
+            <div class="col-span-4 text-right">Aksi</div>
+        </div>
 
-    {{-- Table --}}
-    <div class="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
-        <table class="min-w-full divide-y divide-zinc-100 dark:divide-zinc-800">
-            <thead class="bg-zinc-50 dark:bg-zinc-800/60">
-                <tr>
-                    <th class="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-zinc-500">Nama Bahan</th>
-                    <th class="px-5 py-3.5 text-right text-xs font-semibold uppercase tracking-wide text-zinc-500">Stok Saat Ini</th>
-                    <th class="px-5 py-3.5 text-right text-xs font-semibold uppercase tracking-wide text-zinc-500">Threshold</th>
-                    <th class="px-5 py-3.5 text-right text-xs font-semibold uppercase tracking-wide text-zinc-500">Harga/Unit</th>
-                    <th class="px-5 py-3.5 text-center text-xs font-semibold uppercase tracking-wide text-zinc-500">Status</th>
-                    <th class="px-5 py-3.5 text-right text-xs font-semibold uppercase tracking-wide text-zinc-500">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
-                @forelse($ingredients as $item)
-                    @php
-                        $isLow = (float) $item->current_stock <= (float) $item->minimum_stock;
-                        $pct   = $item->minimum_stock > 0
-                            ? min(100, round(($item->current_stock / ($item->minimum_stock * 3)) * 100))
-                            : 100;
-                    @endphp
-                    <tr @class([
-                        'group transition',
-                        'bg-red-50/50 hover:bg-red-50 dark:bg-red-950/20 dark:hover:bg-red-950/30' => $isLow,
-                        'hover:bg-zinc-50 dark:hover:bg-zinc-800/40' => !$isLow,
-                    ])>
-                        <td class="px-5 py-4">
-                            <div class="flex items-center gap-3">
-                                @if($isLow)
-                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-red-100 text-sm">⚠️</span>
-                                @else
-                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-zinc-100 text-sm">🥬</span>
+        <div class="flex flex-col divide-y divide-outline-variant">
+            @forelse($ingredients ?? [] as $item)
+                @php
+                    $isRendah = $item->current_stock < $item->minimum_stock;
+                    $pct = $item->minimum_stock > 0
+                        ? min(100, round(($item->current_stock / ($item->minimum_stock * 2)) * 100))
+                        : 100;
+                @endphp
+                <div class="p-4 flex flex-col md:grid md:grid-cols-12 md:items-center gap-4 hover:bg-surface-container-lowest/50 transition-colors">
+                    <div class="flex items-center space-x-3 md:col-span-3">
+                        <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center border border-outline-variant text-lg">
+                            {{ $isRendah ? '⚠️' : '📦' }}
+                        </div>
+                        <div>
+                            <h3 class="text-body-lg font-body-lg font-bold flex items-center gap-2">
+                                {{ $item->name }}
+                                @if($isRendah)
+                                    <span class="material-symbols-outlined text-primary-container text-sm" title="Stok Rendah">error</span>
                                 @endif
-                                <span class="font-semibold text-zinc-900 dark:text-white">{{ $item->name }}</span>
-                            </div>
-                        </td>
-                        <td class="px-5 py-4 text-right">
-                            <div class="flex flex-col items-end gap-1">
-                                <span @class(['text-sm font-bold', 'text-red-600' => $isLow, 'text-zinc-900 dark:text-white' => !$isLow])>
-                                    {{ number_format($item->current_stock, 2) }} {{ $item->unit }}
-                                </span>
-                                <div class="h-1.5 w-20 overflow-hidden rounded-full bg-zinc-200">
-                                    <div class="h-full rounded-full transition-all {{ $isLow ? 'bg-red-500' : 'bg-emerald-500' }}"
-                                        style="width: {{ $pct }}%"></div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-5 py-4 text-right text-sm text-zinc-500">
-                            {{ number_format($item->minimum_stock, 2) }} {{ $item->unit }}
-                        </td>
-                        <td class="px-5 py-4 text-right text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                            Rp {{ number_format($item->unit_cost, 0, ',', '.') }}
-                        </td>
-                        <td class="px-5 py-4 text-center">
-                            @if($isLow)
-                                <span class="inline-flex items-center gap-1 rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-700">
-                                    ⚠ Stok Rendah
-                                </span>
-                            @else
-                                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
-                                    ✅ Aman
-                                </span>
-                            @endif
-                        </td>
-                        <td class="px-5 py-4 text-right">
-                            <div class="flex items-center justify-end gap-2">
-                                <button wire:click="openAdjust({{ $item->id }})"
-                                    class="rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 transition hover:bg-blue-100 active:scale-95">
-                                    ➕ Restock
-                                </button>
-                                <button wire:click="openEdit({{ $item->id }})"
-                                    class="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-600 transition hover:bg-zinc-50 active:scale-95 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-                                    ✏️ Edit
-                                </button>
-                                <button wire:click="delete({{ $item->id }})"
-                                    wire:confirm="Hapus bahan '{{ $item->name }}'?"
-                                    class="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-100 active:scale-95">
-                                    🗑️
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" class="px-5 py-16 text-center">
-                            <div class="flex flex-col items-center gap-3">
-                                <span class="text-5xl">🥬</span>
-                                <p class="font-semibold text-zinc-500">Belum ada data bahan baku</p>
-                                <p class="text-sm text-zinc-400">Klik "Tambah Bahan" untuk memulai</p>
-                            </div>
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-        @if($ingredients->hasPages())
-            <div class="border-t border-zinc-100 px-5 py-4 dark:border-zinc-800">{{ $ingredients->links() }}</div>
+                            </h3>
+                            <p class="text-label-caps text-on-surface-variant md:hidden">Min: {{ number_format($item->minimum_stock, 2) }} {{ $item->unit }}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col md:col-span-3 md:items-center">
+                        <div class="flex justify-between md:justify-center items-end w-full mb-1">
+                            <span class="text-label-caps text-on-surface-variant md:hidden">Stok:</span>
+                            <span class="text-body-md font-bold {{ $isRendah ? 'text-primary-container' : 'text-on-surface' }}">
+                                {{ number_format($item->current_stock, 2) }} {{ $item->unit }}
+                            </span>
+                        </div>
+                        <div class="w-full md:w-3/4 h-1.5 bg-surface-variant rounded-full overflow-hidden">
+                            <div class="h-full {{ $isRendah ? 'bg-primary-container' : 'bg-secondary-container' }}"
+                                 style="width: {{ $pct }}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2 flex justify-start md:justify-center">
+                        @if($isRendah)
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-primary-container text-on-primary-container text-label-caps font-bold shadow-sm">Stok Rendah</span>
+                        @else
+                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-surface text-on-surface border border-secondary-container text-label-caps font-bold">
+                                <span class="w-2 h-2 rounded-full bg-secondary-container mr-1.5"></span> Aman
+                            </span>
+                        @endif
+                    </div>
+
+                    <div class="flex items-center justify-end space-x-2 md:col-span-4 mt-2 md:mt-0 pt-3 md:pt-0 border-t border-outline-variant border-dashed md:border-none">
+                        <button wire:click="openAdjust({{ $item->id }})"
+                                class="flex-1 md:flex-none flex items-center justify-center gap-1 px-3 py-1.5 {{ $isRendah ? 'border border-primary-container text-primary-container hover:bg-primary-container/10' : 'border border-outline-variant text-on-surface hover:border-secondary-container hover:text-secondary-container' }} rounded-lg text-label-caps font-bold transition-colors">
+                            <span class="material-symbols-outlined text-sm">add</span> Restock
+                        </button>
+                        <button wire:click="openEdit({{ $item->id }})"
+                                class="p-2 text-on-surface-variant hover:text-secondary-container hover:bg-surface-variant rounded-lg transition-colors">
+                            <span class="material-symbols-outlined text-sm">edit</span>
+                        </button>
+                        <button wire:click="delete({{ $item->id }})"
+                                wire:confirm="Hapus bahan '{{ $item->name }}'?"
+                                class="p-2 text-on-surface-variant hover:text-primary-container hover:bg-error-container rounded-lg transition-colors">
+                            <span class="material-symbols-outlined text-sm">delete</span>
+                        </button>
+                    </div>
+                </div>
+            @empty
+                <div class="py-16 text-center">
+                    <span class="material-symbols-outlined text-5xl text-on-surface-variant/30 block mb-3">inventory_2</span>
+                    <p class="text-on-surface-variant italic text-sm">Belum ada bahan baku terdaftar.</p>
+                </div>
+            @endforelse
+        </div>
+
+        {{-- Pagination --}}
+        @if(($ingredients ?? null) && method_exists($ingredients, 'links'))
+            <div class="border-t border-outline-variant px-4 py-4">{{ $ingredients->links() }}</div>
         @endif
     </div>
 
+    {{-- ── Modals ────────────────────────────────────────────────────── --}}
 
-    {{-- ═══════════════ MODAL: CREATE / EDIT ═══════════════ --}}
-    <div x-data="{ open: @entangle('showForm') }" x-show="open" x-on:keydown.escape.window="$wire.set('showForm', false)"
-        class="fixed inset-0 z-50 flex items-end justify-center p-4 sm:items-center" style="display: none;">
-        <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-            x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-            class="fixed inset-0 bg-black/50 backdrop-blur-sm" x-on:click="$wire.set('showForm', false)"></div>
-        <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
-            x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0 scale-95"
-            class="relative z-50 w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-zinc-900">
-
-            <div class="flex items-center justify-between border-b border-zinc-100 px-6 py-5 dark:border-zinc-800">
-                <div class="flex items-center gap-3">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100 text-xl">🥬</div>
-                    <h3 class="text-lg font-bold text-zinc-900 dark:text-white">{{ $editingId ? 'Edit Bahan Baku' : 'Tambah Bahan Baku' }}</h3>
+    {{-- Modal Create / Edit --}}
+    @if($showForm)
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+             x-data x-on:keydown.escape.window="$wire.set('showForm', false)">
+            <div class="bg-surface-container-lowest rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]"
+                 @click.away="$wire.set('showForm', false)">
+                <div class="px-6 py-4 border-b border-surface-variant flex justify-between items-center bg-surface shrink-0">
+                    <h2 class="font-headline-md text-headline-md font-bold text-on-surface">{{ $editingId ? 'Edit Bahan' : 'Tambah Bahan Baru' }}</h2>
+                    <button wire:click="$set('showForm', false)" class="text-on-surface-variant hover:text-on-surface rounded-full p-1 transition-colors">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
                 </div>
-                <button wire:click="$set('showForm', false)" class="flex h-8 w-8 items-center justify-center rounded-full text-zinc-400 transition hover:bg-zinc-100">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </div>
-
-            <div class="space-y-4 px-6 py-5">
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="col-span-2">
-                        <label class="mb-1.5 block text-sm font-semibold text-zinc-700 dark:text-zinc-300">Nama Bahan *</label>
-                        <input type="text" wire:model="name" placeholder="Contoh: Ayam Segar"
-                            class="w-full rounded-xl border border-zinc-300 px-4 py-2.5 text-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200"/>
-                        @error('name') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                <form wire:submit.prevent="save" class="flex flex-col overflow-y-auto">
+                    <div class="p-6 space-y-4">
+                        <div>
+                            <label class="font-body-md text-body-md font-medium text-on-surface mb-1 block">Nama Bahan <span class="text-error">*</span></label>
+                            <input wire:model="name" type="text" placeholder="Contoh: Beras" class="w-full px-4 py-2 bg-surface-container-low border border-surface-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-on-surface">
+                            @error('name') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="font-body-md text-body-md font-medium text-on-surface mb-1 block">Satuan <span class="text-error">*</span></label>
+                                <input wire:model="unit" type="text" placeholder="Contoh: Kg, Liter, Pcs" class="w-full px-4 py-2 bg-surface-container-low border border-surface-variant rounded-lg focus:ring-2 focus:ring-primary text-on-surface">
+                                @error('unit') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label class="font-body-md text-body-md font-medium text-on-surface mb-1 block">Harga Satuan (Rp) <span class="text-error">*</span></label>
+                                <input wire:model="unit_cost" type="number" min="0" step="100" class="w-full px-4 py-2 bg-surface-container-low border border-surface-variant rounded-lg focus:ring-2 focus:ring-primary text-on-surface">
+                                @error('unit_cost') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="font-body-md text-body-md font-medium text-on-surface mb-1 block">Stok Saat Ini <span class="text-error">*</span></label>
+                                <input wire:model="current_stock" type="number" step="0.01" min="0" class="w-full px-4 py-2 bg-surface-container-low border border-surface-variant rounded-lg focus:ring-2 focus:ring-primary text-on-surface">
+                                @error('current_stock') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label class="font-body-md text-body-md font-medium text-on-surface mb-1 block">Stok Minimum <span class="text-error">*</span></label>
+                                <input wire:model="minimum_stock" type="number" step="0.01" min="0" class="w-full px-4 py-2 bg-surface-container-low border border-surface-variant rounded-lg focus:ring-2 focus:ring-primary text-on-surface">
+                                @error('minimum_stock') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label class="mb-1.5 block text-sm font-semibold text-zinc-700 dark:text-zinc-300">Satuan *</label>
-                        <input type="text" wire:model="unit" placeholder="kg / liter / pcs"
-                            class="w-full rounded-xl border border-zinc-300 px-4 py-2.5 text-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200"/>
-                        @error('unit') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                    <div class="px-6 py-4 border-t border-surface-variant flex justify-end gap-3 shrink-0 bg-surface-container-lowest">
+                        <button type="button" wire:click="$set('showForm', false)" class="px-5 py-2 font-body-md font-medium text-on-surface-variant hover:bg-surface-container rounded-lg">Batal</button>
+                        <button type="submit" class="px-5 py-2 font-body-md font-bold bg-primary text-on-primary hover:bg-surface-tint rounded-lg flex items-center gap-2">
+                            <span wire:loading wire:target="save" class="material-symbols-outlined animate-spin text-[18px]">sync</span>
+                            Simpan
+                        </button>
                     </div>
-                    <div>
-                        <label class="mb-1.5 block text-sm font-semibold text-zinc-700 dark:text-zinc-300">Harga per Unit (Rp) *</label>
-                        <input type="number" wire:model="unit_cost" min="0" placeholder="0"
-                            class="w-full rounded-xl border border-zinc-300 px-4 py-2.5 text-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200"/>
-                        @error('unit_cost') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
-                    </div>
-                    <div>
-                        <label class="mb-1.5 block text-sm font-semibold text-zinc-700 dark:text-zinc-300">Stok Awal *</label>
-                        <input type="number" wire:model="current_stock" step="0.01" min="0" placeholder="0"
-                            class="w-full rounded-xl border border-zinc-300 px-4 py-2.5 text-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200"/>
-                        @error('current_stock') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
-                    </div>
-                    <div>
-                        <label class="mb-1.5 block text-sm font-semibold text-zinc-700 dark:text-zinc-300">Threshold Peringatan *</label>
-                        <input type="number" wire:model="minimum_stock" step="0.01" min="0" placeholder="10"
-                            class="w-full rounded-xl border border-zinc-300 px-4 py-2.5 text-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200"/>
-                        @error('minimum_stock') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex gap-3 border-t border-zinc-100 px-6 py-4 dark:border-zinc-800">
-                <button wire:click="$set('showForm', false)" class="flex-1 rounded-xl border border-zinc-300 bg-white px-4 py-2.5 text-sm font-semibold text-zinc-600 transition hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">Batal</button>
-                <button wire:click="save" wire:loading.attr="disabled" wire:target="save"
-                    class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-orange-600 disabled:opacity-60">
-                    <span wire:loading.remove wire:target="save">{{ $editingId ? '💾 Perbarui' : '✅ Simpan' }}</span>
-                    <span wire:loading wire:target="save" class="flex items-center gap-2">
-                        <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
-                    </span>
-                </button>
+                </form>
             </div>
         </div>
-    </div>
+    @endif
 
-
-    {{-- ═══════════════ MODAL: RESTOCK / ADJUSTMENT ═══════════════ --}}
-    <div x-data="{ open: @entangle('showAdjustModal') }" x-show="open" x-on:keydown.escape.window="$wire.set('showAdjustModal', false)"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4" style="display: none;">
-        <div x-show="open" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-            x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-            class="fixed inset-0 bg-black/50 backdrop-blur-sm" x-on:click="$wire.set('showAdjustModal', false)"></div>
-        <div x-show="open" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
-            class="relative z-50 w-full max-w-sm overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-zinc-900">
-            <div class="flex items-center justify-between border-b border-zinc-100 px-6 py-5 dark:border-zinc-800">
-                <div class="flex items-center gap-3">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 text-xl">➕</div>
-                    <h3 class="text-lg font-bold text-zinc-900 dark:text-white">Restock / Koreksi Stok</h3>
+    {{-- Modal Adjust Stok --}}
+    @if($showAdjustModal)
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+             x-data x-on:keydown.escape.window="$wire.set('showAdjustModal', false)">
+            <div class="bg-surface-container-lowest rounded-2xl shadow-xl w-full max-w-sm overflow-hidden"
+                 @click.away="$wire.set('showAdjustModal', false)">
+                <div class="px-6 py-4 border-b border-surface-variant flex justify-between items-center bg-surface">
+                    <h2 class="font-headline-md font-bold text-on-surface">Restock / Penyesuaian</h2>
+                    <button wire:click="$set('showAdjustModal', false)" class="text-on-surface-variant hover:text-on-surface rounded-full p-1">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
                 </div>
-                <button wire:click="$set('showAdjustModal', false)" class="flex h-8 w-8 items-center justify-center rounded-full text-zinc-400 transition hover:bg-zinc-100">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </div>
-            <div class="space-y-4 px-6 py-5">
-                <p class="text-sm text-zinc-500">Masukkan jumlah positif untuk restock, negatif untuk koreksi pengurangan.</p>
-                <div>
-                    <label class="mb-1.5 block text-sm font-semibold text-zinc-700 dark:text-zinc-300">Jumlah (+/-) *</label>
-                    <input type="number" wire:model="adjustQty" step="0.01" placeholder="Contoh: +50 atau -5"
-                        class="w-full rounded-xl border border-zinc-300 px-4 py-2.5 text-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200"/>
-                    @error('adjustQty') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
-                </div>
-                <div>
-                    <label class="mb-1.5 block text-sm font-semibold text-zinc-700 dark:text-zinc-300">Catatan</label>
-                    <input type="text" wire:model="adjustNote" placeholder="Opsional"
-                        class="w-full rounded-xl border border-zinc-300 px-4 py-2.5 text-sm focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200"/>
-                </div>
-            </div>
-            <div class="flex gap-3 border-t border-zinc-100 px-6 py-4 dark:border-zinc-800">
-                <button wire:click="$set('showAdjustModal', false)" class="flex-1 rounded-xl border border-zinc-300 bg-white px-4 py-2.5 text-sm font-semibold text-zinc-600 transition hover:bg-zinc-50">Batal</button>
-                <button wire:click="applyAdjustment" wire:loading.attr="disabled" wire:target="applyAdjustment"
-                    class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-blue-700 disabled:opacity-60">
-                    <span wire:loading.remove wire:target="applyAdjustment">✅ Terapkan</span>
-                    <span wire:loading wire:target="applyAdjustment" class="flex items-center gap-2">
-                        <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
-                    </span>
-                </button>
+                <form wire:submit.prevent="applyAdjustment" class="p-6">
+                    <div class="mb-4">
+                        <label class="font-body-md font-medium text-on-surface mb-2 block">Kuantitas Ditambahkan</label>
+                        <div class="flex items-center gap-2">
+                            <button type="button" wire:click="$set('adjustQty', $wire.adjustQty - 1)" class="w-10 h-10 rounded-lg bg-surface-container hover:bg-surface-variant flex items-center justify-center text-on-surface">-</button>
+                            <input wire:model="adjustQty" type="number" step="0.01" class="flex-1 px-4 py-2 text-center bg-surface-container-low border border-surface-variant rounded-lg focus:ring-2 focus:ring-primary text-on-surface font-bold">
+                            <button type="button" wire:click="$set('adjustQty', $wire.adjustQty + 1)" class="w-10 h-10 rounded-lg bg-surface-container hover:bg-surface-variant flex items-center justify-center text-on-surface">+</button>
+                        </div>
+                        <p class="text-xs text-on-surface-variant mt-2 text-center">Bisa menggunakan angka negatif untuk mengurangi stok.</p>
+                        @error('adjustQty') <span class="text-error text-sm mt-1 block text-center">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="mb-6">
+                        <label class="font-body-md font-medium text-on-surface mb-1 block">Catatan (opsional)</label>
+                        <input wire:model="adjustNote" type="text" placeholder="Misal: Pembelian baru" class="w-full px-4 py-2 bg-surface-container-low border border-surface-variant rounded-lg focus:ring-2 focus:ring-primary text-on-surface">
+                    </div>
+                    <button type="submit" class="w-full py-2 font-body-md font-bold bg-primary text-on-primary hover:bg-surface-tint rounded-lg flex items-center justify-center gap-2">
+                        <span wire:loading wire:target="applyAdjustment" class="material-symbols-outlined animate-spin text-[18px]">sync</span>
+                        Terapkan Stok
+                    </button>
+                </form>
             </div>
         </div>
-    </div>
+    @endif
 
 </div>
+
+<style>
+@keyframes pulse-border {
+    0%   { box-shadow: 0 0 0 0 rgba(230,25,25,0.4); }
+    70%  { box-shadow: 0 0 0 6px rgba(230,25,25,0); }
+    100% { box-shadow: 0 0 0 0 rgba(230,25,25,0); }
+}
+</style>

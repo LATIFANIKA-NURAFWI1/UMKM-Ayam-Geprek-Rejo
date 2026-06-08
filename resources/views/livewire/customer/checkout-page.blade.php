@@ -268,6 +268,39 @@
                                 </p>
                             @endif
                         </div>
+
+                        {{-- 💰 Banner Redeem Poin (muncul jika >= 150 poin & ada Paket Geprek di cart) --}}
+                        @if($this->canRedeemPoints)
+                            <div class="mt-3 rounded-xl border-2 {{ $usePointsRedeem ? 'border-amber-400 bg-amber-50' : 'border-dashed border-amber-300 bg-amber-50/60' }} p-4 transition-all">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex-1">
+                                        <p class="font-bold text-sm text-amber-800 flex items-center gap-1.5">
+                                            ✨ Tukar Poin Loyalitas
+                                        </p>
+                                        <p class="text-xs text-amber-700 mt-1">
+                                            Gunakan <strong>150 poin</strong> untuk mendapat
+                                            <strong>1 Paket Geprek GRATIS</strong>
+                                            <span class="font-semibold text-amber-900">(Hemat Rp 15.000)</span>
+                                        </p>
+                                        @if($usePointsRedeem)
+                                            <p class="mt-1.5 text-[10px] font-bold text-amber-600 bg-amber-200/60 px-2 py-0.5 rounded-md inline-block">
+                                                ✔ Aktif — Sisa poin setelah: {{ $memberPoints - 150 }}
+                                            </p>
+                                        @endif
+                                    </div>
+
+                                    {{-- Toggle Switch --}}
+                                    <button type="button" wire:click="togglePointsRedeem"
+                                        class="relative inline-flex h-7 w-12 items-center rounded-full transition-colors flex-shrink-0 mt-0.5
+                                               {{ $usePointsRedeem ? 'bg-amber-500' : 'bg-gray-300' }}">
+                                        <span class="inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition-transform
+                                                     {{ $usePointsRedeem ? 'translate-x-6' : 'translate-x-1' }}"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        @elseif($loggedInMemberId && $memberPoints < 150)
+                            {{-- sudah login tapi poin kurang, info saja --}}
+                        @endif
                     </div>
 
                 @else
@@ -473,7 +506,9 @@
 
             {{-- ==============================================================
                  SECTION 5: PAYMENT METHOD
+                 (disembunyikan jika total = 0 karena full redeem poin)
                  ============================================================== --}}
+            @if($this->totalAmount > 0)
             <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
                 <div class="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
                     <svg class="w-4 h-4 text-[#bc000a]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -541,6 +576,16 @@
                     </div>
                 </div>
             </div>
+            @else
+            {{-- Jika total = 0: tampilkan info gratis --}}
+            <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl px-4 py-4 flex items-center gap-3">
+                <span class="text-3xl flex-shrink-0">🎉</span>
+                <div>
+                    <p class="font-bold text-amber-800">Pesanan Gratis!</p>
+                    <p class="text-xs text-amber-700 mt-0.5">Pesanan ini sepenuhnya dibayar dengan poin loyalitas Anda. Kasir akan mengkonfirmasi pesanan.</p>
+                </div>
+            </div>
+            @endif
 
             {{-- ==============================================================
                  SECTION 6: ORDER SUMMARY
@@ -571,6 +616,19 @@
                             </span>
                             <span class="font-semibold text-green-600">
                                 −Rp {{ number_format($voucherDiscount, 0, ',', '.') }}
+                            </span>
+                        </div>
+                    @endif
+
+                    {{-- Points redeem discount --}}
+                    @if($usePointsRedeem && $this->pointsDiscountAmount > 0)
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-amber-700 flex items-center gap-1">
+                                <span class="text-base leading-none">✨</span>
+                                Redeem 150 Poin
+                            </span>
+                            <span class="font-semibold text-amber-700">
+                                −Rp {{ number_format($this->pointsDiscountAmount, 0, ',', '.') }}
                             </span>
                         </div>
                     @endif

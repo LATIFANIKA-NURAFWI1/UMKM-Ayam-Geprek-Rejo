@@ -1,151 +1,204 @@
-<div class="flex h-full w-full flex-1 flex-col gap-6 p-6">
+<div class="flex h-full w-full flex-1 flex-col p-6 bg-surface text-on-surface font-body-md antialiased">
 
-    <div class="flex items-center gap-3">
-        <a href="{{ route('menu.index') }}" wire:navigate class="text-zinc-400 hover:text-zinc-600">
-            <flux:icon name="arrow-left" class="h-5 w-5" />
+    {{-- ── Back Breadcrumb (mobile) ───────────────────────────── --}}
+    <div class="md:hidden flex items-center mb-6">
+        <a href="{{ route('menu.index') }}" wire:navigate class="mr-4 text-on-surface p-1 rounded-full hover:bg-surface-container-high transition-colors">
+            <span class="material-symbols-outlined">arrow_back</span>
         </a>
-        <div>
-            <flux:heading size="xl" level="1">Edit Menu</flux:heading>
-            <flux:text class="mt-0.5">Perbarui informasi item menu</flux:text>
-        </div>
+        <h1 class="font-headline-lg text-headline-lg font-bold text-on-surface">Edit Menu</h1>
     </div>
 
-    <form wire:submit="save" class="mx-auto w-full max-w-2xl space-y-5">
+    {{-- ── Flash Status ─────────────────────────────────────────── --}}
+    @if(session('status'))
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)"
+             x-transition:leave="transition ease-in duration-300"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="mb-4 bg-secondary-container/20 border border-secondary-container text-on-secondary-container px-4 py-3 rounded-xl text-sm flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">check_circle</span>
+            {{ session('status') }}
+        </div>
+    @endif
 
-        {{-- Gambar --}}
-        <div class="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900">
-            <flux:label class="mb-3 block font-semibold">Foto Menu</flux:label>
+    <div class="max-w-6xl w-full mx-auto flex-1 flex flex-col">
+        <form wire:submit.prevent="save">
+            <div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] border border-[#E9ECEF] flex-1 flex flex-col overflow-hidden">
 
-            {{-- Drop Zone (juga berfungsi sebagai preview area) --}}
-            <div
-                id="menu-drop-zone"
-                class="mb-4 relative flex h-48 w-full items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-zinc-300 bg-zinc-50 transition-all duration-200 cursor-pointer dark:border-zinc-600 dark:bg-zinc-800"
-                onclick="document.getElementById('menu-image-input').click()"
-                ondragover="event.preventDefault(); this.classList.add('border-orange-400','bg-orange-50','dark:bg-zinc-700');"
-                ondragleave="this.classList.remove('border-orange-400','bg-orange-50','dark:bg-zinc-700');"
-                ondragenter="event.preventDefault();"
-                ondrop="event.preventDefault();
-                        this.classList.remove('border-orange-400','bg-orange-50','dark:bg-zinc-700');
-                        const file = event.dataTransfer.files[0];
-                        if (file && file.type.startsWith('image/')) {
-                            const input = document.getElementById('menu-image-input');
-                            const dt = new DataTransfer();
-                            dt.items.add(file);
-                            input.files = dt.files;
-                            input.dispatchEvent(new Event('change', { bubbles: true }));
-                        }"
-            >
-                @if($image)
-                    {{-- Preview foto baru (belum disimpan) --}}
-                    <img src="{{ $image->temporaryUrl() }}" class="h-full w-full object-cover rounded-xl">
-                    <div class="absolute inset-0 bg-black/30 flex items-end justify-center pb-3 rounded-xl opacity-0 hover:opacity-100 transition-opacity">
-                        <span class="text-white text-xs font-semibold bg-black/50 px-3 py-1 rounded-full">Klik / drag untuk ganti</span>
+                {{-- ── Main Form Grid ─────────────────────────── --}}
+                <div class="p-6 md:p-8 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+                    {{-- Left: Photo Upload ──────────────────────── --}}
+                    <div class="lg:col-span-4 flex flex-col gap-4">
+                        <label class="font-body-lg text-body-lg text-on-surface">
+                            Foto Menu
+                        </label>
+
+                        {{-- Drop zone (click triggers hidden file input) --}}
+                        <div class="border-2 border-dashed border-outline-variant rounded-xl bg-[#F1F3F5] flex flex-col items-center justify-center h-64 lg:h-full min-h-[300px] cursor-pointer hover:bg-surface-container-highest transition-colors group relative overflow-hidden"
+                             x-data="{ isDropping: false }"
+                             x-on:dragover.prevent="isDropping = true"
+                             x-on:dragleave.prevent="isDropping = false"
+                             x-on:drop.prevent="isDropping = false; if ($event.dataTransfer.files.length > 0) { @this.upload('image', $event.dataTransfer.files[0]) }"
+                             x-bind:class="{ 'border-primary bg-primary-container/20': isDropping }"
+                             @click="$refs.editPhotoInput.click()">
+
+                            @if($image)
+                                {{-- Preview foto baru yang belum disimpan --}}
+                                <img src="{{ $image->temporaryUrl() }}"
+                                     class="absolute inset-0 w-full h-full object-cover z-10">
+                                <div class="absolute inset-0 bg-black/30 z-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span class="material-symbols-outlined text-white text-3xl">edit</span>
+                                </div>
+                            @elseif($existingImage)
+                                {{-- Foto lama yang sudah tersimpan --}}
+                                <img src="{{ Storage::url($existingImage) }}"
+                                     class="absolute inset-0 w-full h-full object-cover z-10">
+                                <div class="absolute inset-0 bg-black/30 z-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div class="flex flex-col items-center gap-2 text-white">
+                                        <span class="material-symbols-outlined text-3xl">edit</span>
+                                        <span class="text-sm font-medium">Klik untuk ganti</span>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="flex flex-col items-center text-center p-6 z-10">
+                                    <div class="w-16 h-16 rounded-full bg-surface flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-sm">
+                                        <span class="material-symbols-outlined text-outline text-3xl">add_a_photo</span>
+                                    </div>
+                                    <p class="font-body-md text-body-md text-on-surface font-medium mb-1">Klik untuk upload foto</p>
+                                    <p class="font-label-caps text-label-caps text-on-surface-variant">PNG, JPG up to 5MB</p>
+                                </div>
+                            @endif
+
+                            <input wire:model="image" type="file" accept="image/*"
+                                   class="hidden" x-ref="editPhotoInput">
+                        </div>
+
+                        {{-- Upload progress --}}
+                        <div wire:loading wire:target="image"
+                             class="flex items-center gap-2 text-on-surface-variant text-sm">
+                            <span class="material-symbols-outlined text-[18px] animate-spin">sync</span>
+                            Mengunggah foto...
+                        </div>
+
+                        {{-- Tombol hapus foto jika ada existing image dan belum pilih baru --}}
+                        @if($existingImage && !$image)
+                            <button type="button" wire:click="deleteImage"
+                                    wire:confirm="Hapus foto ini?"
+                                    class="flex items-center justify-center gap-2 w-full py-2 rounded-lg border border-error/40 bg-error-container/30 text-error text-sm font-medium hover:bg-error-container transition-colors">
+                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                                Hapus Foto
+                            </button>
+                        @endif
+
+                        @error('image')
+                            <p class="text-error text-sm flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[14px]">error</span>{{ $message }}
+                            </p>
+                        @enderror
                     </div>
-                @elseif($existingImage)
-                    {{-- Foto lama yang sudah tersimpan --}}
-                    <img src="{{ Storage::url($existingImage) }}?v={{ time() }}" class="h-full w-full object-cover rounded-xl">
-                    <div class="absolute inset-0 bg-black/30 flex items-end justify-center pb-3 rounded-xl opacity-0 hover:opacity-100 transition-opacity">
-                        <span class="text-white text-xs font-semibold bg-black/50 px-3 py-1 rounded-full">Klik / drag untuk ganti</span>
+
+                    {{-- Right: Form Fields ──────────────────────── --}}
+                    <div class="lg:col-span-8 flex flex-col gap-6">
+
+                        {{-- Nama Menu --}}
+                        <div class="flex flex-col gap-2">
+                            <label class="font-body-md text-body-md text-on-surface font-medium" for="editNama">
+                                Nama Menu <span class="text-error">*</span>
+                            </label>
+                            <input wire:model="name" id="editNama" type="text"
+                                   placeholder="Contoh: Ayam Geprek Sambal Matah"
+                                   class="w-full px-4 py-3 rounded-lg bg-[#F1F3F5] border-none focus:ring-2 focus:ring-primary focus:bg-surface-container-lowest transition-all font-body-md text-body-md text-on-surface placeholder:text-outline">
+                            @error('name')
+                                <p class="text-error text-sm">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Kategori + Harga (2 kolom) --}}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                            {{-- Kategori --}}
+                            <div class="flex flex-col gap-2">
+                                <label class="font-body-md text-body-md text-on-surface font-medium" for="editKategori">
+                                    Kategori <span class="text-error">*</span>
+                                </label>
+                                <div class="relative">
+                                    <select wire:model="category_id" id="editKategori"
+                                            class="w-full px-4 py-3 rounded-lg bg-[#F1F3F5] border-none focus:ring-2 focus:ring-primary focus:bg-surface-container-lowest transition-all font-body-md text-body-md text-on-surface appearance-none cursor-pointer pr-10">
+                                        <option value="" disabled>Pilih kategori</option>
+                                        @foreach($categories as $cat)
+                                            <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+                                </div>
+                                @error('category_id')
+                                    <p class="text-error text-sm">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            {{-- Harga --}}
+                            <div class="flex flex-col gap-2">
+                                <label class="font-body-md text-body-md text-on-surface font-medium" for="editHarga">
+                                    Harga <span class="text-error">*</span>
+                                </label>
+                                <div class="relative flex items-center">
+                                    <span class="absolute left-4 font-body-md text-body-md font-bold text-on-surface-variant pointer-events-none">Rp</span>
+                                    <input wire:model="price" id="editHarga" type="number" min="0" placeholder="0"
+                                           class="w-full pl-12 pr-4 py-3 rounded-lg bg-[#F1F3F5] border-none focus:ring-2 focus:ring-primary focus:bg-surface-container-lowest transition-all font-body-md text-body-md text-on-surface placeholder:text-outline [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                                </div>
+                                @error('price')
+                                    <p class="text-error text-sm">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Deskripsi --}}
+                        <div class="flex flex-col gap-2 flex-grow">
+                            <label class="font-body-md text-body-md text-on-surface font-medium" for="editDeskripsi">
+                                Deskripsi Menu
+                            </label>
+                            <textarea wire:model="description" id="editDeskripsi" rows="5"
+                                      placeholder="Jelaskan detail menu ini (opsional)..."
+                                      class="w-full px-4 py-3 rounded-lg bg-[#F1F3F5] border-none focus:ring-2 focus:ring-primary focus:bg-surface-container-lowest transition-all font-body-md text-body-md text-on-surface placeholder:text-outline resize-none"></textarea>
+                        </div>
+
+                        {{-- Availability Toggle --}}
+                        <div class="flex items-center justify-between mt-4 p-4 rounded-lg bg-surface-container border border-outline-variant/30">
+                            <div class="flex flex-col">
+                                <span class="font-body-lg text-body-lg font-medium text-on-surface">Menu Tersedia</span>
+                                <span class="font-body-md text-body-md text-on-surface-variant">Tampilkan menu ini di kasir dan aplikasi pelanggan.</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer shrink-0 ml-4">
+                                <input wire:model="is_available" type="checkbox" class="sr-only peer">
+                                <div class="w-11 h-6 bg-outline-variant peer-focus:outline-none rounded-full peer
+                                            peer-checked:after:translate-x-full peer-checked:after:border-white
+                                            after:content-[''] after:absolute after:top-[2px] after:left-[2px]
+                                            after:bg-white after:border-gray-300 after:border after:rounded-full
+                                            after:h-5 after:w-5 after:transition-all
+                                            peer-checked:bg-primary transition-colors duration-200"></div>
+                            </label>
+                        </div>
                     </div>
-                @else
-                    <div class="flex flex-col items-center gap-2 text-zinc-400 pointer-events-none">
-                        <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                        </svg>
-                        <p class="text-sm font-medium">Drag & drop foto ke sini</p>
-                        <p class="text-xs">atau klik untuk memilih file</p>
-                    </div>
-                @endif
-            </div>
-
-            {{-- Hidden file input --}}
-            <input type="file" id="menu-image-input" wire:model="image" accept="image/*" class="sr-only">
-
-            {{-- Action buttons --}}
-            <div class="flex flex-wrap items-center gap-3">
-                <label for="menu-image-input" class="cursor-pointer">
-                    <span class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                        </svg>
-                        {{ $existingImage && !$image ? 'Ganti Foto' : 'Pilih Foto' }}
-                    </span>
-                </label>
-
-                {{-- Loading indicator saat upload --}}
-                <div wire:loading wire:target="image" class="flex items-center gap-2 text-sm text-orange-500">
-                    <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-                    </svg>
-                    Mengupload...
                 </div>
 
-                {{-- Tombol hapus foto hanya jika ada foto lama dan belum dipilih foto baru --}}
-                @if($existingImage && !$image)
-                    <button type="button" wire:click="deleteImage"
-                        wire:confirm="Hapus foto ini?"
-                        class="inline-flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-100">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                        </svg>
-                        Hapus Foto
+                {{-- ── Footer Actions ──────────────────────────── --}}
+                <div class="p-6 md:p-8 bg-surface border-t border-[#E9ECEF] flex flex-col-reverse sm:flex-row justify-end items-center gap-4">
+                    <a href="{{ route('menu.index') }}" wire:navigate
+                       class="w-full sm:w-auto px-6 py-3 rounded-lg font-body-md text-body-md font-bold text-on-surface border border-outline-variant hover:bg-surface-container-highest transition-colors active:scale-95 text-center">
+                        Batal
+                    </a>
+                    <button type="submit"
+                            wire:loading.attr="disabled"
+                            wire:loading.class="opacity-75 cursor-not-allowed"
+                            class="w-full sm:w-auto px-6 py-3 rounded-lg font-body-md text-body-md font-bold bg-primary text-on-primary hover:bg-surface-tint shadow-md hover:shadow-none transition-all active:scale-95 flex items-center justify-center gap-2">
+                        <span wire:loading wire:target="save" class="material-symbols-outlined text-xl animate-spin">sync</span>
+                        <span wire:loading.remove wire:target="save" class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">save</span>
+                        <span wire:loading wire:target="save">Menyimpan...</span>
+                        <span wire:loading.remove wire:target="save">Simpan Perubahan</span>
                     </button>
-                @endif
+                </div>
 
-                <p class="text-xs text-zinc-400">JPG, PNG, WebP, maks 2MB (Rekomendasi rasio 1:1 / persegi)</p>
             </div>
-            @error('image') <p class="mt-2 text-xs text-red-500">{{ $message }}</p> @enderror
-        </div>
-
-
-        {{-- Info Utama --}}
-        <div class="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900 space-y-4">
-            <flux:field>
-                <flux:label>Nama Menu <span class="text-red-500">*</span></flux:label>
-                <flux:input wire:model="name" placeholder="cth: Geprek Ori, Es Teh Manis…" />
-                <flux:error name="name" />
-            </flux:field>
-
-            <flux:field>
-                <flux:label>Deskripsi</flux:label>
-                <flux:textarea wire:model="description" placeholder="Deskripsi singkat menu (opsional)" rows="2" />
-                <flux:error name="description" />
-            </flux:field>
-
-            <flux:field>
-                <flux:label>Harga (Rp) <span class="text-red-500">*</span></flux:label>
-                <flux:input type="number" wire:model="price" placeholder="15000" min="0" />
-                <flux:error name="price" />
-            </flux:field>
-
-            <flux:field>
-                <flux:label>Kategori <span class="text-red-500">*</span></flux:label>
-                <select wire:model="category_id"
-                    class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-700 shadow-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200">
-                    <option value="">-- Pilih Kategori --</option>
-                    @foreach($categories as $cat)
-                        <option value="{{ $cat->id }}">{{ $cat->icon }} {{ $cat->name }}</option>
-                    @endforeach
-                </select>
-                <flux:error name="category_id" />
-            </flux:field>
-
-            <flux:field>
-                <flux:checkbox wire:model="is_available" label="Menu tersedia (bisa dipesan)" />
-            </flux:field>
-        </div>
-
-        {{-- Actions --}}
-        <div class="flex justify-end gap-3">
-            <flux:button type="button" variant="ghost" href="{{ route('menu.index') }}" wire:navigate>Batal</flux:button>
-            <flux:button type="submit" icon="check"
-                wire:loading.attr="disabled" wire:target="save">
-                <span wire:loading.remove wire:target="save">Simpan Perubahan</span>
-                <span wire:loading wire:target="save">Menyimpan…</span>
-            </flux:button>
-        </div>
-
-    </form>
-
+        </form>
+    </div>
 </div>

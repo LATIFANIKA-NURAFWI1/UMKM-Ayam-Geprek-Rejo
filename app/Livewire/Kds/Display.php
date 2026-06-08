@@ -13,6 +13,8 @@ use Livewire\Component;
 #[Title('KDS - Dapur Geprek Rejo')]
 class Display extends Component
 {
+    public string $activeTab = 'antrian';
+    public string $searchQuery = '';
     public ?int $completingOrderId = null;
 
     // ─── Computed Properties ─────────────────────────────────────────────────
@@ -29,6 +31,17 @@ class Display extends Component
 
     // ─── Actions ─────────────────────────────────────────────────────────────
 
+    public function switchTab(string $tab): void
+    {
+        if (in_array($tab, ['antrian', 'proses', 'riwayat', 'menu'])) {
+            $activeTabBefore = $this->activeTab;
+            $this->activeTab = $tab;
+            if ($activeTabBefore !== $tab) {
+                $this->reset('searchQuery');
+            }
+        }
+    }
+
     public function startPreparing(int $orderId): void
     {
         app(OrderService::class)->startPreparing($orderId);
@@ -41,6 +54,58 @@ class Display extends Component
         unset($this->kitchenOrders);
     }
 
+    // Aliases to support existing display.blade.php wire:clicks
+    public function mulaiMasak(int $orderId): void
+    {
+        $this->startPreparing($orderId);
+    }
+
+    public function selesaiMasak(int $orderId): void
+    {
+        $this->completeOrder($orderId);
+    }
+
+    public function toggleAvailability(int $menuItemId): void
+    {
+        $menuItem = \App\Models\MenuItem::findOrFail($menuItemId);
+        $menuItem->update([
+            'is_available' => !$menuItem->is_available,
+        ]);
+    }
+
+    public function getWaitingTime(Order $order): string
+    {
+        if (!$order->confirmed_at) {
+            return '-';
+        }
+        $diffInSeconds = (int) $order->confirmed_at->diffInSeconds(now());
+        if ($diffInSeconds < 3600) {
+            $mins = str_pad((int) floor($diffInSeconds / 60), 2, '0', STR_PAD_LEFT);
+            $secs = str_pad($diffInSeconds % 60, 2, '0', STR_PAD_LEFT);
+            return "{$mins}:{$secs}";
+        }
+        $hours = (int) floor($diffInSeconds / 3600);
+        $mins = str_pad((int) floor(($diffInSeconds % 3600) / 60), 2, '0', STR_PAD_LEFT);
+        return "{$hours}j {$mins}m";
+    }
+
+    public function getCookingTime(Order $order): string
+    {
+        if ($order->status !== 'preparing' || !$order->updated_at) {
+            return '-';
+        }
+        $diffInSeconds = (int) $order->updated_at->diffInSeconds(now());
+        if ($diffInSeconds < 3600) {
+            $mins = str_pad((int) floor($diffInSeconds / 60), 2, '0', STR_PAD_LEFT);
+            $secs = str_pad($diffInSeconds % 60, 2, '0', STR_PAD_LEFT);
+            return "{$mins}:{$secs}";
+        }
+        $hours = (int) floor($diffInSeconds / 3600);
+        $mins = str_pad((int) floor(($diffInSeconds % 3600) / 60), 2, '0', STR_PAD_LEFT);
+        return "{$hours}j {$mins}m";
+    }
+
+
     public function logout(\App\Livewire\Actions\Logout $logout): void
     {
         $logout();
@@ -50,6 +115,31 @@ class Display extends Component
 
     public function render()
     {
-        return view('livewire.kds.display');
+        $antrianMasak = $this->kitchenOrders->where('status', 'confirmed');
+        $sedangDimasak = $this->kitchenOrders->where('status', 'preparing');
+        
+        $riwayatPesanan = Order::with(['details'])
+            ->where('status', 'completed')
+            ->today()
+            ->orderBy('completed_at', 'desc')
+            ->get();
+
+        $menuItems = \App\Models\MenuItem::with('category')
+            ->when(filled($this->searchQuery), function ($query) {
+                $query->where('name', 'like', '%' . $this->searchQuery . '%');
+            })
+            ->ordered()
+            ->get()
+            ->groupBy(fn($item) => $item->category ? $item->category->name : 'Lainnya');
+
+        return view('livewire.kds.display', [
+            'antrianMasak'   => $antrianMasak,
+            'sedangDimasak'  => $sedangDimasak,
+            'antrianCount'   => $antrianMasak->count(),
+            'masakCount'     => $sedangDimasak->count(),
+            'riwayatPesanan' => $riwayatPesanan,
+            'menuItemsGroup' => $menuItems,
+        ]);
     }
 }
+

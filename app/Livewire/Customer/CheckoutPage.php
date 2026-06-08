@@ -5,6 +5,7 @@ namespace App\Livewire\Customer;
 use App\Exceptions\InsufficientStockException;
 use App\Models\Member;
 use App\Services\OrderService;
+use App\Services\PointService;
 use App\Services\VoucherService;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Attributes\Computed;
@@ -44,6 +45,7 @@ class CheckoutPage extends Component
     public string  $loggedInMemberName = '';
     public int     $memberPoints     = 0;
     public int     $pointsToRedeem   = 0;
+    public bool    $usePointsRedeem  = false;
     public bool    $showMemberForm   = false;
     public string  $memberLoginError = '';
 
@@ -101,8 +103,25 @@ class CheckoutPage extends Component
     #[Computed]
     public function pointsDiscountAmount(): float
     {
-        // 1 poin = Rp 10.000
-        return (float) $this->pointsToRedeem * 10000.0;
+        // 150 poin = Rp 15.000 (gratis 1 Paket Geprek)
+        if ($this->usePointsRedeem && $this->canRedeemPoints) {
+            return min(PointService::REDEEM_DISCOUNT_VALUE, $this->subtotal - $this->voucherDiscount);
+        }
+        return 0.0;
+    }
+
+    #[Computed]
+    public function canRedeemPoints(): bool
+    {
+        return $this->loggedInMemberId !== null
+            && $this->memberPoints >= PointService::REDEEM_POINTS_REQUIRED
+            && $this->cartHasGeprek;
+    }
+
+    #[Computed]
+    public function cartHasGeprek(): bool
+    {
+        return app(PointService::class)->cartHasGeprekItem($this->cart);
     }
 
     #[Computed]
@@ -256,11 +275,35 @@ class CheckoutPage extends Component
         $this->loggedInMemberName = '';
         $this->memberPoints       = 0;
         $this->pointsToRedeem     = 0;
+        $this->usePointsRedeem    = false;
         $this->showMemberForm     = false;
 
         // Also reset voucher since it might be member-exclusive
         if ($this->voucherApplied) {
             $this->removeVoucher();
+        }
+    }
+
+    /**
+     * Toggle penukaran poin member.
+     * Mengaktifkan 150 poin = Rp 15.000 diskon untuk 1 Paket Geprek.
+     */
+    public function togglePointsRedeem(): void
+    {
+        if (! $this->canRedeemPoints) {
+            $this->usePointsRedeem = false;
+            $this->pointsToRedeem  = 0;
+            return;
+        }
+
+        $this->usePointsRedeem = ! $this->usePointsRedeem;
+        $this->pointsToRedeem  = $this->usePointsRedeem ? PointService::REDEEM_POINTS_REQUIRED : 0;
+
+        // Jika total = 0 setelah redeem, set paymentMethod ke 'gratis' (tidak butuh pembayaran)
+        if ($this->usePointsRedeem && $this->totalAmount <= 0) {
+            $this->paymentMethod = 'points';
+        } elseif (! $this->usePointsRedeem && $this->paymentMethod === 'points') {
+            $this->paymentMethod = 'qris'; // kembalikan default
         }
     }
 
@@ -321,8 +364,13 @@ class CheckoutPage extends Component
 
         $this->validate([
             'customerName'  => 'required|min:2|max:100',
-            'paymentMethod' => 'required|in:qris,cash',
+            // paymentMethod boleh 'points' jika total = 0 (full redeem)
+            'paymentMethod' => 'required|in:qris,cash,points',
         ]);
+
+        // Jika total = 0 via redeem, payment_method disimpan sebagai 'qris' (placeholder)
+        // Kasir tetap konfirmasi, tapi tidak perlu scan / bayar tunai
+        $effectivePaymentMethod = ($this->paymentMethod === 'points') ? 'qris' : $this->paymentMethod;
 
         if (empty($this->cart)) {
             $this->orderError = 'Keranjang belanja kosong. Silakan pilih menu terlebih dahulu.';
@@ -350,7 +398,7 @@ class CheckoutPage extends Component
                 'points_to_redeem' => $this->pointsToRedeem,
                 'table_number'     => $this->tableNumber ?: null,
                 'type'             => $this->orderType,
-                'payment_method'   => $this->paymentMethod,
+                'payment_method'   => $effectivePaymentMethod,
                 'order_notes'      => $this->orderNotes ?: null,
             ]);
 

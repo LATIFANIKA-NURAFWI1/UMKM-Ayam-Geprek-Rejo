@@ -1,406 +1,196 @@
-<div class="flex h-full w-full flex-1 flex-col gap-6 p-6">
+<div class="flex h-full w-full flex-1 flex-col gap-6 p-6 bg-surface text-on-surface font-body-md antialiased">
 
-    {{-- ═══════════════════════════════════════════════════════════════════
-         FLASH MESSAGE
-    ═══════════════════════════════════════════════════════════════════ --}}
-    @if(session('status'))
-        <div
-            x-data="{ show: true }"
-            x-show="show"
-            x-init="setTimeout(() => show = false, 3500)"
-            x-transition:leave="transition ease-in duration-200"
-            x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0"
-            class="fixed right-6 top-6 z-50 flex items-center gap-3 rounded-2xl bg-green-500 px-5 py-3.5 text-white shadow-2xl"
-        >
-            <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-            </svg>
-            <span class="text-sm font-semibold">{{ session('status') }}</span>
-        </div>
-    @endif
-
-    {{-- ═══════════════════════════════════════════════════════════════════
-         HEADER
-    ═══════════════════════════════════════════════════════════════════ --}}
-    <div class="flex flex-wrap items-start justify-between gap-4">
+    {{-- ── Header ─────────────────────────────────────────────────── --}}
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-            <flux:heading size="xl" level="1">Manajemen Pengeluaran</flux:heading>
-            <flux:text class="mt-1">Catat dan pantau semua biaya operasional warung</flux:text>
+            <h1 class="text-headline-lg font-headline-lg text-on-surface">Manajemen Pengeluaran</h1>
+            <p class="text-body-md font-body-md text-on-surface-variant mt-1">Catat dan pantau semua biaya operasional warung</p>
         </div>
-        <button
-            wire:click="openCreate"
-            class="flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-orange-600 active:scale-95"
-        >
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4.5v15m7.5-7.5h-15"/>
-            </svg>
-            Catat Pengeluaran
+        <button wire:click="openCreate()"
+                class="bg-primary hover:bg-on-error-container text-on-primary px-6 py-3 rounded-lg flex items-center gap-2 transition-colors shadow-[0_2px_8px_rgba(188,0,10,0.2)] active:scale-95 duration-150 w-full md:w-auto justify-center">
+            <span class="material-symbols-outlined">add</span>
+            <span class="font-body-lg font-semibold">Catat Pengeluaran</span>
         </button>
     </div>
 
-    {{-- ═══════════════════════════════════════════════════════════════════
-         SUMMARY CARDS — Per Kategori
-    ═══════════════════════════════════════════════════════════════════ --}}
-    <div class="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6">
-        {{-- Total Card --}}
-        <div class="col-span-2 flex items-center gap-4 rounded-2xl border border-red-200 bg-red-50 p-5 lg:col-span-1 xl:col-span-2">
-            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-red-100">
-                <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
-                </svg>
-            </div>
-            <div>
-                <p class="text-xs text-red-600">Total Bulan Ini</p>
-                <p class="mt-0.5 text-xl font-black text-red-700">Rp {{ number_format($this->totalBulanIni, 0, ',', '.') }}</p>
+    {{-- ── Summary Cards Bento Grid ────────────────────────────────── --}}
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-card-gap">
+        {{-- Total Card (Hero) --}}
+        <div class="col-span-1 md:col-span-2 lg:col-span-1 bg-surface-container-lowest rounded-xl p-5 border border-outline-variant shadow-[0_8px_24px_rgba(0,0,0,0.04)] relative overflow-hidden group">
+            <div class="absolute top-0 left-0 w-full h-1 bg-primary"></div>
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-body-md font-body-md text-on-surface-variant font-medium">Total Bulan Ini</p>
+                    <h2 class="text-[28px] font-bold font-headline-lg text-primary mt-2">
+                        Rp {{ number_format($totalBulanIni ?? 0, 0, ',', '.') }}
+                    </h2>
+                </div>
+                <div class="w-12 h-12 rounded-full bg-error-container flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-300">
+                    <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">account_balance_wallet</span>
+                </div>
             </div>
         </div>
 
-        {{-- Per-Category Cards --}}
+        {{-- Category Breakdown Cards --}}
         @php
-            $catColors = [
-                'bahan_baku'  => ['bg-emerald-50', 'text-emerald-600', 'bg-emerald-100', '🥦'],
-                'operasional' => ['bg-blue-50',    'text-blue-600',    'bg-blue-100',    '⚡'],
-                'gaji'        => ['bg-purple-50',  'text-purple-600',  'bg-purple-100',  '👤'],
-                'perawatan'   => ['bg-amber-50',   'text-amber-600',   'bg-amber-100',   '🔧'],
-                'lainnya'     => ['bg-zinc-50',    'text-zinc-600',    'bg-zinc-100',    '📋'],
+            $categories = [
+                ['icon' => 'inventory_2',   'label' => 'Bahan Baku',  'key' => 'bahan_baku'],
+                ['icon' => 'storefront',    'label' => 'Operasional', 'key' => 'operasional'],
+                ['icon' => 'group',         'label' => 'Gaji',        'key' => 'gaji'],
+                ['icon' => 'build',         'label' => 'Perawatan',   'key' => 'perawatan'],
+                ['icon' => 'more_horiz',    'label' => 'Lainnya',     'key' => 'lainnya'],
             ];
         @endphp
-        @foreach(\App\Livewire\Pengeluaran\Index::CATEGORIES as $cat)
-            @php [$bgCard, $textColor, $iconBg, $icon] = $catColors[$cat]; @endphp
-            <div class="flex flex-col gap-1 rounded-2xl border border-zinc-200 {{ $bgCard }} p-4">
-                <div class="flex items-center gap-2">
-                    <span class="text-base">{{ $icon }}</span>
-                    <p class="text-xs font-medium {{ $textColor }}">{{ ucwords(str_replace('_', ' ', $cat)) }}</p>
+        @foreach($categories as $cat)
+            <div class="bg-surface-container-lowest rounded-xl p-5 border border-surface-variant shadow-[0_2px_8px_rgba(0,0,0,0.02)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] transition-shadow">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="material-symbols-outlined text-secondary-fixed-dim">{{ $cat['icon'] }}</span>
+                    <p class="text-body-md font-body-md text-on-surface-variant font-medium">{{ $cat['label'] }}</p>
                 </div>
-                <p class="text-sm font-bold text-zinc-900">
-                    Rp {{ number_format($this->categoryTotals[$cat] ?? 0, 0, ',', '.') }}
+                <p class="text-headline-md font-headline-md text-on-surface">
+                    Rp {{ number_format($this->categoryTotals[$cat['key']] ?? 0, 0, ',', '.') }}
                 </p>
             </div>
         @endforeach
     </div>
 
-    {{-- ═══════════════════════════════════════════════════════════════════
-         FILTERS
-    ═══════════════════════════════════════════════════════════════════ --}}
-    <div class="flex flex-wrap items-center gap-3">
-        <input
-            type="month"
-            wire:model.live="bulan"
-            class="rounded-xl border border-zinc-300 px-4 py-2 text-sm text-zinc-700 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200"
-        />
-        <select
-            wire:model.live="filterKategori"
-            class="rounded-xl border border-zinc-300 px-4 py-2 text-sm text-zinc-700 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200"
-        >
-            <option value="">Semua Kategori</option>
-            @foreach(\App\Livewire\Pengeluaran\Index::CATEGORIES as $cat)
-                <option value="{{ $cat }}">{{ ucwords(str_replace('_', ' ', $cat)) }}</option>
-            @endforeach
-        </select>
+    {{-- ── Filters ─────────────────────────────────────────────────── --}}
+    <div class="flex flex-col md:flex-row gap-4">
         <div class="relative flex-1 max-w-xs">
-            <svg class="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-            </svg>
-            <input
-                type="text"
-                wire:model.live.debounce.300ms="search"
-                placeholder="Cari deskripsi…"
-                class="w-full rounded-xl border border-zinc-300 py-2 pl-10 pr-4 text-sm text-zinc-700 placeholder-zinc-400 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200"
-            />
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">calendar_today</span>
+            <input wire:model.live="bulan" type="month"
+                   class="w-full pl-10 pr-4 py-2.5 bg-surface-container-lowest border border-surface-variant rounded-lg text-body-md focus:border-secondary-fixed-dim focus:ring-1 focus:ring-secondary-fixed-dim outline-none transition-all">
+        </div>
+        <div class="relative flex-1 max-w-xs">
+            <select wire:model.live="filterKategori"
+                    class="w-full pl-4 pr-10 py-2.5 bg-surface-container-lowest border border-surface-variant rounded-lg text-body-md appearance-none focus:border-secondary-fixed-dim focus:ring-1 focus:ring-secondary-fixed-dim outline-none transition-all">
+                <option value="">Semua Kategori</option>
+                <option value="bahan_baku">Bahan Baku</option>
+                <option value="operasional">Operasional</option>
+                <option value="gaji">Gaji</option>
+                <option value="perawatan">Perawatan</option>
+                <option value="lainnya">Lainnya</option>
+            </select>
+            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+        </div>
+        <div class="relative flex-1">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+            <input wire:model.live.debounce.300ms="search" type="text" placeholder="Cari deskripsi..."
+                   class="w-full pl-10 pr-4 py-2.5 bg-surface-container-lowest border border-surface-variant rounded-lg text-body-md focus:border-secondary-fixed-dim focus:ring-1 focus:ring-secondary-fixed-dim outline-none transition-all">
         </div>
     </div>
 
-    {{-- ═══════════════════════════════════════════════════════════════════
-         TABLE
-    ═══════════════════════════════════════════════════════════════════ --}}
-    <div class="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
-        <table class="min-w-full divide-y divide-zinc-100 dark:divide-zinc-800">
-            <thead class="bg-zinc-50 dark:bg-zinc-800/60">
-                <tr>
-                    <th class="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-zinc-500">Tanggal</th>
-                    <th class="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-zinc-500">Kategori</th>
-                    <th class="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wide text-zinc-500">Deskripsi</th>
-                    <th class="px-5 py-3.5 text-right text-xs font-semibold uppercase tracking-wide text-zinc-500">Jumlah</th>
-                    <th class="px-5 py-3.5 text-right text-xs font-semibold uppercase tracking-wide text-zinc-500">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
-                @forelse($expenses as $expense)
-                    <tr class="group transition hover:bg-zinc-50 dark:hover:bg-zinc-800/40">
-                        <td class="px-5 py-3.5 text-sm text-zinc-500">
-                            {{ \Carbon\Carbon::parse($expense->expense_date)->translatedFormat('d M Y') }}
-                        </td>
-                        <td class="px-5 py-3.5">
-                            @php
-                                $catBadge = [
-                                    'bahan_baku'  => 'bg-emerald-100 text-emerald-700',
-                                    'operasional' => 'bg-blue-100 text-blue-700',
-                                    'gaji'        => 'bg-purple-100 text-purple-700',
-                                    'perawatan'   => 'bg-amber-100 text-amber-700',
-                                    'lainnya'     => 'bg-zinc-100 text-zinc-700',
-                                ][$expense->category] ?? 'bg-zinc-100 text-zinc-700';
-                            @endphp
-                            <span class="inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold {{ $catBadge }}">
-                                {{ ucwords(str_replace('_', ' ', $expense->category)) }}
-                            </span>
-                        </td>
-                        <td class="px-5 py-3.5 text-sm text-zinc-800 dark:text-zinc-200">{{ $expense->description }}</td>
-                        <td class="px-5 py-3.5 text-right text-sm font-bold text-red-600">
-                            Rp {{ number_format($expense->amount, 0, ',', '.') }}
-                        </td>
-                        <td class="px-5 py-3.5 text-right">
-                            <div class="flex items-center justify-end gap-2">
-                                <button
-                                    wire:click="openEdit({{ $expense->id }})"
-                                    class="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-600 transition hover:border-zinc-300 hover:bg-zinc-50 active:scale-95 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-                                >
-                                    ✏️ Edit
-                                </button>
-                                <button
-                                    wire:click="confirmDelete({{ $expense->id }})"
-                                    class="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-100 active:scale-95"
-                                >
-                                    🗑️ Hapus
-                                </button>
-                            </div>
-                        </td>
+    {{-- ── Data Table ──────────────────────────────────────────────── --}}
+    <div class="bg-surface-container-lowest border border-surface-variant rounded-xl overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-surface-variant bg-surface-container-low text-label-caps font-label-caps text-on-surface-variant">
+                        <th class="px-6 py-4 font-semibold uppercase tracking-wider">Tanggal</th>
+                        <th class="px-6 py-4 font-semibold uppercase tracking-wider">Kategori</th>
+                        <th class="px-6 py-4 font-semibold uppercase tracking-wider">Deskripsi</th>
+                        <th class="px-6 py-4 font-semibold uppercase tracking-wider text-right">Jumlah</th>
+                        <th class="px-6 py-4 font-semibold uppercase tracking-wider text-center">Aksi</th>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" class="px-5 py-16 text-center">
-                            <div class="flex flex-col items-center gap-3">
-                                <span class="text-5xl">📋</span>
-                                <p class="font-semibold text-zinc-500">Belum ada catatan pengeluaran</p>
-                                <p class="text-sm text-zinc-400">Klik tombol "Catat Pengeluaran" untuk menambahkan</p>
-                            </div>
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="text-body-md font-body-md">
+                    @forelse($expenses ?? [] as $expense)
+                        <tr class="border-b border-surface-variant hover:bg-surface transition-colors group">
+                            <td class="px-6 py-4 text-on-surface">{{ \Carbon\Carbon::parse($expense->expense_date)->format('d M Y') }}</td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full border border-secondary-fixed-dim text-secondary-fixed-dim text-label-caps font-label-caps bg-surface-container-lowest">
+                                    {{ ucwords(str_replace('_', ' ', $expense->category ?? 'Lainnya')) }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-on-surface max-w-[200px] truncate">{{ $expense->description }}</td>
+                            <td class="px-6 py-4 text-right text-primary font-bold">Rp {{ number_format($expense->amount, 0, ',', '.') }}</td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button wire:click="openEdit({{ $expense->id }})"
+                                            class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-secondary-fixed-dim hover:bg-secondary-fixed/20 transition-colors" title="Edit">
+                                        <span class="material-symbols-outlined text-[20px]">edit</span>
+                                    </button>
+                                    <button x-on:click="if(confirm('Hapus pengeluaran ini?')) { $wire.confirmDelete({{ $expense->id }}); $wire.delete(); }"
+                                            class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-error-container transition-colors" title="Hapus">
+                                        <span class="material-symbols-outlined text-[20px]">delete</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="py-16 text-center">
+                                <span class="material-symbols-outlined text-5xl text-on-surface-variant/30 block mb-3">payments</span>
+                                <p class="text-on-surface-variant italic text-sm">Belum ada data pengeluaran bulan ini.</p>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
 
-        @if($expenses->hasPages())
-            <div class="border-t border-zinc-100 px-5 py-4 dark:border-zinc-800">
-                {{ $expenses->links() }}
-            </div>
-        @endif
-    </div>
-
-
-    {{-- ═══════════════════════════════════════════════════════════════════
-         MODAL: CREATE / EDIT FORM
-    ═══════════════════════════════════════════════════════════════════ --}}
-    <div
-        x-data="{ open: @entangle('showForm') }"
-        x-show="open"
-        x-on:keydown.escape.window="$wire.closeForm()"
-        class="fixed inset-0 z-50 flex items-end justify-center p-4 sm:items-center"
-        style="display: none;"
-    >
-        {{-- Backdrop --}}
-        <div
-            x-show="open"
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0"
-            x-transition:enter-end="opacity-100"
-            x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0"
-            class="fixed inset-0 bg-black/50 backdrop-blur-sm"
-            x-on:click="$wire.closeForm()"
-        ></div>
-
-        {{-- Panel --}}
-        <div
-            x-show="open"
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-            x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-            x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0 translate-y-4 sm:scale-95"
-            class="relative z-50 w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-zinc-900"
-        >
-            {{-- Header --}}
-            <div class="flex items-center justify-between border-b border-zinc-100 px-6 py-5 dark:border-zinc-800">
-                <div class="flex items-center gap-3">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100 text-xl">
-                        {{ $editingId ? '✏️' : '➕' }}
-                    </div>
-                    <h3 class="text-lg font-bold text-zinc-900 dark:text-white">
-                        {{ $editingId ? 'Edit Pengeluaran' : 'Catat Pengeluaran Baru' }}
-                    </h3>
-                </div>
-                <button
-                    wire:click="closeForm"
-                    class="flex h-8 w-8 items-center justify-center rounded-full text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-800"
-                >
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
-            </div>
-
-            {{-- Body --}}
-            <div class="space-y-4 px-6 py-5">
-                {{-- Tanggal --}}
-                <div>
-                    <label class="mb-1.5 block text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                        Tanggal <span class="text-red-500">*</span>
-                    </label>
-                    <input
-                        type="date"
-                        wire:model="formDate"
-                        class="w-full rounded-xl border border-zinc-300 px-4 py-2.5 text-sm text-zinc-700 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200"
-                    />
-                    @error('formDate') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
-                </div>
-
-                {{-- Kategori --}}
-                <div>
-                    <label class="mb-1.5 block text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                        Kategori <span class="text-red-500">*</span>
-                    </label>
-                    <div class="grid grid-cols-3 gap-2 sm:grid-cols-5">
-                        @php
-                            $catEmojis = ['bahan_baku' => '🥦', 'operasional' => '⚡', 'gaji' => '👤', 'perawatan' => '🔧', 'marketing' => '📢', 'lainnya' => '📋'];
-                        @endphp
-                        @foreach(\App\Livewire\Pengeluaran\Index::CATEGORIES as $cat)
-                            <label
-                                class="flex cursor-pointer flex-col items-center gap-1 rounded-xl border-2 p-2 text-center transition {{ $formCategory === $cat ? 'border-orange-400 bg-orange-50' : 'border-zinc-200 hover:border-zinc-300' }}"
-                            >
-                                <input type="radio" wire:model.live="formCategory" value="{{ $cat }}" class="sr-only">
-                                <span class="text-xl">{{ $catEmojis[$cat] }}</span>
-                                <span class="text-[10px] font-semibold {{ $formCategory === $cat ? 'text-orange-700' : 'text-zinc-500' }}">{{ ucwords(str_replace('_', ' ', $cat)) }}</span>
-                            </label>
-                        @endforeach
-                    </div>
-                    @error('formCategory') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
-                </div>
-
-                {{-- Deskripsi --}}
-                <div>
-                    <label class="mb-1.5 block text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                        Deskripsi <span class="text-red-500">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        wire:model="formDescription"
-                        placeholder="Contoh: Bayar listrik bulan Juni"
-                        class="w-full rounded-xl border border-zinc-300 px-4 py-2.5 text-sm text-zinc-700 placeholder-zinc-400 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200"
-                    />
-                    @error('formDescription') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
-                </div>
-
-                {{-- Jumlah --}}
-                <div>
-                    <label class="mb-1.5 block text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                        Jumlah (Rp) <span class="text-red-500">*</span>
-                    </label>
-                    <div class="relative">
-                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-medium text-zinc-500">Rp</span>
-                        <input
-                            type="number"
-                            wire:model="formAmount"
-                            placeholder="0"
-                            min="1"
-                            class="w-full rounded-xl border border-zinc-300 py-2.5 pl-10 pr-4 text-sm text-zinc-700 placeholder-zinc-400 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200"
-                        />
-                    </div>
-                    @error('formAmount') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
-                </div>
-            </div>
-
-            {{-- Footer --}}
-            <div class="flex gap-3 border-t border-zinc-100 px-6 py-4 dark:border-zinc-800">
-                <button
-                    wire:click="closeForm"
-                    class="flex-1 rounded-xl border border-zinc-300 bg-white px-4 py-2.5 text-sm font-semibold text-zinc-600 transition hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
-                >
-                    Batal
-                </button>
-                <button
-                    wire:click="saveExpense"
-                    wire:loading.attr="disabled"
-                    wire:target="saveExpense"
-                    class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                    <span wire:loading.remove wire:target="saveExpense">
-                        {{ $editingId ? '💾 Simpan Perubahan' : '✅ Simpan' }}
-                    </span>
-                    <span wire:loading wire:target="saveExpense" class="flex items-center gap-2">
-                        <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-                        </svg>
-                        Menyimpan...
-                    </span>
-                </button>
-            </div>
+        {{-- Pagination Footer --}}
+        <div class="border-t border-surface-variant bg-surface-container-lowest px-6 py-4 flex items-center justify-between">
+            <p class="text-body-md text-on-surface-variant">
+                Menampilkan {{ ($expenses ?? collect())->count() }} entri
+            </p>
+            @if(($expenses ?? null) && method_exists($expenses, 'links'))
+                <div>{{ $expenses->links() }}</div>
+            @endif
         </div>
     </div>
 
-
-    {{-- ═══════════════════════════════════════════════════════════════════
-         MODAL: DELETE CONFIRMATION
-    ═══════════════════════════════════════════════════════════════════ --}}
-    <div
-        x-data
-        x-show="$wire.deletingId !== null"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4"
-        style="display: none;"
-    >
-        <div
-            x-show="$wire.deletingId !== null"
-            x-transition:enter="transition ease-out duration-150"
-            x-transition:enter-start="opacity-0"
-            x-transition:enter-end="opacity-100"
-            x-transition:leave="transition ease-in duration-100"
-            x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0"
-            class="fixed inset-0 bg-black/50 backdrop-blur-sm"
-            x-on:click="$wire.cancelDelete()"
-        ></div>
-
-        <div
-            x-show="$wire.deletingId !== null"
-            x-transition:enter="transition ease-out duration-150"
-            x-transition:enter-start="opacity-0 scale-95"
-            x-transition:enter-end="opacity-100 scale-100"
-            class="relative z-50 w-full max-w-sm overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-zinc-900"
-        >
-            <div class="p-6 text-center">
-                <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
-                    <span class="text-3xl">🗑️</span>
+    {{-- ── Form Modal ────────────────────────────────────────────────── --}}
+    @if($showForm)
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+             x-data x-on:keydown.escape.window="$wire.closeForm()">
+            <div class="bg-surface-container-lowest rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col"
+                 @click.away="$wire.closeForm()">
+                <div class="px-6 py-4 border-b border-surface-variant flex justify-between items-center bg-surface shrink-0">
+                    <h2 class="font-headline-md text-headline-md font-bold text-on-surface">{{ $editingId ? 'Edit Pengeluaran' : 'Catat Pengeluaran Baru' }}</h2>
+                    <button wire:click="closeForm()" class="text-on-surface-variant hover:text-on-surface rounded-full p-1 transition-colors">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
                 </div>
-                <h3 class="text-lg font-bold text-zinc-900 dark:text-white">Hapus Pengeluaran?</h3>
-                <p class="mt-2 text-sm text-zinc-500">Tindakan ini tidak dapat dibatalkan. Data pengeluaran akan dihapus permanen.</p>
-            </div>
-            <div class="flex gap-3 border-t border-zinc-100 px-6 py-4 dark:border-zinc-800">
-                <button
-                    wire:click="cancelDelete"
-                    class="flex-1 rounded-xl border border-zinc-300 bg-white px-4 py-2.5 text-sm font-semibold text-zinc-600 transition hover:bg-zinc-50"
-                >
-                    Batal
-                </button>
-                <button
-                    wire:click="delete"
-                    wire:loading.attr="disabled"
-                    wire:target="delete"
-                    class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-500 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-red-600 disabled:opacity-60"
-                >
-                    <span wire:loading.remove wire:target="delete">Ya, Hapus</span>
-                    <span wire:loading wire:target="delete" class="flex items-center gap-2">
-                        <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-                        </svg>
-                        Menghapus...
-                    </span>
-                </button>
+                <form wire:submit.prevent="saveExpense" class="flex flex-col">
+                    <div class="p-6 space-y-4">
+                        <div>
+                            <label class="font-body-md font-medium text-on-surface mb-1 block">Tanggal</label>
+                            <input wire:model="formDate" type="date" class="w-full px-4 py-2 bg-surface-container-low border border-surface-variant rounded-lg focus:ring-2 focus:ring-primary text-on-surface">
+                            @error('formDate') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
+                        </div>
+                        <div>
+                            <label class="font-body-md font-medium text-on-surface mb-1 block">Kategori</label>
+                            <select wire:model="formCategory" class="w-full px-4 py-2 bg-surface-container-low border border-surface-variant rounded-lg focus:ring-2 focus:ring-primary text-on-surface">
+                                <option value="bahan_baku">Bahan Baku</option>
+                                <option value="operasional">Operasional</option>
+                                <option value="gaji">Gaji</option>
+                                <option value="perawatan">Perawatan</option>
+                                <option value="lainnya">Lainnya</option>
+                            </select>
+                            @error('formCategory') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
+                        </div>
+                        <div>
+                            <label class="font-body-md font-medium text-on-surface mb-1 block">Deskripsi</label>
+                            <input wire:model="formDescription" type="text" placeholder="Misal: Beli gas elpiji" class="w-full px-4 py-2 bg-surface-container-low border border-surface-variant rounded-lg focus:ring-2 focus:ring-primary text-on-surface">
+                            @error('formDescription') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
+                        </div>
+                        <div>
+                            <label class="font-body-md font-medium text-on-surface mb-1 block">Jumlah (Rp)</label>
+                            <input wire:model="formAmount" type="number" min="0" step="500" placeholder="0" class="w-full px-4 py-2 bg-surface-container-low border border-surface-variant rounded-lg focus:ring-2 focus:ring-primary text-on-surface">
+                            @error('formAmount') <span class="text-error text-sm mt-1">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
+                    <div class="px-6 py-4 border-t border-surface-variant flex justify-end gap-3 shrink-0 bg-surface-container-lowest">
+                        <button type="button" wire:click="closeForm()" class="px-5 py-2 font-body-md font-medium text-on-surface-variant hover:bg-surface-container rounded-lg">Batal</button>
+                        <button type="submit" class="px-5 py-2 font-body-md font-bold bg-primary text-on-primary hover:bg-surface-tint rounded-lg flex items-center gap-2">
+                            <span wire:loading wire:target="saveExpense" class="material-symbols-outlined animate-spin text-[18px]">sync</span>
+                            Simpan
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
-    </div>
+    @endif
 
 </div>

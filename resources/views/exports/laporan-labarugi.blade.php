@@ -107,9 +107,9 @@
             <tbody>
                 @foreach($topItems as $item)
                 <tr>
-                    <td>{{ $item['name'] }}</td>
-                    <td class="text-right">{{ $item['qty'] }}</td>
-                    <td class="text-right">Rp {{ number_format($item['revenue'], 0, ',', '.') }}</td>
+                    <td>{{ $item['menu_item_name'] ?? '-' }}</td>
+                    <td class="text-right">{{ number_format($item['total_qty'] ?? 0, 0, ',', '.') }}</td>
+                    <td class="text-right">Rp {{ number_format($item['total_revenue'] ?? 0, 0, ',', '.') }}</td>
                 </tr>
                 @endforeach
             </tbody>

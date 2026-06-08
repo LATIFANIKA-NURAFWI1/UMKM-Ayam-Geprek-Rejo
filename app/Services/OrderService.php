@@ -85,6 +85,7 @@ class OrderService
             }
         }
 
+        DB::statement('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
         return DB::transaction(function () use ($data, $cartItems, $voucherData, $redemptionData, $member) {
             // 1. Hitung finansial
             $subtotal          = $this->calculateSubtotal($data['cart']);
@@ -132,10 +133,8 @@ class OrderService
                 ]);
             }
 
-            // 5. Redeem poin (jika ada)
-            if ($member && $pointsRedeemed > 0) {
-                $this->pointService->redeemPoints($member, $order, $pointsRedeemed);
-            }
+            // 5. JANGAN potong poin di sini — poin hanya dipotong saat kasir konfirmasi (confirmPayment)
+            //    Order sudah mencatat points_redeemed & points_redeemed_amount untuk referensi kasir.
 
             Log::info("OrderService: Order #{$orderNumber} (queue: {$queueNumber}) dibuat.");
 
@@ -168,6 +167,7 @@ class OrderService
      */
     public function confirmPayment(int $orderId, string $paymentMethod, ?int $confirmedBy = null): Order
     {
+        DB::statement('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
         return DB::transaction(function () use ($orderId, $paymentMethod, $confirmedBy) {
 
             // Pessimistic lock pada order untuk cegah double confirm
@@ -204,8 +204,19 @@ class OrderService
             // Refresh total_hpp setelah freeze
             $order->refresh();
 
-            // ── STEP 4 & 5: Proses poin & voucher (jika ada member) ────────
+            // ── STEP 4: Proses poin earn & REDEEM (ATOMIC) ─────────────────
             if ($order->member) {
+                // REDEEM: Potong poin jika pesanan menggunakan redeem
+                // Poin baru dipotong DI SINI (bukan saat createOrder)
+                if ((int) $order->points_redeemed > 0) {
+                    // Re-fetch member dengan lock untuk cegah race condition
+                    $memberLocked = \App\Models\Member::lockForUpdate()->findOrFail($order->member_id);
+                    $this->pointService->redeemPoints($memberLocked, $order, (int) $order->points_redeemed);
+                    $order->member = $memberLocked->refresh(); // sinkronisasi state
+                }
+
+                // EARN: Hitung poin dari total_amount (setelah diskon)
+                // Catatan: jika total_amount = 0 (full redeem), poin yang didapat = 0
                 $this->pointService->earnPoints($order->member, $order);
             }
 
@@ -241,6 +252,7 @@ class OrderService
      */
     public function startPreparing(int $orderId): Order
     {
+        DB::statement('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
         return DB::transaction(function () use ($orderId) {
             $order = Order::lockForUpdate()->findOrFail($orderId);
 
@@ -261,6 +273,7 @@ class OrderService
      */
     public function completeOrder(int $orderId): Order
     {
+        DB::statement('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
         return DB::transaction(function () use ($orderId) {
             $order = Order::lockForUpdate()->findOrFail($orderId);
 
@@ -285,6 +298,7 @@ class OrderService
      */
     public function cancelOrder(int $orderId, string $reason = ''): Order
     {
+        DB::statement('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
         return DB::transaction(function () use ($orderId, $reason) {
             $order = Order::lockForUpdate()->with('details')->findOrFail($orderId);
 

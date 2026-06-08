@@ -4,10 +4,14 @@ namespace App\Livewire\Menu;
 
 use App\Models\Category;
 use App\Models\MenuItem;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Layout('layouts.app')]
+#[Title('Menu Makanan')]
 class Index extends Component
 {
     use WithPagination;

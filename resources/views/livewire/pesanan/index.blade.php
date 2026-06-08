@@ -1,246 +1,300 @@
-<div class="flex h-full w-full flex-1 flex-col gap-6 p-6">
+<div class="flex h-full w-full flex-1 flex-col gap-section-margin p-6 bg-background text-on-background font-body-md antialiased">
 
-    {{-- Header --}}
-    <div class="flex flex-wrap items-center justify-between gap-3">
+    {{-- ══ Header & View Toggle ════════════════════════════════════════════════ --}}
+    <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-6">
         <div>
-            <flux:heading size="xl" level="1">Pesanan</flux:heading>
-            <flux:text class="mt-1">Riwayat transaksi penjualan</flux:text>
+            <h1 class="font-headline-lg text-headline-lg text-on-background mb-1">Pesanan</h1>
+            <p class="text-on-surface-variant">Riwayat transaksi penjualan</p>
         </div>
-        {{-- Mode Toggle --}}
-        <div class="flex items-center gap-1 rounded-xl border border-zinc-200 bg-white p-1 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+
+        {{-- Mode Toggle Pill --}}
+        <div class="inline-flex bg-surface-container rounded-full p-1 self-start md:self-auto">
             <button wire:click="$set('viewMode', 'harian')"
-                @class([
-                    'rounded-lg px-4 py-2 text-sm font-semibold transition',
-                    'bg-orange-500 text-white shadow-sm' => $viewMode === 'harian',
-                    'text-zinc-500 hover:text-zinc-700 dark:text-zinc-400' => $viewMode !== 'harian',
-                ])>
-                📅 Harian
+                    class="{{ $viewMode === 'harian' ? 'bg-secondary-container text-on-secondary-container shadow-sm' : 'text-on-surface-variant hover:bg-surface-variant' }} px-6 py-2 rounded-full font-label-caps text-label-caps transition-colors flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">calendar_view_day</span>
+                Harian
             </button>
             <button wire:click="$set('viewMode', 'bulanan')"
-                @class([
-                    'rounded-lg px-4 py-2 text-sm font-semibold transition',
-                    'bg-orange-500 text-white shadow-sm' => $viewMode === 'bulanan',
-                    'text-zinc-500 hover:text-zinc-700 dark:text-zinc-400' => $viewMode !== 'bulanan',
-                ])>
-                🗓 Bulanan
+                    class="{{ $viewMode === 'bulanan' ? 'bg-secondary-container text-on-secondary-container shadow-sm' : 'text-on-surface-variant hover:bg-surface-variant' }} px-6 py-2 rounded-full font-label-caps text-label-caps transition-colors flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">calendar_month</span>
+                Bulanan
             </button>
         </div>
     </div>
 
-    {{-- =====================================================================
-         MODE BULANAN: Summary per hari dalam 1 bulan
-         ===================================================================== --}}
-    @if($viewMode === 'bulanan')
+    {{-- ══════════════════════════════════════════════════════════════════════════
+         MODE: HARIAN
+    ══════════════════════════════════════════════════════════════════════════════ --}}
+    @if($viewMode === 'harian')
 
-        {{-- Filter Bulan --}}
-        <div class="flex flex-wrap items-end gap-3">
-            <div>
-                <label class="mb-1 block text-xs font-semibold text-zinc-500">Pilih Bulan</label>
-                <input type="month" wire:model.live="bulan"
-                    class="rounded-xl border border-zinc-300 px-4 py-2.5 text-sm text-zinc-700 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200">
+        {{-- Filters --}}
+        <div class="flex flex-col md:flex-row gap-4">
+            <div class="relative w-full md:w-64">
+                <input wire:model.live="tanggal" type="date"
+                       class="w-full bg-surface-container-lowest border border-surface-variant rounded-xl px-4 py-3 text-on-background focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all cursor-pointer font-body-md text-body-md">
+            </div>
+            <div class="relative flex-1">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                <input wire:model.live.debounce.300ms="search" type="text"
+                       placeholder="Cari no. pesanan..."
+                       class="w-full bg-surface-container-lowest border border-surface-variant rounded-xl pl-12 pr-4 py-3 text-on-background focus:ring-2 focus:ring-secondary focus:border-transparent outline-none transition-all font-body-md text-body-md">
             </div>
         </div>
 
-        @if(!empty($this->dailySummary))
-            <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                <div class="flex flex-col gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 p-5 dark:border-emerald-800/40 dark:bg-emerald-900/20">
-                    <p class="text-xs font-semibold text-emerald-700">💰 Total Pendapatan</p>
-                    <p class="text-2xl font-black text-emerald-800">
-                        Rp {{ number_format($this->totalRevenueBulan, 0, ',', '.') }}
-                    </p>
-                    <p class="text-xs text-emerald-600">
-                        {{ \Carbon\Carbon::createFromFormat('Y-m', $bulan)->translatedFormat('F Y') }}
-                    </p>
+        {{-- Summary Cards --}}
+        @php
+            $pendapatanHarian = ($orders ?? collect())->where('status', 'completed')->sum('total_amount');
+            $totalPesananHarian = ($orders ?? collect())->count();
+        @endphp
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-card-gap">
+            {{-- Pendapatan --}}
+            <div class="bg-surface-container-lowest border border-surface-variant rounded-xl p-6 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.1)] transition-shadow">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary">payments</span>
+                    </div>
+                    <span class="font-label-caps text-label-caps text-on-surface-variant">PENDAPATAN</span>
                 </div>
-                <div class="flex flex-col gap-2 rounded-2xl border border-blue-200 bg-blue-50 p-5 dark:border-blue-800/40 dark:bg-blue-900/20">
-                    <p class="text-xs font-semibold text-blue-700">🛒 Total Transaksi</p>
-                    <p class="text-2xl font-black text-blue-800">{{ number_format($this->totalPesananBulan) }}</p>
-                    <p class="text-xs text-blue-600">pesanan masuk</p>
-                </div>
-                @php
-                    $hariAda = count($this->dailySummary);
-                    $rataHarian = $hariAda > 0 ? $this->totalRevenueBulan / $hariAda : 0;
-                @endphp
-                <div class="col-span-2 flex flex-col gap-2 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-700 dark:bg-zinc-900 sm:col-span-1">
-                    <p class="text-xs font-semibold text-zinc-500">📊 Rata-rata Harian</p>
-                    <p class="text-2xl font-black text-zinc-900 dark:text-white">
-                        Rp {{ number_format($rataHarian, 0, ',', '.') }}
-                    </p>
-                    <p class="text-xs text-zinc-400">dari {{ $hariAda }} hari operasional</p>
+                <div class="font-headline-lg text-headline-lg text-primary font-bold">
+                    Rp {{ number_format($pendapatanHarian, 0, ',', '.') }}
                 </div>
             </div>
-
-            <div class="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
-                <div class="border-b border-zinc-100 px-5 py-4 dark:border-zinc-800">
-                    <h3 class="font-bold text-zinc-800 dark:text-white">
-                        📋 Rincian Harian —
-                        {{ \Carbon\Carbon::createFromFormat('Y-m', $bulan)->translatedFormat('F Y') }}
-                    </h3>
+            {{-- Total Pesanan --}}
+            <div class="bg-surface-container-lowest border border-surface-variant rounded-xl p-6 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.1)] transition-shadow">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center">
+                        <span class="material-symbols-outlined text-on-background">receipt_long</span>
+                    </div>
+                    <span class="font-label-caps text-label-caps text-on-surface-variant">TOTAL PESANAN</span>
                 </div>
-                <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                    <thead class="bg-zinc-50 dark:bg-zinc-800">
-                        <tr>
-                            <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-zinc-500">Tanggal</th>
-                            <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-zinc-500">Pesanan</th>
-                            <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-zinc-500">Terbayar</th>
-                            <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-zinc-500">Pendapatan</th>
+                <div class="font-headline-lg text-headline-lg text-on-background font-bold">
+                    {{ $totalPesananHarian }}
+                </div>
+            </div>
+        </div>
+
+        {{-- Transaction List --}}
+        <div class="bg-surface-container-lowest border border-surface-variant rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
+
+            {{-- Desktop Table Header --}}
+            <div class="hidden md:grid grid-cols-12 gap-4 p-4 border-b border-surface-variant bg-surface-container-low font-label-caps text-label-caps text-on-surface-variant">
+                <div class="col-span-3">NO. PESANAN</div>
+                <div class="col-span-3">PELANGGAN / MEJA</div>
+                <div class="col-span-2">ITEM</div>
+                <div class="col-span-2">TOTAL</div>
+                <div class="col-span-1 text-center">STATUS</div>
+                <div class="col-span-1 text-right">WAKTU</div>
+            </div>
+
+            {{-- List Items --}}
+            <div class="divide-y divide-surface-variant">
+                @forelse($orders ?? [] as $order)
+                    @php
+                        $customerName = $order->member?->name ?? 'Pelanggan Umum';
+                        $initial      = strtoupper(substr($customerName, 0, 1));
+                        $hasMember    = (bool) $order->member_id;
+                        $avatarBg     = $hasMember ? 'bg-secondary-fixed text-on-secondary-fixed' : 'bg-surface-container text-on-surface-variant';
+                        $itemCount    = $order->details?->count() ?? 0;
+                        $orderType    = $order->order_type === 'dine_in'
+                            ? 'Dine In (Meja ' . ($order->table_number ?? '-') . ')'
+                            : 'Take Away (Antrian ' . ($order->queue_number ?? '-') . ')';
+                        $orderTypeIcon = $order->order_type === 'dine_in' ? 'table_restaurant' : 'takeout_dining';
+
+                        $statusConfig = match($order->status) {
+                            'completed'  => ['label' => 'Selesai',     'class' => 'bg-secondary-fixed text-on-secondary-fixed',         'icon' => 'check_circle'],
+                            'confirmed'  => ['label' => 'Dikonfirmasi','class' => 'bg-surface-container text-on-surface',               'icon' => 'thumb_up'],
+                            'preparing'  => ['label' => 'Diproses',    'class' => 'bg-secondary-container text-on-secondary-container', 'icon' => 'skillet'],
+                            'cancelled'  => ['label' => 'Dibatalkan',  'class' => 'bg-error-container text-on-error-container',         'icon' => 'cancel'],
+                            default      => ['label' => 'Menunggu',    'class' => 'bg-surface-variant text-on-surface-variant',         'icon' => 'schedule'],
+                        };
+                    @endphp
+
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 md:items-center hover:bg-surface-container-low transition-colors cursor-pointer group">
+
+                        {{-- Mobile: No. Order + Status Badge --}}
+                        <div class="flex justify-between items-start md:hidden mb-2">
+                            <div class="font-body-lg text-body-lg font-bold text-on-background">#{{ $order->order_number }}</div>
+                            <span class="{{ $statusConfig['class'] }} px-3 py-1 rounded-full font-label-caps text-label-caps flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[14px]">{{ $statusConfig['icon'] }}</span>
+                                {{ $statusConfig['label'] }}
+                            </span>
+                        </div>
+
+                        {{-- Desktop: No. Order --}}
+                        <div class="col-span-3 hidden md:block font-body-lg text-body-lg font-bold text-on-background group-hover:text-primary transition-colors">
+                            #{{ $order->order_number }}
+                        </div>
+
+                        {{-- Customer --}}
+                        <div class="col-span-3 flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full {{ $avatarBg }} flex items-center justify-center font-bold shrink-0">{{ $initial }}</div>
+                            <div>
+                                <div class="font-body-md text-body-md font-semibold text-on-background">{{ $customerName }}</div>
+                                <div class="text-on-surface-variant text-[12px] flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[14px]">{{ $orderTypeIcon }}</span>
+                                    {{ $orderType }}
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Items Count --}}
+                        <div class="col-span-2 text-on-surface-variant flex items-center gap-2 mt-2 md:mt-0">
+                            <span class="material-symbols-outlined text-[16px] md:hidden">restaurant</span>
+                            {{ $itemCount }} item
+                        </div>
+
+                        {{-- Total --}}
+                        <div class="col-span-2 font-body-lg text-body-lg font-bold text-on-background flex justify-between md:block mt-2 md:mt-0">
+                            <span class="md:hidden text-on-surface-variant font-normal text-body-md">Total:</span>
+                            Rp {{ number_format($order->total_amount ?? 0, 0, ',', '.') }}
+                        </div>
+
+                        {{-- Status Badge (Desktop) --}}
+                        <div class="col-span-1 text-center hidden md:block">
+                            <span class="{{ $statusConfig['class'] }} px-3 py-1 rounded-full font-label-caps text-label-caps inline-flex items-center gap-1">
+                                {{ $statusConfig['label'] }}
+                            </span>
+                        </div>
+
+                        {{-- Time --}}
+                        <div class="col-span-1 text-right text-on-surface-variant flex justify-between md:block mt-2 md:mt-0 border-t border-surface-variant pt-2 md:border-t-0 md:pt-0">
+                            <span class="md:hidden">Waktu:</span>
+                            {{ $order->created_at?->format('H:i') ?? '-' }}
+                        </div>
+                    </div>
+                @empty
+                    <div class="py-16 text-center">
+                        <span class="material-symbols-outlined text-5xl text-on-surface-variant/30 block mb-3">receipt_long</span>
+                        <p class="text-on-surface-variant italic text-sm">Tidak ada pesanan untuk tanggal ini.</p>
+                    </div>
+                @endforelse
+            </div>
+
+            {{-- Pagination / Load More --}}
+            @if(($orders ?? null) && method_exists($orders, 'links') && $orders->hasPages())
+                <div class="p-4 bg-surface-container-low border-t border-surface-variant">
+                    {{ $orders->links() }}
+                </div>
+            @endif
+        </div>
+
+    {{-- ══════════════════════════════════════════════════════════════════════════
+         MODE: BULANAN
+    ══════════════════════════════════════════════════════════════════════════════ --}}
+    @else
+
+        {{-- Month Selector --}}
+        <div>
+            <label class="block font-label-caps text-label-caps text-tertiary mb-2 uppercase tracking-wider">Pilih Bulan</label>
+            <div class="relative w-full md:w-64">
+                <input wire:model.live="bulan" type="month"
+                       class="w-full bg-surface-container-lowest border border-surface-variant rounded-xl px-4 py-3 font-body-lg text-body-lg text-on-background focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer">
+            </div>
+        </div>
+
+        {{-- Summary Cards --}}
+        @php
+            $bulanLabel = $bulan ? \Carbon\Carbon::createFromFormat('Y-m', $bulan)->translatedFormat('F Y') : '-';
+        @endphp
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-card-gap">
+            {{-- Total Pendapatan --}}
+            <div class="bg-surface-container-lowest border border-surface-variant rounded-2xl p-6 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] relative overflow-hidden group">
+                <div class="absolute top-0 left-0 w-1 h-full bg-primary rounded-l-2xl"></div>
+                <div class="flex items-center gap-2 mb-3">
+                    <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary text-[18px]">payments</span>
+                    </div>
+                    <span class="font-body-md text-body-md text-on-surface-variant font-medium">Total Pendapatan</span>
+                </div>
+                <div class="font-headline-lg text-headline-lg text-primary mb-1">
+                    Rp {{ number_format($this->totalRevenueBulan, 0, ',', '.') }}
+                </div>
+                <div class="font-body-md text-body-md text-tertiary">{{ $bulanLabel }}</div>
+            </div>
+            {{-- Total Transaksi --}}
+            <div class="bg-surface-container-lowest border border-surface-variant rounded-2xl p-6 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-secondary-container rounded-l-2xl"></div>
+                <div class="flex items-center gap-2 mb-3">
+                    <div class="w-8 h-8 rounded-full bg-secondary-container/20 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-on-secondary-container text-[18px]">receipt_long</span>
+                    </div>
+                    <span class="font-body-md text-body-md text-on-surface-variant font-medium">Total Transaksi</span>
+                </div>
+                <div class="font-headline-lg text-headline-lg text-on-background mb-1">
+                    {{ $this->totalPesananBulan }}
+                </div>
+                <div class="font-body-md text-body-md text-tertiary">pesanan masuk</div>
+            </div>
+            {{-- Rata-rata Harian --}}
+            <div class="bg-surface-container-lowest border border-surface-variant rounded-2xl p-6 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] relative overflow-hidden">
+                <div class="flex items-center gap-2 mb-3">
+                    <div class="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center">
+                        <span class="material-symbols-outlined text-on-surface-variant text-[18px]">monitoring</span>
+                    </div>
+                    <span class="font-body-md text-body-md text-on-surface-variant font-medium">Rata-rata Harian</span>
+                </div>
+                @php
+                    $hariOperasional = count(array_filter($this->dailySummary, fn($d) => ($d['revenue'] ?? 0) > 0));
+                    $rataRata = $hariOperasional > 0 ? $this->totalRevenueBulan / $hariOperasional : 0;
+                @endphp
+                <div class="font-headline-lg text-headline-lg text-on-background mb-1">
+                    Rp {{ number_format($rataRata, 0, ',', '.') }}
+                </div>
+                <div class="font-body-md text-body-md text-tertiary">dari {{ $hariOperasional }} hari operasional</div>
+            </div>
+        </div>
+
+        {{-- Daily Breakdown Table --}}
+        <div class="bg-surface-container-lowest border border-surface-variant rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col">
+            <div class="bg-surface-container-low px-6 py-4 border-b border-surface-variant flex items-center gap-2">
+                <span class="material-symbols-outlined text-on-surface-variant text-[20px]">list_alt</span>
+                <h2 class="font-body-lg text-body-lg font-semibold text-on-background">Rincian Harian — {{ $bulanLabel }}</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[600px]">
+                    <thead>
+                        <tr class="bg-surface-container-lowest border-b border-surface-variant">
+                            <th class="px-6 py-4 font-label-caps text-label-caps text-tertiary font-bold tracking-wider uppercase">Tanggal</th>
+                            <th class="px-6 py-4 font-label-caps text-label-caps text-tertiary font-bold tracking-wider uppercase text-right">Pesanan</th>
+                            <th class="px-6 py-4 font-label-caps text-label-caps text-tertiary font-bold tracking-wider uppercase text-right">Terbayar</th>
+                            <th class="px-6 py-4 font-label-caps text-label-caps text-tertiary font-bold tracking-wider uppercase text-right">Pendapatan</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
-                        @foreach($this->dailySummary as $day)
-                            <tr class="cursor-pointer transition hover:bg-orange-50 dark:hover:bg-zinc-800/50"
-                                wire:click="$set('viewMode', 'harian'); $set('tanggal', '{{ $day['tanggal'] }}')">
-                                <td class="px-5 py-3 text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                                    {{ \Carbon\Carbon::parse($day['tanggal'])->translatedFormat('d F Y, l') }}
-                                </td>
-                                <td class="px-5 py-3 text-right text-sm text-zinc-600">{{ $day['total_pesanan'] }}</td>
-                                <td class="px-5 py-3 text-right text-sm text-zinc-500">{{ $day['terbayar'] }}</td>
-                                <td class="px-5 py-3 text-right font-bold text-emerald-700">
-                                    Rp {{ number_format($day['revenue'], 0, ',', '.') }}
+                    <tbody class="font-body-md text-body-md text-on-background divide-y divide-surface-variant/50">
+                        @forelse($this->dailySummary as $row)
+                            @php
+                                $tgl = \Carbon\Carbon::parse($row['tanggal'])->translatedFormat('d F Y, l');
+                                $revenue = (float) ($row['revenue'] ?? 0);
+                            @endphp
+                            <tr class="hover:bg-surface-container-lowest/50 transition-colors">
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $tgl }}</td>
+                                <td class="px-6 py-4 text-right">{{ $row['total_pesanan'] }}</td>
+                                <td class="px-6 py-4 text-right">{{ $row['terbayar'] ?? '-' }}</td>
+                                <td class="px-6 py-4 text-right {{ $revenue > 0 ? 'font-semibold text-primary' : 'text-tertiary' }}">
+                                    Rp {{ number_format($revenue, 0, ',', '.') }}
                                 </td>
                             </tr>
-                        @endforeach
-                        <tr class="bg-zinc-900 dark:bg-zinc-800">
-                            <td class="px-5 py-3 text-sm font-bold text-white">Total Bulan Ini</td>
-                            <td class="px-5 py-3 text-right text-sm text-zinc-300">{{ $this->totalPesananBulan }}</td>
-                            <td class="px-5 py-3 text-right text-sm text-zinc-300">—</td>
-                            <td class="px-5 py-3 text-right text-base font-black text-emerald-400">
+                        @empty
+                            <tr>
+                                <td colspan="4" class="px-6 py-12 text-center text-on-surface-variant italic text-sm">
+                                    Belum ada data untuk bulan ini
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                    <tfoot>
+                        <tr class="bg-surface-variant border-t-2 border-surface-variant">
+                            <td class="px-6 py-4 font-headline-md text-headline-md font-bold text-on-background whitespace-nowrap">Total Bulan Ini</td>
+                            <td class="px-6 py-4 text-right font-headline-md text-headline-md font-bold text-on-background">{{ $this->totalPesananBulan }}</td>
+                            <td class="px-6 py-4 text-right font-headline-md text-headline-md font-bold text-on-background">—</td>
+                            <td class="px-6 py-4 text-right font-headline-md text-headline-md font-bold text-primary">
                                 Rp {{ number_format($this->totalRevenueBulan, 0, ',', '.') }}
                             </td>
                         </tr>
-                    </tbody>
+                    </tfoot>
                 </table>
             </div>
-        @else
-            <div class="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-zinc-300 py-16 dark:border-zinc-700">
-                <span class="text-5xl">📭</span>
-                <p class="mt-3 text-sm text-zinc-400">Tidak ada transaksi pada bulan ini</p>
-            </div>
-        @endif
-
-    @else
-
-    {{-- =====================================================================
-         MODE HARIAN: List transaksi
-         ===================================================================== --}}
-        <div class="flex flex-wrap gap-3">
-            <input type="date" wire:model.live="tanggal"
-                class="w-full rounded-xl border border-zinc-300 bg-white px-4 py-2.5 text-sm text-zinc-700 shadow-sm focus:border-orange-400 focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 sm:w-44">
-            <div class="relative">
-                <svg class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
-                <input wire:model.live.debounce.300ms="search" placeholder="Cari no. pesanan…"
-                    class="rounded-xl border border-zinc-300 bg-white py-2.5 pl-10 pr-4 text-sm text-zinc-700 shadow-sm focus:border-orange-400 focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 sm:w-56">
-            </div>
         </div>
-
-        {{-- Summary harian --}}
-        @if($tanggal)
-            @php
-                $ordersToday = $orders->getCollection();
-                $revenueHarian = $ordersToday->whereIn('status', ['confirmed','preparing','completed'])->sum('total_amount');
-            @endphp
-            <div class="flex flex-wrap gap-3">
-                <div class="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-3 dark:border-emerald-800/40 dark:bg-emerald-900/20">
-                    <span class="text-xl">💰</span>
-                    <div>
-                        <p class="text-xs font-semibold text-emerald-700">Pendapatan</p>
-                        <p class="text-lg font-black text-emerald-800">Rp {{ number_format($revenueHarian, 0, ',', '.') }}</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3 rounded-xl border border-zinc-200 bg-white px-5 py-3 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
-                    <span class="text-xl">🛒</span>
-                    <div>
-                        <p class="text-xs font-semibold text-zinc-500">Total Pesanan</p>
-                        <p class="text-lg font-black text-zinc-900 dark:text-white">{{ $orders->total() }}</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3 rounded-xl border border-zinc-100 bg-zinc-50 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800">
-                    <span class="text-lg">📅</span>
-                    <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-300">
-                        {{ \Carbon\Carbon::parse($tanggal)->translatedFormat('l, d F Y') }}
-                    </p>
-                </div>
-            </div>
-        @endif
-
-        {{-- Table --}}
-        <div class="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
-            <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                <thead class="bg-zinc-50 dark:bg-zinc-800">
-                    <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-zinc-500">No. Pesanan</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-zinc-500">Pelanggan / Meja</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-zinc-500">Item</th>
-                        <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-zinc-500">Total</th>
-                        <th class="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-zinc-500">Status</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-zinc-500">Waktu</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
-                    @forelse($orders as $order)
-                        @php
-                            $badge = match($order->status) {
-                                'pending'   => 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400',
-                                'confirmed' => 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400',
-                                'preparing' => 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-400',
-                                'completed' => 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400',
-                                default     => 'bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400',
-                            };
-                            $label = match($order->status) {
-                                'pending'   => 'Menunggu',
-                                'confirmed' => 'Dikonfirmasi',
-                                'preparing' => 'Dimasak',
-                                'completed' => 'Selesai',
-                                'cancelled' => 'Dibatalkan',
-                                default     => $order->status,
-                            };
-                        @endphp
-                        <tr class="transition hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
-                            <td class="px-4 py-3">
-                                <span class="font-mono text-sm font-semibold text-zinc-900 dark:text-white">#{{ $order->order_number }}</span>
-                                @if($order->queue_number)
-                                    <span class="ml-1 text-xs text-zinc-400">Antrian {{ $order->queue_number }}</span>
-                                @endif
-                            </td>
-                            <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400">
-                                @if($order->member)
-                                    <span class="inline-flex items-center gap-1">
-                                        <span class="text-amber-500">⭐</span>
-                                        <span class="font-medium">{{ $order->member->name }}</span>
-                                    </span>
-                                @else
-                                    <span class="text-zinc-400">Pelanggan</span>
-                                @endif
-                                <div class="text-xs text-zinc-400 mt-0.5">
-                                    {{ $order->table_number ? 'Meja '.$order->table_number : '-' }}
-                                    <span class="ml-1 rounded bg-zinc-100 px-1.5 py-0.5 dark:bg-zinc-700">
-                                        {{ $order->type === 'dine_in' ? 'Dine In' : 'Take Away' }}
-                                    </span>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-sm text-zinc-500">{{ $order->details->count() }} item</td>
-                            <td class="px-4 py-3 text-right text-sm font-semibold text-zinc-900 dark:text-white">
-                                Rp {{ number_format($order->total_amount, 0, ',', '.') }}
-                            </td>
-                            <td class="px-4 py-3 text-center">
-                                <span class="rounded-full px-2.5 py-0.5 text-xs font-medium {{ $badge }}">{{ $label }}</span>
-                            </td>
-                            <td class="px-4 py-3 text-sm text-zinc-400">{{ $order->created_at->format('H:i') }}</td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="px-4 py-12 text-center text-sm text-zinc-400">
-                                Tidak ada pesanan pada periode ini.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-
-        <div>{{ $orders->links() }}</div>
 
     @endif
 

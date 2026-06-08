@@ -1,24 +1,33 @@
 @if($topMenus->isEmpty())
-    <div class="flex flex-col items-center justify-center py-8 text-zinc-400">
-        <flux:icon name="fire" class="mb-2 h-10 w-10 opacity-30" />
+    <div class="flex flex-col items-center justify-center py-8 text-on-surface-variant">
+        <span class="material-symbols-outlined text-4xl opacity-30 mb-2">local_fire_department</span>
         <p class="text-sm">Belum ada data penjualan hari ini</p>
     </div>
 @else
-    <div class="divide-y divide-zinc-100 dark:divide-zinc-800">
+    <div class="flex flex-col gap-3">
         @foreach($topMenus as $index => $item)
-            <div class="flex items-center gap-3 py-3">
-                <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-orange-100 text-xs font-bold text-orange-600 dark:bg-orange-900/40 dark:text-orange-400">
-                    {{ $index + 1 }}
-                </span>
-                <div class="flex-1 min-w-0">
-                    <p class="truncate text-sm font-medium text-zinc-900 dark:text-white">
-                        {{ $item->menuItem?->name ?? $item->menu_item_name }}
-                    </p>
-                    <p class="text-xs text-zinc-500">{{ $item->menuItem?->category?->name ?? '' }}</p>
+            @php
+                $rank       = $index + 1;
+                $isTop3     = $rank <= 3;
+                $rankBg     = $isTop3 ? 'bg-primary-container text-primary' : 'bg-[#fef5e6] text-secondary-fixed-dim';
+                $stagger    = 'list-stagger-' . min($rank, 5);
+                $categoryName = $item->menuItem?->category?->name ?? '';
+            @endphp
+            <div class="flex items-center justify-between p-2 rounded-lg hover:bg-surface-container-high transition-colors animate-fade-in {{ $stagger }}">
+                <div class="flex items-center gap-4">
+                    <div class="w-8 h-8 rounded-full {{ $rankBg }} flex items-center justify-center font-bold text-sm shrink-0">
+                        {{ $rank }}
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-sm font-medium text-on-surface">
+                            {{ $item->menuItem?->name ?? $item->menu_item_name }}
+                        </span>
+                        @if($categoryName)
+                            <span class="text-xs text-on-surface-variant">{{ $categoryName }}</span>
+                        @endif
+                    </div>
                 </div>
-                <span class="shrink-0 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                    {{ $item->total_terjual }}x
-                </span>
+                <span class="text-sm font-bold text-on-surface shrink-0">{{ $item->total_terjual }}x</span>
             </div>
         @endforeach
     </div>

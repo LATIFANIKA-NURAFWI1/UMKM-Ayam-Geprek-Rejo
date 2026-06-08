@@ -8,6 +8,7 @@ use App\Services\OrderService;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 #[Layout('components.layouts.cashier')]
@@ -26,6 +27,8 @@ class Dashboard extends Component
 
     public ?int $cancelOrderId = null;
 
+    #[Validate('required', message: 'Alasan pembatalan wajib diisi.')]
+    #[Validate('min:3', message: 'Alasan minimal 3 karakter.')]
     public string $cancelReason = '';
 
     // ─── Confirm Payment Modal ───────────────────────────────────────────────
@@ -127,13 +130,7 @@ class Dashboard extends Component
 
     public function cancelOrder(): void
     {
-        $this->validate(
-            ['cancelReason' => 'required|min:3'],
-            [
-                'cancelReason.required' => 'Alasan pembatalan wajib diisi.',
-                'cancelReason.min'      => 'Alasan minimal 3 karakter.',
-            ]
-        );
+        $this->validateOnly('cancelReason');
 
         try {
             app(OrderService::class)->cancelOrder($this->cancelOrderId, $this->cancelReason);

@@ -1,101 +1,151 @@
-<div class="flex h-full w-full flex-1 flex-col gap-6 p-6">
+<div class="flex h-full w-full flex-1 flex-col gap-6 p-6 bg-background text-on-background font-body-md antialiased">
 
-    {{-- Header --}}
-    <div class="flex flex-wrap items-center justify-between gap-3">
+    {{-- ── Flash Status ─────────────────────────────────────────────────── --}}
+    @if(session('status'))
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)"
+             x-transition:leave="transition ease-in duration-300"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="bg-secondary-container/20 border border-secondary-container text-on-secondary-container px-4 py-3 rounded-xl text-sm flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">check_circle</span>
+            {{ session('status') }}
+        </div>
+    @endif
+
+    {{-- ── Header ───────────────────────────────────────────────────── --}}
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-            <flux:heading size="xl" level="1">Menu Makanan</flux:heading>
-            <flux:text class="mt-1">Kelola semua item menu Geprek Rejo</flux:text>
+            <h1 class="font-headline-lg text-headline-lg text-on-surface mb-1">Menu Makanan</h1>
+            <p class="font-body-md text-body-md text-on-surface-variant">Kelola daftar menu, harga, dan ketersediaan stok.</p>
         </div>
-        <flux:button icon="plus" href="{{ route('menu.create') }}" wire:navigate>
+        <a href="{{ route('menu.create') }}" wire:navigate
+           class="bg-primary hover:bg-surface-tint text-on-primary font-body-lg text-body-lg font-bold py-3 px-6 rounded-lg shadow-[0_4px_14px_0_rgba(188,0,10,0.39)] hover:shadow-[0_6px_20px_rgba(188,0,10,0.23)] transition-all duration-200 flex items-center gap-2 active:scale-95 w-full md:w-auto justify-center">
+            <span class="material-symbols-outlined">add</span>
             Tambah Menu
-        </flux:button>
+        </a>
     </div>
 
-    {{-- Filters --}}
-    <div class="flex flex-wrap gap-3">
-        <flux:input wire:model.live.debounce.300ms="search" placeholder="Cari nama menu…" icon="magnifying-glass" class="w-full sm:w-64" />
+    {{-- ── Filters Section ─────────────────────────────────────────── --}}
+    <div class="bg-surface-container-lowest border border-[#E9ECEF] rounded-xl p-4 flex flex-col sm:flex-row sm:items-center gap-4 justify-between shadow-sm">
 
-        <select wire:model.live="kategori"
-            class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-700 shadow-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 sm:w-48">
-            <option value="">Semua Kategori</option>
-            @foreach($categories as $cat)
-                <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+        {{-- Category Filter Pills --}}
+        <div class="flex overflow-x-auto gap-2 pb-2 sm:pb-0 hide-scrollbar">
+            <button wire:click="$set('kategori', '')"
+                    class="whitespace-nowrap px-4 py-2 font-label-caps text-label-caps rounded-full transition-colors
+                           {{ ($kategori ?? '') === '' ? 'bg-primary-container text-on-primary-container font-bold' : 'border border-outline-variant text-on-surface-variant hover:bg-surface-container hover:text-on-surface' }}">
+                Semua
+            </button>
+            @foreach($categories ?? [] as $cat)
+                <button wire:click="$set('kategori', '{{ $cat->id }}')"
+                        class="whitespace-nowrap px-4 py-2 font-label-caps text-label-caps rounded-full transition-colors
+                               {{ ($kategori ?? '') == $cat->id ? 'bg-primary-container text-on-primary-container font-bold' : 'border border-outline-variant text-on-surface-variant hover:bg-surface-container hover:text-on-surface' }}">
+                    {{ $cat->name }}
+                </button>
             @endforeach
-        </select>
+        </div>
 
-        <select wire:model.live="status"
-            class="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-700 shadow-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 sm:w-44">
-            <option value="">Semua Status</option>
-            <option value="1">Tersedia</option>
-            <option value="0">Tidak Tersedia</option>
-        </select>
+        <div class="flex gap-2 w-full sm:w-auto">
+            {{-- Status Filter --}}
+            <select wire:model.live="status" class="bg-[#F1F3F5] border-none focus:ring-2 focus:ring-primary rounded-lg font-body-md text-body-md text-on-surface px-4 py-2">
+                <option value="">Semua Status</option>
+                <option value="1">Tersedia</option>
+                <option value="0">Habis</option>
+            </select>
+
+            {{-- Search Input --}}
+            <div class="relative w-full sm:w-72">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                <input wire:model.live.debounce.300ms="search"
+                       class="w-full pl-10 pr-4 py-2 bg-[#F1F3F5] border-none focus:ring-2 focus:ring-primary rounded-lg font-body-md text-body-md text-on-surface transition-shadow"
+                       placeholder="Cari nama menu..." type="text">
+            </div>
+        </div>
     </div>
 
-    {{-- Grid Menu --}}
-    @if($menuItems->isEmpty())
-        <div class="flex flex-col items-center justify-center rounded-xl border border-dashed border-zinc-300 py-16 dark:border-zinc-700">
-            <flux:icon name="fire" class="mb-3 h-12 w-12 text-zinc-300 dark:text-zinc-600" />
-            <p class="font-medium text-zinc-500">Tidak ada menu ditemukan</p>
-            <p class="mt-1 text-sm text-zinc-400">Coba ubah filter atau tambahkan menu baru</p>
-        </div>
-    @else
-        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            @foreach($menuItems as $item)
-                <div class="group relative overflow-hidden rounded-xl border border-zinc-200 bg-white transition hover:shadow-md dark:border-zinc-700 dark:bg-zinc-900">
+    {{-- ── Menu Grid ────────────────────────────────────────────────── --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-card-gap">
+        @forelse($menuItems ?? [] as $item)
+            @php
+                $isHabis = !$item->is_available;
+                $isSisa  = $item->is_available && isset($item->stock) && $item->stock <= 5;
+            @endphp
 
-                    {{-- Image --}}
-                    <div class="relative aspect-square overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-                        @if($item->image)
-                            <img src="{{ Storage::url($item->image) }}?v={{ time() }}" alt="{{ $item->name }}"
-                                class="h-full w-full object-cover transition group-hover:scale-105">
-                        @else
-                            <div class="flex h-full items-center justify-center">
-                                <flux:icon name="fire" class="h-10 w-10 text-zinc-300 dark:text-zinc-600" />
-                            </div>
-                        @endif
+            <div class="bg-surface-container-lowest border border-[#E9ECEF] rounded-xl overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300 group flex flex-col {{ $isHabis ? 'opacity-70 grayscale-[20%]' : '' }}">
 
-                        {{-- Status Badge --}}
-                        <span class="absolute right-2 top-2 rounded-full px-2 py-0.5 text-xs font-semibold
-                            {{ $item->is_available
-                                ? 'bg-green-100 text-green-700 dark:bg-green-900/60 dark:text-green-400'
-                                : 'bg-red-100 text-red-700 dark:bg-red-900/60 dark:text-red-400' }}">
-                            {{ $item->is_available ? 'Tersedia' : 'Habis' }}
-                        </span>
-                    </div>
+                {{-- Thumbnail --}}
+                <div class="relative h-48 w-full overflow-hidden">
+                    @if($item->image)
+                        <img src="{{ Storage::url($item->image) }}" alt="{{ $item->name }}"
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    @else
+                        <div class="w-full h-full bg-surface-container-high flex items-center justify-center">
+                            <span class="material-symbols-outlined text-5xl text-on-surface-variant/30">restaurant</span>
+                        </div>
+                    @endif
 
-                    {{-- Info --}}
-                    <div class="p-3">
-                        <p class="truncate text-sm font-semibold text-zinc-900 dark:text-white">{{ $item->name }}</p>
-                        <p class="text-xs text-zinc-400">{{ $item->category?->name ?? '-' }}</p>
-                        <p class="mt-1.5 text-sm font-bold text-orange-600 dark:text-orange-400">
-                            Rp {{ number_format($item->price, 0, ',', '.') }}
-                        </p>
-                    </div>
-
-                    {{-- Actions --}}
-                    <div class="flex border-t border-zinc-100 dark:border-zinc-800">
-                        <button wire:click="toggleAvailable({{ $item->id }})"
-                            class="flex flex-1 items-center justify-center gap-1 py-2 text-xs text-zinc-500 transition hover:bg-zinc-50 hover:text-zinc-700 dark:hover:bg-zinc-800">
-                            <flux:icon name="{{ $item->is_available ? 'eye-slash' : 'eye' }}" class="h-3.5 w-3.5" />
-                            {{ $item->is_available ? 'Nonaktif' : 'Aktifkan' }}
-                        </button>
-                        <a href="{{ route('menu.edit', $item->id) }}" wire:navigate
-                            class="flex flex-1 items-center justify-center gap-1 border-x border-zinc-100 py-2 text-xs text-zinc-500 transition hover:bg-zinc-50 hover:text-zinc-700 dark:border-zinc-800 dark:hover:bg-zinc-800">
-                            <flux:icon name="pencil" class="h-3.5 w-3.5" />
-                            Edit
-                        </a>
-                        <button wire:click="delete({{ $item->id }})"
-                            wire:confirm="Hapus menu '{{ $item->name }}'?"
-                            class="flex flex-1 items-center justify-center gap-1 py-2 text-xs text-red-400 transition hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20">
-                            <flux:icon name="trash" class="h-3.5 w-3.5" />
-                            Hapus
-                        </button>
-                    </div>
-
+                    {{-- Availability Badge --}}
+                    @if($isHabis)
+                        <div class="absolute top-3 right-3 bg-tertiary-fixed-dim/90 backdrop-blur-sm px-3 py-1 rounded-full border border-tertiary">
+                            <span class="font-label-caps text-label-caps text-on-tertiary-fixed-variant">Habis</span>
+                        </div>
+                    @elseif($isSisa)
+                        <div class="absolute top-3 right-3 bg-secondary-fixed-dim/90 backdrop-blur-sm px-3 py-1 rounded-full border border-secondary-container">
+                            <span class="font-label-caps text-label-caps text-on-secondary-fixed">Sisa {{ $item->stock }} Porsi</span>
+                        </div>
+                    @else
+                        <div class="absolute top-3 right-3 bg-surface-container-lowest/90 backdrop-blur-sm px-3 py-1 rounded-full border border-primary/20">
+                            <span class="font-label-caps text-label-caps text-primary">Tersedia</span>
+                        </div>
+                    @endif
                 </div>
-            @endforeach
-        </div>
 
+                {{-- Card Body --}}
+                <div class="p-5 flex-1 flex flex-col">
+                    <span class="font-label-caps text-label-caps text-on-surface-variant mb-1">
+                        {{ $item->category->name ?? 'Tanpa Kategori' }}
+                    </span>
+                    <h3 class="font-headline-md text-headline-md text-on-surface mb-2 line-clamp-2">{{ $item->name }}</h3>
+
+                    <div class="mt-auto pt-4 flex items-center justify-between border-t border-outline-variant/30">
+                        <span class="font-headline-md text-headline-md font-bold {{ $isHabis ? 'text-on-surface-variant' : 'text-primary' }}">
+                            Rp {{ number_format($item->price, 0, ',', '.') }}
+                        </span>
+                        <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <button wire:click="toggleAvailable({{ $item->id }})"
+                                    class="p-2 text-on-surface-variant hover:text-primary bg-surface-container-lowest border border-outline-variant rounded-lg hover:border-primary transition-colors"
+                                    title="Toggle Tersedia/Habis">
+                                <span class="material-symbols-outlined">{{ $item->is_available ? 'block' : 'check_circle' }}</span>
+                            </button>
+                            <a href="{{ route('menu.edit', $item->id) }}" wire:navigate
+                               class="p-2 text-on-surface-variant hover:text-secondary-fixed-dim bg-surface-container-lowest border border-outline-variant rounded-lg hover:border-secondary-fixed-dim transition-colors"
+                               title="Edit">
+                                <span class="material-symbols-outlined">edit</span>
+                            </a>
+                            <button wire:click="delete({{ $item->id }})"
+                                    wire:confirm="Hapus menu '{{ $item->name }}'?"
+                                    class="p-2 text-on-surface-variant hover:text-error bg-surface-container-lowest border border-outline-variant rounded-lg hover:border-error transition-colors"
+                                    title="Hapus">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        @empty
+            <div class="col-span-full flex flex-col items-center justify-center py-20 border-2 border-dashed border-surface-variant rounded-xl">
+                <span class="material-symbols-outlined text-6xl text-on-surface-variant/30 mb-4">restaurant_menu</span>
+                <p class="font-body-lg text-body-lg text-on-surface-variant mb-4">Belum ada menu. Mulai tambahkan sekarang.</p>
+                <a href="{{ route('menu.create') }}" wire:navigate
+                   class="bg-primary text-on-primary px-5 py-2.5 rounded-lg font-body-md font-bold flex items-center gap-2 hover:bg-surface-tint transition-colors">
+                    <span class="material-symbols-outlined text-sm">add</span> Tambah Menu Pertama
+                </a>
+            </div>
+        @endforelse
+    </div>
+
+    {{-- ── Pagination ─────────────────────────────────────────────────── --}}
+    @if(($menuItems ?? null) && method_exists($menuItems, 'links') && $menuItems->hasPages())
         <div class="mt-2">{{ $menuItems->links() }}</div>
     @endif
 

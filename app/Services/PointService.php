@@ -57,12 +57,45 @@ class PointService
         return $pointsEarned;
     }
 
+    // ── Konstanta Program Reward ─────────────────────────────────────────────
+
+    public const REDEEM_POINTS_REQUIRED = 150;
+    public const REDEEM_DISCOUNT_VALUE  = 15000.0; // Rp 15.000 = 1 Paket Geprek Gratis
+
     /**
-     * Redeem poin saat checkout.
-     * Dipanggil SEBELUM order dibuat, untuk menghitung discount dari poin.
+     * Cek apakah member bisa menukarkan poin (saldo >= 150).
+     */
+    public function canRedeem(Member $member): bool
+    {
+        return $member->points >= self::REDEEM_POINTS_REQUIRED;
+    }
+
+    /**
+     * Validasi apakah cart mengandung item "Paket Geprek" / "Paket Nasi Geprek".
+     * Aturan bisnis: poin hanya bisa ditukar jika ada item Paket Geprek di keranjang.
+     *
+     * @param  array<string, array{name: string, ...}>  $cart  Session cart
+     */
+    public function cartHasGeprekItem(array $cart): bool
+    {
+        foreach ($cart as $item) {
+            $name = strtolower($item['name'] ?? '');
+            if (str_contains($name, 'paket') && (
+                str_contains($name, 'geprek') || str_contains($name, 'nasi')
+            )) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Hitung diskon dari penukaran poin.
+     * Aturan: 150 poin = Rp 15.000 (gratis 1 Paket Geprek).
      *
      * @param  Member  $member
-     * @param  int     $pointsToRedeem  Jumlah poin yang ingin digunakan
+     * @param  bool    $wantsRedeem     Apakah pelanggan mengaktifkan redeem
+     * @param  array   $cart            Session cart untuk validasi item Geprek
      * @param  float   $orderTotal      Total sebelum redeem
      * @return array{discount: float, points_used: int}
      *
@@ -74,22 +107,23 @@ class PointService
             return ['discount' => 0.0, 'points_used' => 0];
         }
 
-        if ($member->points < $pointsToRedeem) {
+        if ($pointsToRedeem !== self::REDEEM_POINTS_REQUIRED) {
             throw new \InvalidArgumentException(
-                "Poin tidak mencukupi. Saldo: {$member->points}, diminta: {$pointsToRedeem}."
+                'Penukaran hanya bisa dilakukan sebesar ' . self::REDEEM_POINTS_REQUIRED . ' poin sekaligus.'
             );
         }
 
-        // 1 poin = Rp 10.000
-        $discountValue = (float) $pointsToRedeem * 10000.0;
+        if ($member->points < self::REDEEM_POINTS_REQUIRED) {
+            throw new \InvalidArgumentException(
+                "Poin tidak mencukupi. Saldo: {$member->points}, dibutuhkan: " . self::REDEEM_POINTS_REQUIRED . '.');
+        }
 
-        // Redeem tidak boleh melebihi total order
-        $actualDiscount = min($discountValue, $orderTotal);
-        $actualPoints   = $pointsToRedeem;
+        // 150 poin = Rp 15.000 (harga 1 Paket Geprek gratis)
+        $actualDiscount = min(self::REDEEM_DISCOUNT_VALUE, $orderTotal);
 
         return [
             'discount'    => $actualDiscount,
-            'points_used' => $actualPoints,
+            'points_used' => self::REDEEM_POINTS_REQUIRED,
         ];
     }
 
@@ -163,6 +197,7 @@ class PointService
 
         $lastCode = null;
         while ($member->points >= 150) {
+            \Illuminate\Support\Facades\DB::statement('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
             $lastCode = \Illuminate\Support\Facades\DB::transaction(function () use ($member) {
                 // Re-fetch member under lock to avoid race conditions
                 $memberLocked = Member::lockForUpdate()->find($member->id);
