@@ -253,7 +253,7 @@
 
             /* Label "Tema": putih bold */
             [data-flux-sidebar] .px-3.pb-2 > p {
-                color: #3e3b3bff !important;
+                color: #ffffff !important;
                 font-size: 0.8125rem !important;
                 font-weight: 700 !important;
                 letter-spacing: 0.08em !important;

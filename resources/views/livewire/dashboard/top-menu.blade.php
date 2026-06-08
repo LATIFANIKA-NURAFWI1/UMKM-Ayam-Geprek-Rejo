@@ -9,7 +9,7 @@
             @php
                 $rank       = $index + 1;
                 $isTop3     = $rank <= 3;
-                $rankBg     = $isTop3 ? 'bg-primary-container text-primary' : 'bg-[#fef5e6] text-secondary-fixed-dim';
+                $rankBg     = $isTop3 ? 'bg-primary-container text-white' : 'bg-[#fef5e6] text-secondary-fixed-dim';
                 $stagger    = 'list-stagger-' . min($rank, 5);
                 $categoryName = $item->menuItem?->category?->name ?? '';
             @endphp
