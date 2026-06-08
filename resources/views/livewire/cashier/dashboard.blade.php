@@ -1,4 +1,4 @@
-<div wire:poll.3s class="min-h-screen bg-gray-100">
+<div wire:poll.5s.keep-alive class="min-h-screen bg-gray-100">
 
     {{-- ═══════════════════════════════════════════════════════════════════════
          FLASH MESSAGES

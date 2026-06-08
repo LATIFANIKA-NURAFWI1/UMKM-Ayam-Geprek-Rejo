@@ -1,4 +1,4 @@
-<div wire:poll.2s class="flex flex-col h-screen w-full bg-[#f4f6f9] dark:bg-gray-950 text-gray-800 dark:text-gray-100 font-sans antialiased overflow-hidden">
+<div wire:poll.5s.keep-alive class="flex flex-col h-screen w-full bg-[#f4f6f9] dark:bg-gray-950 text-gray-800 dark:text-gray-100 font-sans antialiased overflow-hidden">
     
     {{-- ── TopBar ────────────────────────────────────────────────── --}}
     <header class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center w-full px-6 py-4 shadow-sm z-10 shrink-0">

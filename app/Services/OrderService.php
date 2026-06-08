@@ -85,6 +85,7 @@ class OrderService
             }
         }
 
+        DB::statement('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
         return DB::transaction(function () use ($data, $cartItems, $voucherData, $redemptionData, $member) {
             // 1. Hitung finansial
             $subtotal          = $this->calculateSubtotal($data['cart']);
@@ -166,6 +167,7 @@ class OrderService
      */
     public function confirmPayment(int $orderId, string $paymentMethod, ?int $confirmedBy = null): Order
     {
+        DB::statement('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
         return DB::transaction(function () use ($orderId, $paymentMethod, $confirmedBy) {
 
             // Pessimistic lock pada order untuk cegah double confirm
@@ -250,6 +252,7 @@ class OrderService
      */
     public function startPreparing(int $orderId): Order
     {
+        DB::statement('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
         return DB::transaction(function () use ($orderId) {
             $order = Order::lockForUpdate()->findOrFail($orderId);
 
@@ -270,6 +273,7 @@ class OrderService
      */
     public function completeOrder(int $orderId): Order
     {
+        DB::statement('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
         return DB::transaction(function () use ($orderId) {
             $order = Order::lockForUpdate()->findOrFail($orderId);
 
@@ -294,6 +298,7 @@ class OrderService
      */
     public function cancelOrder(int $orderId, string $reason = ''): Order
     {
+        DB::statement('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
         return DB::transaction(function () use ($orderId, $reason) {
             $order = Order::lockForUpdate()->with('details')->findOrFail($orderId);
 
