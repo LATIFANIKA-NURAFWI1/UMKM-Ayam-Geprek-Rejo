@@ -114,7 +114,7 @@
                         <span class="font-headline-md text-headline-md font-bold {{ $isHabis ? 'text-on-surface-variant' : 'text-primary' }}">
                             Rp {{ number_format($item->price, 0, ',', '.') }}
                         </span>
-                        <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <div class="flex gap-2">
                             <button wire:click="toggleAvailable({{ $item->id }})"
                                     class="p-2 text-on-surface-variant hover:text-primary bg-surface-container-lowest border border-outline-variant rounded-lg hover:border-primary transition-colors"
                                     title="Toggle Tersedia/Habis">
