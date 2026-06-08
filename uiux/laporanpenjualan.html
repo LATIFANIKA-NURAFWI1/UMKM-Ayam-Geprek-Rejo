@@ -1,0 +1,478 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Laporan Penjualan - Geprek Rejo</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Google Fonts: Plus Jakarta Sans & Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-container": "#fdc003",
+                    "error": "#ba1a1a",
+                    "surface-bright": "#f7f9ff",
+                    "tertiary": "#5a5c5e",
+                    "surface-dim": "#d7dadf",
+                    "inverse-on-surface": "#eef1f6",
+                    "secondary-fixed": "#ffdf9e",
+                    "primary-fixed": "#ffdad5",
+                    "on-primary-fixed": "#410001",
+                    "on-error": "#ffffff",
+                    "surface-variant": "#e0e3e8",
+                    "surface-container-high": "#e5e8ee",
+                    "on-tertiary-fixed-variant": "#454748",
+                    "surface-container-highest": "#e0e3e8",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-fixed": "#191c1d",
+                    "on-secondary-fixed-variant": "#5b4300",
+                    "on-secondary-fixed": "#261a00",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-container": "#e61919",
+                    "outline-variant": "#e8bcb6",
+                    "on-surface": "#181c20",
+                    "on-error-container": "#93000a",
+                    "on-primary": "#ffffff",
+                    "surface-container": "#ebeef3",
+                    "on-background": "#181c20",
+                    "surface-container-low": "#f1f4f9",
+                    "on-tertiary": "#ffffff",
+                    "primary": "#bc000a",
+                    "tertiary-container": "#737576",
+                    "on-primary-container": "#fffbff",
+                    "background": "#f7f9ff",
+                    "on-tertiary-container": "#fcfdfe",
+                    "surface-tint": "#c0000b",
+                    "secondary-fixed-dim": "#fabd00",
+                    "tertiary-fixed": "#e1e3e4",
+                    "primary-fixed-dim": "#ffb4aa",
+                    "on-secondary-container": "#6c5000",
+                    "tertiary-fixed-dim": "#c5c7c8",
+                    "on-surface-variant": "#5e3f3b",
+                    "inverse-surface": "#2d3135",
+                    "error-container": "#ffdad6",
+                    "outline": "#936e69",
+                    "inverse-primary": "#ffb4aa",
+                    "secondary": "#785900",
+                    "surface": "#f7f9ff",
+                    "on-primary-fixed-variant": "#930006"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "section-margin": "32px",
+                    "container-padding": "24px",
+                    "card-gap": "16px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "body-lg": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "headline-lg": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ],
+                    "label-caps": [
+                            "Inter"
+                    ],
+                    "headline-md": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "order-number": [
+                            "Plus Jakarta Sans"
+                    ]
+            },
+            "fontSize": {
+                    "body-lg": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "headline-lg": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-caps": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "headline-md": [
+                            "20px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "order-number": [
+                            "48px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "800"
+                            }
+                    ]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Skeleton Animation */
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+        .skeleton {
+            background: #f6f7f8;
+            background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+            background-repeat: no-repeat;
+            background-size: 1000px 100%; 
+            animation-duration: 1s;
+            animation-fill-mode: forwards; 
+            animation-iteration-count: infinite;
+            animation-name: shimmer;
+            animation-timing-function: linear;
+        }
+
+        /* Number Counting Animation - Initial State */
+        .count-up {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+        .count-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md antialiased min-h-screen flex flex-col md:flex-row">
+<!-- Navigation Drawer (Desktop) -->
+<nav class="hidden md:flex flex-col h-screen w-72 fixed left-0 top-0 bg-surface-container-low shadow-md py-section-margin z-40">
+<div class="px-6 mb-8">
+<h1 class="font-headline-md text-headline-md font-extrabold text-primary">Resto Manager</h1>
+</div>
+<ul class="flex flex-col gap-2">
+<li>
+<a class="flex items-center gap-4 text-on-surface-variant hover:text-on-surface px-6 py-3 hover:bg-surface-container-highest transition-all duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-lg text-body-lg">Ringkasan</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-4 bg-secondary-container text-on-secondary-container rounded-r-full font-bold px-6 py-3 hover:bg-surface-container-highest transition-all duration-200 active:translate-x-1" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-body-lg text-body-lg">Penjualan</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-4 text-on-surface-variant hover:text-on-surface px-6 py-3 hover:bg-surface-container-highest transition-all duration-200" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-body-lg text-body-lg">Pengeluaran</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-4 text-on-surface-variant hover:text-on-surface px-6 py-3 hover:bg-surface-container-highest transition-all duration-200" href="#">
+<span class="material-symbols-outlined">reorder</span>
+<span class="font-body-lg text-body-lg">Menu Terlaris</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-4 text-on-surface-variant hover:text-on-surface px-6 py-3 hover:bg-surface-container-highest transition-all duration-200" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-body-lg text-body-lg">Laporan PDF</span>
+</a>
+</li>
+</ul>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-72 flex flex-col min-h-screen pb-24 md:pb-0">
+<!-- TopAppBar (Mobile) -->
+<header class="md:hidden flex items-center justify-between px-container-padding py-base w-full bg-surface shadow-sm sticky top-0 z-30 border-b border-surface-variant">
+<div class="flex items-center gap-3">
+<img alt="Owner Profile" class="w-10 h-10 rounded-full bg-surface-container-highest border-2 border-surface" data-alt="A small circular avatar placeholder image showing a generic person's face. The lighting is neutral and even, suitable for a professional dashboard UI profile picture. The background of the avatar is simple and non-distracting, fitting within a clean, modern white and grey aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKqlMUa2LmF_LSgwIB0Ut6lLhl0B5wkhWWq6LkfHuiu7GUSVblxu0GDwi2Oh7tBcxoldnDgZaqQ28X9l_eVBv--EBJ1Gr09jvvrPK4wPATeirNDFBp-BFxGGYEHU24Tv0nLXMW6S5JKDUUl8KzjRH8VkmnWbBz7tqOIZMEL0STiXOjuot6nCdsK-wmIWzL_468bsaF4QguNzr0Hj4_ZamuQMWlWHoaXKwKss-rrhDTdcyRBQ75blFv1Q6BmljvF7kpA2BH6LOKWz0">
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Laporan Penjualan</h1>
+</div>
+<button class="text-on-surface-variant hover:bg-surface-container-high transition-colors p-2 rounded-full active:scale-95 duration-150">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</header>
+<!-- Content Canvas -->
+<div class="px-container-padding py-section-margin max-w-7xl mx-auto w-full flex flex-col gap-section-margin">
+<!-- Header & Filters -->
+<section class="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface hidden md:block mb-4">Laporan Penjualan</h2>
+<div class="flex flex-wrap gap-4 items-center">
+<!-- Segmented Control -->
+<div class="flex p-1 bg-surface-container-low rounded-lg border border-surface-variant">
+<button class="px-4 py-2 font-label-caps text-label-caps text-on-surface-variant hover:text-on-surface rounded-md transition-colors">Hari Ini</button>
+<button class="px-4 py-2 font-label-caps text-label-caps text-on-surface-variant hover:text-on-surface rounded-md transition-colors">Minggu Ini</button>
+<button class="px-4 py-2 font-label-caps text-label-caps bg-surface text-primary font-bold rounded-md shadow-sm border border-surface-variant transition-colors">Bulan Ini</button>
+<button class="px-4 py-2 font-label-caps text-label-caps text-on-surface-variant hover:text-on-surface rounded-md transition-colors">Tahun Ini</button>
+</div>
+<!-- Dropdowns -->
+<div class="flex gap-2">
+<select class="form-select border border-surface-variant rounded-lg bg-surface text-on-surface font-body-md py-2 pl-3 pr-8 focus:ring-primary focus:border-primary">
+<option>Oktober</option>
+<option>September</option>
+<option>Agustus</option>
+</select>
+<select class="form-select border border-surface-variant rounded-lg bg-surface text-on-surface font-body-md py-2 pl-3 pr-8 focus:ring-primary focus:border-primary">
+<option>2023</option>
+<option>2022</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Export Action -->
+<button class="flex items-center justify-center gap-2 px-6 py-3 border border-primary text-primary rounded-lg font-body-lg text-body-lg hover:bg-primary hover:text-white transition-colors duration-200 active:scale-95 whitespace-nowrap">
+<span class="material-symbols-outlined">picture_as_pdf</span>
+                    Export PDF
+                </button>
+</section>
+<!-- Financial Summary Cards -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-card-gap">
+<!-- Total Revenue -->
+<div class="bg-surface border border-surface-variant rounded-xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-shadow">
+<p class="font-body-md text-body-md text-on-surface-variant mb-2">Total Revenue</p>
+<div class="skeleton h-8 w-32 rounded mb-1 card-value-skeleton"></div>
+<p class="font-headline-lg text-headline-lg text-secondary hidden count-up" data-value="124500000">Rp 124.500.000</p>
+</div>
+<!-- Laba Kotor -->
+<div class="bg-surface border border-surface-variant rounded-xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-shadow">
+<p class="font-body-md text-body-md text-on-surface-variant mb-2">Laba Kotor</p>
+<div class="skeleton h-8 w-28 rounded mb-1 card-value-skeleton"></div>
+<p class="font-headline-lg text-headline-lg text-secondary hidden count-up" data-value="85200000">Rp 85.200.000</p>
+</div>
+<!-- Total HPP -->
+<div class="bg-surface border border-surface-variant rounded-xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-shadow">
+<p class="font-body-md text-body-md text-on-surface-variant mb-2">Total HPP</p>
+<div class="skeleton h-8 w-24 rounded mb-1 card-value-skeleton"></div>
+<p class="font-headline-lg text-headline-lg text-tertiary hidden count-up" data-value="39300000">Rp 39.300.000</p>
+</div>
+<!-- Total Expense -->
+<div class="bg-surface border border-surface-variant rounded-xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-shadow">
+<p class="font-body-md text-body-md text-on-surface-variant mb-2">Total Expense</p>
+<div class="skeleton h-8 w-24 rounded mb-1 card-value-skeleton"></div>
+<p class="font-headline-lg text-headline-lg text-error hidden count-up" data-value="12500000">Rp 12.500.000</p>
+</div>
+<!-- Laba Bersih -->
+<div class="bg-surface border border-surface-variant rounded-xl p-5 shadow-[0_8px_30px_rgba(253,192,3,0.15)] border-t-4 border-t-secondary-container hover:shadow-[0_8px_30px_rgba(253,192,3,0.25)] transition-shadow lg:col-span-1 md:col-span-2">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-2 uppercase">Laba Bersih</p>
+<div class="skeleton h-10 w-40 rounded mb-1 card-value-skeleton"></div>
+<p class="font-order-number text-order-number text-secondary hidden count-up" data-value="72700000">Rp 72.7M</p>
+</div>
+</section>
+<!-- Main Data Section -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-card-gap">
+<!-- Visualizations: Donut Chart -->
+<section class="lg:col-span-1 bg-surface border border-surface-variant rounded-xl p-container-padding shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-6">Pengeluaran Operasional</h3>
+<div class="flex-1 flex flex-col items-center justify-center relative min-h-[250px]">
+<!-- CSS Donut Chart Representation -->
+<div class="w-48 h-48 rounded-full border-[16px] border-surface-container-high relative" style="background: conic-gradient(#bc000a 0% 45%, #fdc003 45% 75%, #5a5c5e 75% 100%); mask-image: radial-gradient(transparent 55%, black 56%); -webkit-mask-image: radial-gradient(transparent 55%, black 56%);">
+</div>
+<div class="absolute inset-0 flex items-center justify-center flex-col">
+<span class="font-body-md text-body-md text-on-surface-variant">Total</span>
+<span class="font-headline-md text-headline-md font-bold text-on-surface">12.5M</span>
+</div>
+</div>
+<!-- Permanent Legend -->
+<div class="mt-8 flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+<span class="font-body-md text-body-md text-on-surface">Gaji Karyawan</span>
+</div>
+<div class="text-right">
+<span class="font-body-md text-body-md font-bold block">45%</span>
+<span class="text-xs text-on-surface-variant">Rp 5.6M</span>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-secondary-container"></div>
+<span class="font-body-md text-body-md text-on-surface">Operasional &amp; Listrik</span>
+</div>
+<div class="text-right">
+<span class="font-body-md text-body-md font-bold block">30%</span>
+<span class="text-xs text-on-surface-variant">Rp 3.7M</span>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-tertiary"></div>
+<span class="font-body-md text-body-md text-on-surface">Lain-lain</span>
+</div>
+<div class="text-right">
+<span class="font-body-md text-body-md font-bold block">25%</span>
+<span class="text-xs text-on-surface-variant">Rp 3.2M</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Top 10 Menu Terlaris Table -->
+<section class="lg:col-span-2 bg-surface border border-surface-variant rounded-xl p-container-padding shadow-[0_4px_20px_rgba(0,0,0,0.03)] overflow-hidden flex flex-col">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline-md text-headline-md text-on-surface">Top Menu Terlaris</h3>
+<button class="text-primary text-sm font-bold hover:underline">Lihat Semua</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-surface-variant">
+<th class="py-3 px-4 font-label-caps text-label-caps text-on-surface-variant uppercase w-16 text-center">Rank</th>
+<th class="py-3 px-4 font-label-caps text-label-caps text-on-surface-variant uppercase">Menu</th>
+<th class="py-3 px-4 font-label-caps text-label-caps text-on-surface-variant uppercase text-right">Terjual</th>
+<th class="py-3 px-4 font-label-caps text-label-caps text-on-surface-variant uppercase text-right">Revenue</th>
+</tr>
+</thead>
+<tbody class="table-body">
+<!-- Skeleton Rows initially -->
+<tr class="border-b border-surface-variant">
+<td class="py-4 px-4"><div class="skeleton h-6 w-6 rounded-full mx-auto"></div></td>
+<td class="py-4 px-4"><div class="skeleton h-5 w-32 rounded"></div></td>
+<td class="py-4 px-4"><div class="skeleton h-5 w-16 rounded ml-auto"></div></td>
+<td class="py-4 px-4"><div class="skeleton h-5 w-24 rounded ml-auto"></div></td>
+</tr>
+<tr class="border-b border-surface-variant">
+<td class="py-4 px-4"><div class="skeleton h-6 w-6 rounded-full mx-auto"></div></td>
+<td class="py-4 px-4"><div class="skeleton h-5 w-28 rounded"></div></td>
+<td class="py-4 px-4"><div class="skeleton h-5 w-16 rounded ml-auto"></div></td>
+<td class="py-4 px-4"><div class="skeleton h-5 w-24 rounded ml-auto"></div></td>
+</tr>
+<tr class="border-b border-surface-variant">
+<td class="py-4 px-4"><div class="skeleton h-6 w-6 rounded-full mx-auto"></div></td>
+<td class="py-4 px-4"><div class="skeleton h-5 w-36 rounded"></div></td>
+<td class="py-4 px-4"><div class="skeleton h-5 w-16 rounded ml-auto"></div></td>
+<td class="py-4 px-4"><div class="skeleton h-5 w-24 rounded ml-auto"></div></td>
+</tr>
+</tbody>
+<tbody class="table-content hidden">
+<!-- Actual Data Rows -->
+<tr class="border-b border-surface-variant hover:bg-surface-container-low transition-colors cursor-default">
+<td class="py-3 px-4 text-center">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold mx-auto text-sm">1</div>
+</td>
+<td class="py-3 px-4 font-body-lg text-body-lg text-on-surface">Paket Geprek Dada + Nasi</td>
+<td class="py-3 px-4 font-body-md text-body-md text-on-surface-variant text-right">1,240 porsi</td>
+<td class="py-3 px-4 font-body-lg text-body-lg font-bold text-on-surface text-right">Rp 31.000.000</td>
+</tr>
+<tr class="border-b border-surface-variant hover:bg-surface-container-low transition-colors cursor-default">
+<td class="py-3 px-4 text-center">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed-dim text-on-secondary-container flex items-center justify-center font-bold mx-auto text-sm">2</div>
+</td>
+<td class="py-3 px-4 font-body-lg text-body-lg text-on-surface">Paket Geprek Paha + Nasi</td>
+<td class="py-3 px-4 font-body-md text-body-md text-on-surface-variant text-right">980 porsi</td>
+<td class="py-3 px-4 font-body-lg text-body-lg font-bold text-on-surface text-right">Rp 23.520.000</td>
+</tr>
+<tr class="border-b border-surface-variant hover:bg-surface-container-low transition-colors cursor-default">
+<td class="py-3 px-4 text-center">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed text-on-secondary-container flex items-center justify-center font-bold mx-auto text-sm">3</div>
+</td>
+<td class="py-3 px-4 font-body-lg text-body-lg text-on-surface">Es Teh Manis Jumbo</td>
+<td class="py-3 px-4 font-body-md text-body-md text-on-surface-variant text-right">2,100 cup</td>
+<td class="py-3 px-4 font-body-lg text-body-lg font-bold text-on-surface text-right">Rp 10.500.000</td>
+</tr>
+<tr class="border-b border-surface-variant hover:bg-surface-container-low transition-colors cursor-default">
+<td class="py-3 px-4 text-center">
+<div class="font-body-md text-body-md text-on-surface-variant mx-auto">4</div>
+</td>
+<td class="py-3 px-4 font-body-lg text-body-lg text-on-surface">Geprek Indomie</td>
+<td class="py-3 px-4 font-body-md text-body-md text-on-surface-variant text-right">450 porsi</td>
+<td class="py-3 px-4 font-body-lg text-body-lg font-bold text-on-surface text-right">Rp 9.000.000</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors cursor-default">
+<td class="py-3 px-4 text-center">
+<div class="font-body-md text-body-md text-on-surface-variant mx-auto">5</div>
+</td>
+<td class="py-3 px-4 font-body-lg text-body-lg text-on-surface">Tahu Tempe Goreng</td>
+<td class="py-3 px-4 font-body-md text-body-md text-on-surface-variant text-right">800 porsi</td>
+<td class="py-3 px-4 font-body-lg text-body-lg font-bold text-on-surface text-right">Rp 4.000.000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="lg:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center p-base bg-surface shadow-[0_-2px_10px_rgba(0,0,0,0.05)] rounded-t-xl pb-6">
+<a class="flex flex-col items-center justify-center text-on-surface-variant w-16 py-1 hover:bg-surface-container-high rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">home</span>
+<span class="font-label-caps text-label-caps text-[10px]">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 w-20 active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined mb-1">analytics</span>
+<span class="font-label-caps text-label-caps text-[10px]">Laporan</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant w-16 py-1 hover:bg-surface-container-high rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">restaurant_menu</span>
+<span class="font-label-caps text-label-caps text-[10px]">Menu</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant w-16 py-1 hover:bg-surface-container-high rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">logout</span>
+<span class="font-label-caps text-label-caps text-[10px]">Keluar</span>
+</a>
+</nav>
+<script>
+        // Simulate data loading and animations
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                // Remove card skeletons and show numbers
+                document.querySelectorAll('.card-value-skeleton').forEach(el => el.style.display = 'none');
+                document.querySelectorAll('.count-up').forEach(el => {
+                    el.classList.remove('hidden');
+                    // Simple animation trigger (actual counting logic would go here)
+                    setTimeout(() => el.classList.add('visible'), 50);
+                });
+
+                // Remove table skeletons and show content
+                const tbody = document.querySelector('.table-body');
+                const tcontent = document.querySelector('.table-content');
+                if(tbody && tcontent) {
+                    tbody.style.display = 'none';
+                    tcontent.classList.remove('hidden');
+                }
+            }, 800); // 800ms loading simulation
+        });
+    </script>
+</body></html>

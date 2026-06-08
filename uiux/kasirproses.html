@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dashboard Kasir - DAPUR — GEPREK REJO</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#936e69",
+                        "inverse-primary": "#ffb4aa",
+                        "on-tertiary-container": "#fcfdfe",
+                        "on-surface-variant": "#5e3f3b",
+                        "surface-bright": "#f7f9ff",
+                        "surface-container-highest": "#e0e3e8",
+                        "surface-dim": "#d7dadf",
+                        "secondary-container": "#fdc003",
+                        "primary": "#bc000a",
+                        "surface": "#f7f9ff",
+                        "secondary-fixed": "#ffdf9e",
+                        "on-tertiary-fixed-variant": "#454748",
+                        "tertiary": "#5a5c5e",
+                        "inverse-on-surface": "#eef1f6",
+                        "on-surface": "#181c20",
+                        "error": "#ba1a1a",
+                        "background": "#f7f9ff",
+                        "on-secondary-fixed-variant": "#5b4300",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2d3135",
+                        "outline-variant": "#e8bcb6",
+                        "on-primary-fixed-variant": "#930006",
+                        "primary-container": "#e61919",
+                        "surface-container-high": "#e5e8ee",
+                        "on-secondary-container": "#6c5000",
+                        "tertiary-fixed": "#e1e3e4",
+                        "primary-fixed": "#ffdad5",
+                        "on-secondary-fixed": "#261a00",
+                        "surface-variant": "#e0e3e8",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f1f4f9",
+                        "surface-container": "#ebeef3",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#c5c7c8",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#191c1d",
+                        "secondary": "#785900",
+                        "surface-tint": "#c0000b",
+                        "tertiary-container": "#737576",
+                        "on-background": "#181c20",
+                        "secondary-fixed-dim": "#fabd00",
+                        "on-primary-container": "#fffbff",
+                        "on-primary-fixed": "#410001",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed-dim": "#ffb4aa"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "card-gap": "16px",
+                        "base": "8px",
+                        "section-margin": "32px",
+                        "container-padding": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "label-caps": ["Inter"],
+                        "order-number": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "order-number": ["48px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "800" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col md:pb-0 pb-20">
+<!-- TopAppBar -->
+<header class="bg-surface border-b border-outline-variant shadow-sm w-full sticky top-0 z-40">
+<div class="flex justify-between items-center w-full px-container-padding py-4">
+<div class="flex items-center gap-4">
+<span class="text-headline-lg font-headline-lg font-bold text-on-surface">DAPUR — GEPREK REJO</span>
+<span class="bg-surface-container-high px-3 py-1 rounded-full text-label-caps font-label-caps text-on-surface-variant hidden md:inline-block">DASHBOARD KASIR</span>
+</div>
+<div class="flex items-center gap-4">
+<button aria-label="dark_mode" class="text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 p-2 rounded-full hidden md:flex items-center justify-center">
+<span class="material-symbols-outlined">dark_mode</span>
+</button>
+<button aria-label="schedule" class="text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200 p-2 rounded-full hidden md:flex items-center justify-center">
+<span class="material-symbols-outlined">schedule</span>
+</button>
+<button class="bg-primary text-on-primary font-label-caps text-label-caps px-4 py-2 rounded-full hover:bg-surface-tint transition-colors duration-200 shadow-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">logout</span>
+                    Keluar
+                </button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow p-container-padding">
+<!-- Status Filter Pills -->
+<div class="flex gap-4 mb-section-margin overflow-x-auto pb-2 scrollbar-hide">
+<button class="bg-secondary-container text-on-secondary-container px-4 py-2 rounded-full font-label-caps text-label-caps flex items-center gap-2 shadow-sm border border-secondary transition-all hover:bg-secondary-fixed-dim shrink-0">
+<span class="material-symbols-outlined text-[16px]">pending_actions</span>
+                Menunggu Pembayaran
+                <span class="bg-on-secondary-container text-secondary-container px-2 rounded-full ml-1">3</span>
+</button>
+<button class="bg-surface text-on-surface px-4 py-2 rounded-full font-label-caps text-label-caps flex items-center gap-2 border border-outline-variant hover:bg-surface-variant transition-all shrink-0">
+<span class="material-symbols-outlined text-[16px]">outdoor_grill</span>
+                Diproses Dapur
+                <span class="bg-surface-variant text-on-surface px-2 rounded-full ml-1">5</span>
+</button>
+<button class="bg-surface text-on-surface px-4 py-2 rounded-full font-label-caps text-label-caps flex items-center gap-2 border border-outline-variant hover:bg-surface-variant transition-all shrink-0">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+                Selesai
+            </button>
+</div>
+<!-- 2-Column Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-[32px]">
+<!-- Column 1: Menunggu Konfirmasi Pembayaran -->
+<section class="flex flex-col gap-card-gap">
+<div class="flex items-center justify-between border-b-2 border-primary pb-2 mb-2">
+<h2 class="font-headline-md text-headline-md text-primary flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">payments</span>
+                        Menunggu Pembayaran
+                    </h2>
+<span class="bg-primary text-on-primary font-label-caps text-label-caps px-2 py-1 rounded-full">3</span>
+</div>
+<!-- Order Card 1 -->
+<article class="bg-surface rounded-xl border border-outline-variant shadow-sm p-[20px] flex flex-col gap-4 hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-16 h-16 bg-primary-container rounded-bl-full -z-0 opacity-20"></div>
+<div class="flex justify-between items-start z-10">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="bg-secondary-container text-on-secondary-container font-label-caps text-label-caps px-2 py-0.5 rounded">QRIS</span>
+<span class="text-on-surface-variant font-body-md text-body-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span> 12:45
+                                </span>
+</div>
+<h3 class="font-order-number text-order-number text-on-surface">#08</h3>
+</div>
+<div class="text-right">
+<span class="block font-label-caps text-label-caps text-on-surface-variant mb-1">MEJA</span>
+<span class="font-headline-md text-headline-md text-primary bg-primary-container/20 px-3 py-1 rounded-lg">M-12</span>
+</div>
+</div>
+<div class="border-t border-dashed border-outline-variant pt-3 z-10">
+<ul class="flex flex-col gap-2 font-body-md text-body-md text-on-surface">
+<li class="flex justify-between">
+<span>2x Ayam Geprek Sambal Bawang</span>
+<span class="font-bold">Rp 30.000</span>
+</li>
+<li class="flex justify-between">
+<span>1x Nasi Putih</span>
+<span class="font-bold">Rp 5.000</span>
+</li>
+<li class="flex justify-between">
+<span>2x Es Teh Manis</span>
+<span class="font-bold">Rp 10.000</span>
+</li>
+</ul>
+</div>
+<div class="border-t border-outline-variant pt-3 flex justify-between items-center z-10">
+<div>
+<span class="block font-label-caps text-label-caps text-on-surface-variant">TOTAL TAGIHAN</span>
+<span class="font-headline-lg text-headline-lg text-primary">Rp 45.000</span>
+</div>
+</div>
+<div class="flex gap-2 mt-2 z-10">
+<button class="flex-1 bg-surface border border-outline text-on-surface font-body-lg text-body-lg py-3 rounded-lg hover:bg-error-container hover:text-on-error-container hover:border-error transition-colors">
+                            Batal
+                        </button>
+<button class="flex-[2] bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-body-lg text-body-lg py-3 rounded-lg shadow-sm hover:shadow-md transition-shadow font-bold flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">check_circle</span>
+                            Konfirmasi Lunas
+                        </button>
+</div>
+</article>
+<!-- Order Card 2 -->
+<article class="bg-surface rounded-xl border border-outline-variant shadow-sm p-[20px] flex flex-col gap-4 hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-16 h-16 bg-primary-container rounded-bl-full -z-0 opacity-20"></div>
+<div class="flex justify-between items-start z-10">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="bg-surface-variant text-on-surface font-label-caps text-label-caps px-2 py-0.5 rounded border border-outline-variant">TUNAI</span>
+<span class="text-on-surface-variant font-body-md text-body-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span> 12:50
+                                </span>
+</div>
+<h3 class="font-order-number text-order-number text-on-surface">#09</h3>
+</div>
+<div class="text-right">
+<span class="block font-label-caps text-label-caps text-on-surface-variant mb-1">BUNGKUS</span>
+<span class="font-headline-md text-headline-md text-on-surface bg-surface-container-high px-3 py-1 rounded-lg">TA</span>
+</div>
+</div>
+<div class="border-t border-dashed border-outline-variant pt-3 z-10">
+<ul class="flex flex-col gap-2 font-body-md text-body-md text-on-surface">
+<li class="flex justify-between">
+<span>1x Paket Geprek Keju + Nasi</span>
+<span class="font-bold">Rp 25.000</span>
+</li>
+</ul>
+</div>
+<div class="border-t border-outline-variant pt-3 flex justify-between items-center z-10">
+<div>
+<span class="block font-label-caps text-label-caps text-on-surface-variant">TOTAL TAGIHAN</span>
+<span class="font-headline-lg text-headline-lg text-primary">Rp 25.000</span>
+</div>
+</div>
+<div class="flex gap-2 mt-2 z-10">
+<button class="flex-1 bg-surface border border-outline text-on-surface font-body-lg text-body-lg py-3 rounded-lg hover:bg-error-container hover:text-on-error-container hover:border-error transition-colors">
+                            Batal
+                        </button>
+<button class="flex-[2] bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-body-lg text-body-lg py-3 rounded-lg shadow-sm hover:shadow-md transition-shadow font-bold flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">check_circle</span>
+                            Konfirmasi Lunas
+                        </button>
+</div>
+</article>
+</section>
+<!-- Column 2: Sedang Diproses Dapur -->
+<section class="flex flex-col gap-card-gap">
+<div class="flex items-center justify-between border-b-2 border-secondary-container pb-2 mb-2">
+<h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary-container" style="font-variation-settings: 'FILL' 1;">soup_kitchen</span>
+                        Diproses Dapur
+                    </h2>
+<span class="bg-secondary-container text-on-secondary-container font-label-caps text-label-caps px-2 py-1 rounded-full">5</span>
+</div>
+<!-- Order Card (Processed) -->
+<article class="bg-surface rounded-xl border border-outline-variant shadow-sm p-[20px] flex flex-col gap-4 hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="flex justify-between items-start z-10">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="bg-surface-variant text-on-surface font-label-caps text-label-caps px-2 py-0.5 rounded border border-outline-variant">LUNAS</span>
+<span class="text-on-surface-variant font-body-md text-body-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span> 12:30
+                                </span>
+</div>
+<h3 class="font-order-number text-order-number text-on-surface">#05</h3>
+</div>
+<div class="text-right">
+<span class="block font-label-caps text-label-caps text-on-surface-variant mb-1">MEJA</span>
+<span class="font-headline-md text-headline-md text-primary bg-primary-container/20 px-3 py-1 rounded-lg">M-04</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-secondary font-body-md text-body-md bg-secondary-container/10 p-2 rounded-lg border border-secondary-container/20">
+<span class="material-symbols-outlined text-[18px] animate-pulse">outdoor_grill</span>
+<span>Sedang dimasak (est. 5 mnt)</span>
+</div>
+<div class="mt-2 z-10">
+<button class="w-full bg-surface border-2 border-secondary-container text-on-surface font-body-lg text-body-lg py-2 rounded-lg hover:bg-secondary-container hover:text-on-secondary-container transition-colors flex justify-center items-center gap-2">
+<span class="material-symbols-outlined">receipt_long</span>
+                            Detail Pesanan
+                        </button>
+</div>
+</article>
+<!-- Empty State -->
+<div class="flex flex-col items-center justify-center p-8 border-2 border-dashed border-outline-variant rounded-xl bg-surface-container-low h-48 opacity-60">
+<span class="material-symbols-outlined text-4xl text-outline mb-2">restaurant</span>
+<p class="font-body-md text-body-md text-on-surface-variant text-center">Tidak ada pesanan lain yang sedang diproses.</p>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="bg-surface-container border-t border-outline-variant bg-surface-container shadow-lg fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 px-4 md:hidden">
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 scale-90 transition-transform">
+<span class="material-symbols-outlined">list_alt</span>
+<span class="font-label-caps text-label-caps">Antrian</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant rounded-xl transition-colors">
+<span class="material-symbols-outlined">outdoor_grill</span>
+<span class="font-label-caps text-label-caps">Proses</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant rounded-xl transition-colors">
+<span class="material-symbols-outlined">history</span>
+<span class="font-label-caps text-label-caps">Riwayat</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant rounded-xl transition-colors">
+<span class="material-symbols-outlined">restaurant_menu</span>
+<span class="font-label-caps text-label-caps">Menu</span>
+</button>
+</nav>
+</body></html>

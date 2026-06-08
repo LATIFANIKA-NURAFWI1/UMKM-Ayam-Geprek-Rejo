@@ -1,95 +1,81 @@
 @php $s = $this->stats; @endphp
 
-<div class="grid grid-cols-2 gap-4 lg:grid-cols-4 xl:grid-cols-7">
+<div class="flex overflow-x-auto hide-scrollbar gap-card-gap pb-4 -mx-6 px-6 md:mx-0 md:px-0 md:grid md:grid-cols-3 lg:grid-cols-5 mb-section-margin snap-x">
 
-    {{-- Total Pesanan --}}
-    <div class="col-span-1 flex flex-col gap-3 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
-        <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-100 text-2xl dark:bg-blue-900/40">🛒</div>
+    {{-- Card: Total Pesanan --}}
+    <div class="min-w-[160px] md:min-w-0 bg-surface-container-lowest rounded-xl p-5 border border-[#E9ECEF] shadow-[0_4px_12px_rgba(0,0,0,0.05)] hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(0,0,0,0.1)] transition-all duration-200 snap-center flex flex-col justify-between animate-fade-in-up stagger-1">
+        <div class="flex flex-col gap-2 mb-4">
+            <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary mb-2">
+                <span class="material-symbols-outlined">shopping_cart</span>
+            </div>
+            <span class="text-xs text-on-surface-variant font-medium">Total Pesanan</span>
+        </div>
         <div>
-            <p class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Total Pesanan</p>
-            <p class="text-3xl font-black text-zinc-900 dark:text-white">{{ $s['total_pesanan'] }}</p>
-            <p class="text-xs text-zinc-400">{{ $s['paid_count'] }} terbayar</p>
+            <div class="text-headline-lg font-headline-lg text-on-surface">{{ $s['total_pesanan'] }}</div>
+            <div class="text-xs text-on-surface-variant mt-1">{{ $s['paid_count'] }} terbayar</div>
         </div>
     </div>
 
-    {{-- Omset Hari Ini --}}
-    <div class="col-span-1 flex flex-col gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm dark:border-emerald-800/40 dark:bg-emerald-900/20">
-        <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-100 text-2xl">💰</div>
+    {{-- Card: Omset Hari Ini --}}
+    <div class="min-w-[160px] md:min-w-0 bg-surface-container-lowest rounded-xl p-5 border border-[#E9ECEF] shadow-[0_4px_12px_rgba(0,0,0,0.05)] hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(0,0,0,0.1)] transition-all duration-200 snap-center flex flex-col justify-between animate-fade-in-up stagger-2">
+        <div class="flex flex-col gap-2 mb-4">
+            <div class="w-10 h-10 rounded-full bg-[#fef5e6] text-secondary-fixed-dim flex items-center justify-center mb-2">
+                <span class="material-symbols-outlined">payments</span>
+            </div>
+            <span class="text-xs text-on-surface-variant font-medium">Omset Hari Ini</span>
+        </div>
         <div>
-            <p class="text-xs font-medium text-emerald-700 dark:text-emerald-400">Omset Hari Ini</p>
-            <p class="text-xl font-black text-emerald-900 dark:text-emerald-300">Rp {{ number_format($s['omset'], 0, ',', '.') }}</p>
+            <div class="text-headline-md font-headline-md text-secondary-fixed-dim">
+                Rp {{ number_format($s['omset'], 0, ',', '.') }}
+            </div>
         </div>
     </div>
 
-    {{-- Laba Kotor --}}
-    <div class="col-span-1 flex flex-col gap-3 rounded-2xl border border-blue-200 bg-blue-50 p-5 shadow-sm dark:border-blue-800/40 dark:bg-blue-900/20">
-        <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-100 text-2xl">📈</div>
+    {{-- Card: Laba Kotor --}}
+    <div class="min-w-[160px] md:min-w-0 bg-surface-container-lowest rounded-xl p-5 border border-[#E9ECEF] shadow-[0_4px_12px_rgba(0,0,0,0.05)] hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(0,0,0,0.1)] transition-all duration-200 snap-center flex flex-col justify-between animate-fade-in-up stagger-3">
+        <div class="flex flex-col gap-2 mb-4">
+            <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary mb-2">
+                <span class="material-symbols-outlined">trending_up</span>
+            </div>
+            <span class="text-xs text-on-surface-variant font-medium">Laba Kotor</span>
+        </div>
         <div>
-            <p class="text-xs font-medium text-blue-700 dark:text-blue-400">Laba Kotor</p>
-            <p class="text-xl font-black text-blue-900 dark:text-blue-300">Rp {{ number_format($s['gross_profit'], 0, ',', '.') }}</p>
+            <div class="text-headline-md font-headline-md text-on-surface">
+                Rp {{ number_format($s['gross_profit'], 0, ',', '.') }}
+            </div>
         </div>
     </div>
 
-    {{-- Pending --}}
-    <div @class([
-        'col-span-1 flex flex-col gap-3 rounded-2xl border p-5 shadow-sm',
-        'border-amber-300 bg-amber-50 dark:border-amber-800/40 dark:bg-amber-900/20' => $s['pending'] > 0,
-        'border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900' => $s['pending'] === 0,
-    ])>
-        <div @class([
-            'flex h-11 w-11 items-center justify-center rounded-xl text-2xl',
-            'bg-amber-100 dark:bg-amber-900/40' => $s['pending'] > 0,
-            'bg-zinc-100 dark:bg-zinc-800' => $s['pending'] === 0,
-        ])>⏳</div>
+    {{-- Card: Menu Aktif --}}
+    <div class="min-w-[160px] md:min-w-0 bg-surface-container-lowest rounded-xl p-5 border border-[#E9ECEF] shadow-[0_4px_12px_rgba(0,0,0,0.05)] hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(0,0,0,0.1)] transition-all duration-200 snap-center flex flex-col justify-between animate-fade-in-up stagger-4">
+        <div class="flex flex-col gap-2 mb-4">
+            <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant mb-2">
+                <span class="material-symbols-outlined">restaurant</span>
+            </div>
+            <span class="text-xs text-on-surface-variant font-medium">Menu Aktif</span>
+        </div>
         <div>
-            <p @class(['text-xs font-medium', 'text-amber-700 dark:text-amber-400' => $s['pending'] > 0, 'text-zinc-500 dark:text-zinc-400' => $s['pending'] === 0])>
-                Menunggu Konfirmasi
-            </p>
-            <p @class(['text-3xl font-black', 'text-amber-900 dark:text-amber-300' => $s['pending'] > 0, 'text-zinc-900 dark:text-white' => $s['pending'] === 0])>
-                {{ $s['pending'] }}
-            </p>
-            @if($s['pending'] > 0)
-                <a href="{{ route('kasir.dashboard') }}" wire:navigate class="mt-1 inline-block text-xs font-medium text-amber-700 underline hover:text-amber-900">
-                    → Ke Kasir
-                </a>
-            @endif
+            <div class="text-headline-lg font-headline-lg text-on-surface">{{ $s['menu_aktif'] }}</div>
         </div>
     </div>
 
-    {{-- Menu Aktif --}}
-    <div class="col-span-1 flex flex-col gap-3 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
-        <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-orange-100 text-2xl dark:bg-orange-900/40">🍗</div>
-        <div>
-            <p class="text-xs font-medium text-zinc-500 dark:text-zinc-400">Menu Aktif</p>
-            <p class="text-3xl font-black text-zinc-900 dark:text-white">{{ $s['menu_aktif'] }}</p>
+    {{-- Card: Bahan Stok Rendah (Critical) --}}
+    <div class="min-w-[200px] md:min-w-0 bg-surface-container-lowest rounded-xl p-5 border-2 border-primary shadow-[0_8px_16px_rgba(188,0,10,0.1)] hover:-translate-y-1 hover:shadow-[0_12px_24px_rgba(188,0,10,0.2)] transition-all duration-200 snap-center flex flex-col justify-between relative overflow-hidden animate-fade-in-up stagger-5">
+        <div class="absolute top-0 right-0 w-16 h-16 bg-error-container rounded-bl-full -z-10 opacity-50"></div>
+        <div class="flex flex-col gap-2 mb-4 relative z-10">
+            <div class="flex items-center justify-between w-full mb-2">
+                <div class="w-10 h-10 rounded-full bg-error-container flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined">warning</span>
+                </div>
+            </div>
+            <span class="text-sm text-primary font-bold">Bahan Stok Rendah</span>
         </div>
-    </div>
-
-    {{-- Stok Kritis --}}
-    <div @class([
-        'col-span-1 flex flex-col gap-3 rounded-2xl border p-5 shadow-sm lg:col-span-2',
-        'border-red-300 bg-red-50 dark:border-red-800/40 dark:bg-red-900/20' => $s['stok_kritis'] > 0,
-        'border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900' => $s['stok_kritis'] === 0,
-    ])>
-        <div @class([
-            'flex h-11 w-11 items-center justify-center rounded-xl text-2xl',
-            'bg-red-100 dark:bg-red-900/40' => $s['stok_kritis'] > 0,
-            'bg-zinc-100 dark:bg-zinc-800' => $s['stok_kritis'] === 0,
-        ])>{{ $s['stok_kritis'] > 0 ? '⚠️' : '📦' }}</div>
-        <div>
-            <p @class(['text-xs font-medium', 'text-red-700 dark:text-red-400' => $s['stok_kritis'] > 0, 'text-zinc-500 dark:text-zinc-400' => $s['stok_kritis'] === 0])>
-                Bahan Stok Rendah
-            </p>
-            <p @class(['text-3xl font-black', 'text-red-900 dark:text-red-300' => $s['stok_kritis'] > 0, 'text-zinc-900 dark:text-white' => $s['stok_kritis'] === 0])>
-                {{ $s['stok_kritis'] }}
-            </p>
-            @if($s['stok_kritis'] > 0)
-                <a href="{{ route('stok.index') }}" wire:navigate class="mt-1 inline-block text-xs font-medium text-red-700 underline hover:text-red-900">
-                    → Cek Stok
-                </a>
-            @else
-                <p class="mt-1 text-xs text-zinc-400">Semua aman ✅</p>
-            @endif
+        <div class="relative z-10 flex flex-col gap-3">
+            <div class="text-headline-lg font-headline-lg text-primary">{{ $s['stok_kritis'] }}</div>
+            <a href="{{ route('stok.index') }}" wire:navigate
+               class="bg-primary hover:bg-surface-tint text-on-primary text-xs font-bold py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-1 w-fit">
+                Cek Stok <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+            </a>
         </div>
     </div>
 

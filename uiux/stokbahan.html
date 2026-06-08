@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Stok Bahan Baku - Geprek Rejo</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-fixed-variant": "#930006",
+                      "on-tertiary-fixed-variant": "#454748",
+                      "surface-bright": "#f7f9ff",
+                      "surface-variant": "#e0e3e8",
+                      "secondary-fixed-dim": "#fabd00",
+                      "on-tertiary-fixed": "#191c1d",
+                      "inverse-primary": "#ffb4aa",
+                      "secondary-fixed": "#ffdf9e",
+                      "secondary-container": "#fdc003",
+                      "surface-container-lowest": "#ffffff",
+                      "tertiary-fixed-dim": "#c5c7c8",
+                      "on-surface": "#181c20",
+                      "tertiary-fixed": "#e1e3e4",
+                      "on-surface-variant": "#5e3f3b",
+                      "primary-fixed": "#ffdad5",
+                      "on-tertiary-container": "#fcfdfe",
+                      "outline-variant": "#e8bcb6",
+                      "surface-container-high": "#e5e8ee",
+                      "surface": "#f7f9ff",
+                      "surface-container": "#ebeef3",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-fixed-variant": "#5b4300",
+                      "on-error": "#ffffff",
+                      "inverse-surface": "#2d3135",
+                      "on-secondary": "#ffffff",
+                      "primary-fixed-dim": "#ffb4aa",
+                      "on-background": "#181c20",
+                      "on-primary": "#ffffff",
+                      "on-secondary-fixed": "#261a00",
+                      "primary-container": "#e61919",
+                      "error-container": "#ffdad6",
+                      "surface-tint": "#c0000b",
+                      "surface-container-highest": "#e0e3e8",
+                      "outline": "#936e69",
+                      "on-primary-container": "#fffbff",
+                      "on-error-container": "#93000a",
+                      "inverse-on-surface": "#eef1f6",
+                      "error": "#ba1a1a",
+                      "on-secondary-container": "#6c5000",
+                      "surface-dim": "#d7dadf",
+                      "on-primary-fixed": "#410001",
+                      "primary": "#bc000a",
+                      "tertiary-container": "#737576",
+                      "surface-container-low": "#f1f4f9",
+                      "tertiary": "#5a5c5e",
+                      "secondary": "#785900",
+                      "background": "#f7f9ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "card-gap": "16px",
+                      "base": "8px",
+                      "section-margin": "32px",
+                      "container-padding": "24px"
+              },
+              "fontFamily": {
+                      "order-number": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label-caps": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "headline-lg": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Plus Jakarta Sans"
+                      ]
+              },
+              "fontSize": {
+                      "order-number": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "500"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Smooth scrolling for hiding scrollbar but keeping functionality */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .pulse-alert {
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(230, 25, 25, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(230, 25, 25, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(230, 25, 25, 0); }
+        }
+      </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body-md antialiased pb-24 md:pb-0 md:pl-72 flex h-screen overflow-hidden">
+<!-- Navigation Drawer (Desktop) -->
+<nav class="hidden md:flex flex-col h-screen py-6 bg-surface-container-low dark:bg-inverse-surface border-r border-outline-variant shadow-sm fixed left-0 top-0 w-72 z-40">
+<div class="px-6 mb-8 flex items-center space-x-3">
+<div class="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center text-on-primary-container font-headline-lg font-bold">GR</div>
+<div>
+<h2 class="text-headline-md font-headline-md font-bold text-primary">Geprek Rejo</h2>
+<p class="text-label-caps font-label-caps text-on-surface-variant">Management System</p>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto hide-scrollbar flex flex-col gap-2">
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors px-6 py-3 flex items-center space-x-3 text-body-lg font-body-lg" href="#">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+<span>Dashboard</span>
+</a>
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors px-6 py-3 flex items-center space-x-3 text-body-lg font-body-lg" href="#">
+<span class="material-symbols-outlined" data-icon="restaurant_menu">restaurant_menu</span>
+<span>Menu Makanan</span>
+</a>
+<a class="bg-secondary-container text-on-secondary-container rounded-r-full font-bold px-6 py-3 flex items-center space-x-3 text-body-lg font-body-lg opacity-80" href="#">
+<span class="material-symbols-outlined filled" data-icon="inventory_2" data-weight="fill" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+<span>Stok Bahan</span>
+</a>
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors px-6 py-3 flex items-center space-x-3 text-body-lg font-body-lg" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span>Pengeluaran</span>
+</a>
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors px-6 py-3 flex items-center space-x-3 text-body-lg font-body-lg" href="#">
+<span class="material-symbols-outlined" data-icon="Confirmation_Number">confirmation_number</span>
+<span>Voucher</span>
+</a>
+<a class="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors px-6 py-3 flex items-center space-x-3 text-body-lg font-body-lg" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span>Laporan</span>
+</a>
+</div>
+<div class="px-6 mt-auto">
+<div class="flex items-center space-x-3 p-3 rounded-xl hover:bg-surface-variant transition-colors cursor-pointer border border-outline-variant">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold uppercase overflow-hidden">
+                    Y
+                </div>
+<div>
+<p class="text-body-md font-body-md font-bold">Yono</p>
+<p class="text-label-caps font-label-caps text-on-surface-variant">Owner • Admin</p>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-container-padding py-4 bg-surface dark:bg-inverse-surface border-b md:border-none border-outline-variant z-10 sticky top-0 flat no shadows docked full-width top-0">
+<div class="flex items-center space-x-3">
+<button class="md:hidden text-on-surface-variant p-2 rounded-full hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="flex items-center space-x-2 text-primary font-bold text-headline-md font-headline-md">
+<span class="material-symbols-outlined filled hidden md:block" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+<h1>Stok Bahan Baku</h1>
+</div>
+</div>
+<button class="bg-primary-container text-on-primary-container hover:opacity-90 active:scale-95 transition-transform px-4 py-2 rounded-lg flex items-center space-x-2 shadow-sm text-label-caps font-label-caps font-bold">
+<span class="material-symbols-outlined text-sm">add</span>
+<span class="hidden sm:inline">Tambah Bahan</span>
+<span class="sm:hidden">Tambah</span>
+</button>
+</header>
+<!-- Scrollable Content Area -->
+<div class="flex-1 overflow-y-auto px-4 md:px-container-padding pb-8">
+<!-- Context Text -->
+<p class="text-body-md text-on-surface-variant mb-6 hidden md:block">Pantau dan kelola persediaan bahan baku dapur</p>
+<!-- Summary Cards (Horizontal Scroll on Mobile, Grid on Desktop) -->
+<div class="flex overflow-x-auto hide-scrollbar gap-4 mb-section-margin pb-2 md:grid md:grid-cols-3 md:overflow-visible md:pb-0 snap-x">
+<!-- Card 1: Total -->
+<div class="min-w-[240px] md:min-w-0 bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:-translate-y-1 transition-transform snap-center flex-shrink-0">
+<div class="flex items-start justify-between">
+<div>
+<p class="text-label-caps font-label-caps text-on-surface-variant mb-1 uppercase tracking-wider">Total Bahan</p>
+<p class="text-headline-lg font-headline-lg font-bold text-on-surface">27</p>
+</div>
+<div class="w-12 h-12 rounded-full bg-secondary-container/20 flex items-center justify-center text-secondary-container">
+<span class="material-symbols-outlined text-2xl">package</span>
+</div>
+</div>
+</div>
+<!-- Card 2: Aman -->
+<div class="min-w-[240px] md:min-w-0 bg-surface-container-lowest border-t-4 border-t-secondary-container border border-outline-variant rounded-xl p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:-translate-y-1 transition-transform snap-center flex-shrink-0 relative overflow-hidden">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-secondary-container/5 rounded-full blur-xl"></div>
+<div class="flex items-start justify-between relative z-10">
+<div>
+<p class="text-label-caps font-label-caps text-on-surface-variant mb-1 uppercase tracking-wider">Stok Aman</p>
+<p class="text-headline-lg font-headline-lg font-bold text-on-surface">25</p>
+</div>
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container shadow-sm">
+<span class="material-symbols-outlined text-2xl">check_circle</span>
+</div>
+</div>
+</div>
+<!-- Card 3: Alert -->
+<div class="min-w-[240px] md:min-w-0 bg-error-container/20 border border-primary-container rounded-xl p-5 shadow-[0_4px_20px_-4px_rgba(230,25,25,0.1)] hover:-translate-y-1 transition-transform snap-center flex-shrink-0 pulse-alert">
+<div class="flex items-start justify-between">
+<div>
+<p class="text-label-caps font-label-caps text-primary-container mb-1 uppercase tracking-wider font-bold">Stok Rendah</p>
+<p class="text-headline-lg font-headline-lg font-bold text-primary-container">2</p>
+</div>
+<div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container shadow-sm">
+<span class="material-symbols-outlined text-2xl">warning</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Filters -->
+<div class="flex flex-col sm:flex-row gap-3 mb-6">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-10 pr-4 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-lg text-body-md focus:outline-none focus:ring-2 focus:ring-secondary-container focus:border-transparent transition-all placeholder:text-on-surface-variant/60" placeholder="Cari bahan baku..." type="text"/>
+</div>
+<div class="relative min-w-[160px]">
+<select class="w-full pl-4 pr-10 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-lg text-body-md appearance-none focus:outline-none focus:ring-2 focus:ring-secondary-container focus:border-transparent transition-all">
+<option>Semua Status</option>
+<option>Stok Aman</option>
+<option>Stok Rendah</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- Data Table / List -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] overflow-hidden">
+<!-- Desktop Header -->
+<div class="hidden md:grid grid-cols-12 gap-4 p-4 border-b border-outline-variant bg-surface-container/50 text-label-caps font-label-caps text-on-surface-variant uppercase tracking-wider">
+<div class="col-span-3">Nama Bahan</div>
+<div class="col-span-3 text-center">Stok Saat Ini</div>
+<div class="col-span-2 text-center">Status</div>
+<div class="col-span-4 text-right">Aksi</div>
+</div>
+<!-- List Items -->
+<div class="flex flex-col divide-y divide-outline-variant">
+<!-- Item 1 (Alert) -->
+<div class="p-4 flex flex-col md:grid md:grid-cols-12 md:items-center gap-4 hover:bg-surface-container-lowest/50 transition-colors">
+<div class="flex items-center space-x-3 md:col-span-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center border border-outline-variant">
+                                🍅
+                            </div>
+<div>
+<h3 class="text-body-lg font-body-lg font-bold flex items-center gap-2">
+                                    aaaa
+                                    <span class="material-symbols-outlined text-primary-container text-sm" title="Stok Rendah">error</span>
+</h3>
+<p class="text-label-caps text-on-surface-variant md:hidden">Threshold: 10.00 kg</p>
+</div>
+</div>
+<div class="flex flex-col md:col-span-3 md:items-center">
+<div class="flex justify-between md:justify-center items-end w-full mb-1">
+<span class="text-label-caps text-on-surface-variant md:hidden">Stok:</span>
+<span class="text-body-md font-bold text-primary-container">8.00 kg</span>
+</div>
+<div class="w-full md:w-3/4 h-1.5 bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-primary-container w-[15%]"></div>
+</div>
+</div>
+<div class="md:col-span-2 flex justify-start md:justify-center">
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-primary-container text-on-primary-container text-label-caps font-bold shadow-sm">
+                                Stok Rendah
+                            </span>
+</div>
+<div class="flex items-center justify-end space-x-2 md:col-span-4 mt-2 md:mt-0 pt-3 md:pt-0 border-t border-outline-variant border-dashed md:border-none">
+<button class="flex-1 md:flex-none flex items-center justify-center gap-1 px-3 py-1.5 border border-primary-container text-primary-container hover:bg-primary-container/10 rounded-lg text-label-caps font-bold transition-colors">
+<span class="material-symbols-outlined text-sm">add</span> Restock
+                            </button>
+<button class="p-2 text-on-surface-variant hover:text-secondary-container hover:bg-surface-variant rounded-lg transition-colors">
+<span class="material-symbols-outlined text-sm">edit</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary-container hover:bg-error-container rounded-lg transition-colors">
+<span class="material-symbols-outlined text-sm">delete</span>
+</button>
+</div>
+</div>
+<!-- Item 2 (Safe) -->
+<div class="p-4 flex flex-col md:grid md:grid-cols-12 md:items-center gap-4 hover:bg-surface-container-lowest/50 transition-colors">
+<div class="flex items-center space-x-3 md:col-span-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center border border-outline-variant">
+                                🧅
+                            </div>
+<div>
+<h3 class="text-body-lg font-body-lg font-bold">Bawang Merah</h3>
+<p class="text-label-caps text-on-surface-variant md:hidden">Threshold: 10.00 kg</p>
+</div>
+</div>
+<div class="flex flex-col md:col-span-3 md:items-center">
+<div class="flex justify-between md:justify-center items-end w-full mb-1">
+<span class="text-label-caps text-on-surface-variant md:hidden">Stok:</span>
+<span class="text-body-md font-bold text-on-surface">26.00 kg</span>
+</div>
+<div class="w-full md:w-3/4 h-1.5 bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-secondary-container w-[65%]"></div>
+</div>
+</div>
+<div class="md:col-span-2 flex justify-start md:justify-center">
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-surface text-on-surface border border-secondary-container text-label-caps font-bold">
+<span class="w-2 h-2 rounded-full bg-secondary-container mr-1.5"></span> Aman
+                            </span>
+</div>
+<div class="flex items-center justify-end space-x-2 md:col-span-4 mt-2 md:mt-0 pt-3 md:pt-0 border-t border-outline-variant border-dashed md:border-none">
+<button class="flex-1 md:flex-none flex items-center justify-center gap-1 px-3 py-1.5 border border-outline-variant text-on-surface hover:border-secondary-container hover:text-secondary-container rounded-lg text-label-caps font-bold transition-colors">
+<span class="material-symbols-outlined text-sm">add</span> Restock
+                            </button>
+<button class="p-2 text-on-surface-variant hover:text-secondary-container hover:bg-surface-variant rounded-lg transition-colors">
+<span class="material-symbols-outlined text-sm">edit</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary-container hover:bg-error-container rounded-lg transition-colors">
+<span class="material-symbols-outlined text-sm">delete</span>
+</button>
+</div>
+</div>
+<!-- Item 3 (Safe) -->
+<div class="p-4 flex flex-col md:grid md:grid-cols-12 md:items-center gap-4 hover:bg-surface-container-lowest/50 transition-colors">
+<div class="flex items-center space-x-3 md:col-span-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center border border-outline-variant">
+                                🍗
+                            </div>
+<div>
+<h3 class="text-body-lg font-body-lg font-bold">Daging Ayam</h3>
+<p class="text-label-caps text-on-surface-variant md:hidden">Threshold: 10.00 liter</p>
+</div>
+</div>
+<div class="flex flex-col md:col-span-3 md:items-center">
+<div class="flex justify-between md:justify-center items-end w-full mb-1">
+<span class="text-label-caps text-on-surface-variant md:hidden">Stok:</span>
+<span class="text-body-md font-bold text-on-surface">91.00 liter</span>
+</div>
+<div class="w-full md:w-3/4 h-1.5 bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-secondary-container w-[90%]"></div>
+</div>
+</div>
+<div class="md:col-span-2 flex justify-start md:justify-center">
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-surface text-on-surface border border-secondary-container text-label-caps font-bold">
+<span class="w-2 h-2 rounded-full bg-secondary-container mr-1.5"></span> Aman
+                            </span>
+</div>
+<div class="flex items-center justify-end space-x-2 md:col-span-4 mt-2 md:mt-0 pt-3 md:pt-0 border-t border-outline-variant border-dashed md:border-none">
+<button class="flex-1 md:flex-none flex items-center justify-center gap-1 px-3 py-1.5 border border-outline-variant text-on-surface hover:border-secondary-container hover:text-secondary-container rounded-lg text-label-caps font-bold transition-colors">
+<span class="material-symbols-outlined text-sm">add</span> Restock
+                            </button>
+<button class="p-2 text-on-surface-variant hover:text-secondary-container hover:bg-surface-variant rounded-lg transition-colors">
+<span class="material-symbols-outlined text-sm">edit</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary-container hover:bg-error-container rounded-lg transition-colors">
+<span class="material-symbols-outlined text-sm">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Spacer for bottom nav -->
+<div class="h-8 md:hidden"></div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-3 bg-surface-container-lowest dark:bg-inverse-surface border-t border-outline-variant dark:border-outline shadow-[0_-4px_10px_rgba(0,0,0,0.05)] z-50 rounded-t-xl text-label-caps font-label-caps">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-tertiary-fixed-dim hover:bg-surface-variant hover:scale-95 transition-all p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-xl px-4 py-2 scale-110 shadow-sm transition-all -translate-y-2 border-2 border-surface" href="#">
+<span class="material-symbols-outlined filled mb-1" data-icon="inventory" style="font-variation-settings: 'FILL' 1;">inventory</span>
+<span class="font-bold">Stok</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-tertiary-fixed-dim hover:bg-surface-variant hover:scale-95 transition-all p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="receipt_long">receipt_long</span>
+<span>Pesanan</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-tertiary-fixed-dim hover:bg-surface-variant hover:scale-95 transition-all p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="bar_chart">bar_chart</span>
+<span>Laporan</span>
+</a>
+</nav>
+</body></html>

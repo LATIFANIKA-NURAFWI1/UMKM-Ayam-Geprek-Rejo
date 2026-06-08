@@ -1,369 +1,214 @@
-<div class="flex h-full w-full flex-1 flex-col gap-6 p-6">
+<div class="flex h-full w-full flex-1 flex-col gap-6 p-6 bg-surface text-on-surface font-body-md antialiased">
+    <style>
+        /* Skeleton Animation */
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+        .skeleton {
+            background: #f6f7f8;
+            background-image: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+            background-repeat: no-repeat;
+            background-size: 1000px 100%; 
+            animation-duration: 1s;
+            animation-fill-mode: forwards; 
+            animation-iteration-count: infinite;
+            animation-name: shimmer;
+            animation-timing-function: linear;
+        }
 
-    {{-- ═══════════════════════════════════════════════════════════════════
-         HEADER
-    ═══════════════════════════════════════════════════════════════════ --}}
-    <div class="flex flex-wrap items-start justify-between gap-4">
+        /* Number Counting Animation - Initial State */
+        .count-up {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+        .count-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+
+    @php
+        $rep = $this->report ?? [];
+        $rev = $rep['revenue'] ?? $rep['total_revenue'] ?? $totalRevenue ?? 0;
+        $cogs = $rep['total_hpp'] ?? $totalHpp ?? 0;
+        $gross = $rep['gross_profit'] ?? $rep['laba_kotor'] ?? $labaKotor ?? ($rev - $cogs);
+        $exp = $rep['total_expenses'] ?? $totalExpense ?? 0;
+        $net = $rep['net_profit'] ?? $rep['laba_bersih'] ?? $labaBersih ?? ($gross - $exp);
+        $top = $this->topItems ?? [];
+
+        $gaji = $rep['expenses_by_category']['Gaji'] ?? $rep['expenses_by_category']['gaji'] ?? 0;
+        $ops = $rep['expenses_by_category']['Operasional'] ?? $rep['expenses_by_category']['operasional'] ?? 0;
+        $lain = array_sum(array_filter($rep['expenses_by_category'] ?? [], fn($k) => strtolower($k) !== 'gaji' && strtolower($k) !== 'operasional', ARRAY_FILTER_USE_KEY));
+
+        $gajiPct = $exp > 0 ? round(($gaji / $exp) * 100) : 0;
+        $operasionalPct = $exp > 0 ? round(($ops / $exp) * 100) : 0;
+        $lainPct = $exp > 0 ? round(($lain / $exp) * 100) : 0;
+
+        $gajiNominal = 'Rp ' . number_format($gaji, 0, ',', '.');
+        $operasionalNominal = 'Rp ' . number_format($ops, 0, ',', '.');
+        $lainNominal = 'Rp ' . number_format($lain, 0, ',', '.');
+    @endphp
+
+    {{-- ── Header & Filters ──────────────────────────────────────── --}}
+    <section class="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
         <div>
-            <flux:heading size="xl" level="1">Laporan Laba-Rugi</flux:heading>
-            <flux:text class="mt-1">Analisis keuangan komprehensif: Revenue, HPP, Pengeluaran, dan Net Profit</flux:text>
+            <h1 class="font-headline-lg text-headline-lg text-on-surface mb-4">Laporan Penjualan</h1>
+            <div class="flex flex-wrap gap-4 items-center">
+                {{-- Segmented Control --}}
+                <div class="flex p-1 bg-surface-container-low rounded-lg border border-surface-variant">
+                    <button wire:click="applyPreset('hari_ini')" class="px-4 py-2 font-label-caps text-label-caps transition-colors {{ $preset === 'hari_ini' ? 'bg-surface text-primary font-bold rounded-md shadow-sm border border-surface-variant' : 'text-on-surface-variant hover:text-on-surface rounded-md' }}">Hari Ini</button>
+                    <button wire:click="applyPreset('minggu_ini')" class="px-4 py-2 font-label-caps text-label-caps transition-colors {{ $preset === 'minggu_ini' ? 'bg-surface text-primary font-bold rounded-md shadow-sm border border-surface-variant' : 'text-on-surface-variant hover:text-on-surface rounded-md' }}">Minggu Ini</button>
+                    <button wire:click="applyPreset('bulanan')" class="px-4 py-2 font-label-caps text-label-caps transition-colors {{ $preset === 'bulanan' ? 'bg-surface text-primary font-bold rounded-md shadow-sm border border-surface-variant' : 'text-on-surface-variant hover:text-on-surface rounded-md' }}">Bulan Ini</button>
+                    <button wire:click="applyPreset('tahun')" class="px-4 py-2 font-label-caps text-label-caps transition-colors {{ $preset === 'tahun' ? 'bg-surface text-primary font-bold rounded-md shadow-sm border border-surface-variant' : 'text-on-surface-variant hover:text-on-surface rounded-md' }}">Tahun Ini</button>
+                </div>
+                {{-- Dropdowns --}}
+                <div class="flex gap-2">
+                    <select wire:model.live="selectedMonth" class="form-select border border-surface-variant rounded-lg bg-surface text-on-surface font-body-md py-2 pl-3 pr-8 focus:ring-primary focus:border-primary">
+                        <option value="1">Januari</option><option value="2">Februari</option>
+                        <option value="3">Maret</option><option value="4">April</option>
+                        <option value="5">Mei</option><option value="6">Juni</option>
+                        <option value="7">Juli</option><option value="8">Agustus</option>
+                        <option value="9">September</option><option value="10">Oktober</option>
+                        <option value="11">November</option><option value="12">Desember</option>
+                    </select>
+                    <select wire:model.live="selectedYear" class="form-select border border-surface-variant rounded-lg bg-surface text-on-surface font-body-md py-2 pl-3 pr-8 focus:ring-primary focus:border-primary">
+                        @for($y = date('Y'); $y >= date('Y') - 5; $y--)
+                            <option value="{{ $y }}">{{ $y }}</option>
+                        @endfor
+                    </select>
+                </div>
+            </div>
         </div>
-        <button wire:click="exportPdf"
-            class="flex items-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-red-700 active:scale-95">
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        {{-- Export Action --}}
+        <button wire:click="exportPdf" class="flex items-center justify-center gap-2 px-6 py-3 border border-primary text-primary rounded-lg font-body-lg text-body-lg hover:bg-primary hover:text-white transition-colors duration-200 active:scale-95 whitespace-nowrap">
+            <span class="material-symbols-outlined">picture_as_pdf</span>
             Export PDF
         </button>
-    </div>
+    </section>
 
-    {{-- ═══════════════════════════════════════════════════════════════════
-         PERIOD FILTER
-    ═══════════════════════════════════════════════════════════════════ --}}
-    <div class="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
-        <div class="flex flex-wrap items-center gap-3">
-
-            {{-- Hari Ini --}}
-            <button wire:click="applyPreset('hari_ini')"
-                @class(['rounded-xl px-4 py-2.5 text-sm font-semibold transition',
-                    'bg-orange-500 text-white shadow-sm' => $preset === 'hari_ini',
-                    'border border-zinc-200 bg-white text-zinc-600 hover:border-orange-300 hover:text-orange-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' => $preset !== 'hari_ini',
-                ])>
-                📅 Hari Ini
-            </button>
-
-            {{-- Minggu Ini --}}
-            <button wire:click="applyPreset('minggu_ini')"
-                @class(['rounded-xl px-4 py-2.5 text-sm font-semibold transition',
-                    'bg-orange-500 text-white shadow-sm' => $preset === 'minggu_ini',
-                    'border border-zinc-200 bg-white text-zinc-600 hover:border-orange-300 hover:text-orange-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' => $preset !== 'minggu_ini',
-                ])>
-                📆 Minggu Ini
-            </button>
-
-            {{-- Bulanan + dropdown bulan --}}
-            <div class="flex items-center gap-1">
-                <button wire:click="applyPreset('bulanan')"
-                    @class(['rounded-l-xl px-4 py-2.5 text-sm font-semibold transition border',
-                        'bg-orange-500 text-white border-orange-500 shadow-sm' => $preset === 'bulanan',
-                        'border-zinc-200 bg-white text-zinc-600 hover:border-orange-300 hover:text-orange-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' => $preset !== 'bulanan',
-                    ])>
-                    🗓 Bulanan
-                </button>
-                <select wire:model.live="selectedMonth"
-                    wire:change="applyPreset('bulanan')"
-                    class="rounded-r-xl border border-l-0 border-zinc-200 bg-white px-3 py-2.5 text-sm text-zinc-700 focus:border-orange-400 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">
-                    @foreach(['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'] as $i => $bulanLabel)
-                        <option value="{{ $i + 1 }}">{{ $bulanLabel }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            {{-- Tahun + dropdown tahun --}}
-            <div class="flex items-center gap-1">
-                <button wire:click="applyPreset('tahun')"
-                    @class(['rounded-l-xl px-4 py-2.5 text-sm font-semibold transition border',
-                        'bg-orange-500 text-white border-orange-500 shadow-sm' => $preset === 'tahun',
-                        'border-zinc-200 bg-white text-zinc-600 hover:border-orange-300 hover:text-orange-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' => $preset !== 'tahun',
-                    ])>
-                    📊 Tahun
-                </button>
-                <select wire:model.live="selectedYear"
-                    wire:change="applyPreset('tahun')"
-                    class="rounded-r-xl border border-l-0 border-zinc-200 bg-white px-3 py-2.5 text-sm text-zinc-700 focus:border-orange-400 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">
-                    @foreach(range(now()->year, 2020) as $yr)
-                        <option value="{{ $yr }}">{{ $yr }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-        </div>
-
-        {{-- Info periode aktif --}}
-        @if($dari && $sampai)
-            <p class="mt-3 text-xs text-zinc-400">
-                📌 Menampilkan:
-                <span class="font-semibold text-zinc-600 dark:text-zinc-300">
-                    {{ \Carbon\Carbon::parse($dari)->translatedFormat('d M Y') }}
-                    @if($dari !== $sampai)
-                        — {{ \Carbon\Carbon::parse($sampai)->translatedFormat('d M Y') }}
-                    @endif
-                </span>
-            </p>
-        @endif
-    </div>
-
-    @if(!empty($this->report))
-        @php $r = $this->report; @endphp
-
-        {{-- ═══════════════════════════════════════════════════════════════════
-             KPI CARDS
-        ═══════════════════════════════════════════════════════════════════ --}}
-        <div class="grid grid-cols-2 gap-4 lg:grid-cols-5">
-
-            {{-- Revenue --}}
-            <div class="flex flex-col gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 p-5 dark:border-emerald-800/40 dark:bg-emerald-900/20">
-                <div class="flex items-center gap-2">
-                    <span class="text-xl">💰</span>
-                    <p class="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Total Revenue</p>
-                </div>
-                <p class="text-2xl font-black text-emerald-800 dark:text-emerald-300">
-                    Rp {{ number_format($r['revenue'], 0, ',', '.') }}
-                </p>
-                <p class="text-xs text-emerald-600">{{ $r['order_count'] }} pesanan</p>
-            </div>
-
-            {{-- HPP --}}
-            <div class="flex flex-col gap-2 rounded-2xl border border-red-200 bg-red-50 p-5 dark:border-red-800/40 dark:bg-red-900/20">
-                <div class="flex items-center gap-2">
-                    <span class="text-xl">🥩</span>
-                    <p class="text-xs font-semibold text-red-700 dark:text-red-400">Total HPP</p>
-                </div>
-                <p class="text-2xl font-black text-red-800 dark:text-red-300">
-                    Rp {{ number_format($r['total_hpp'], 0, ',', '.') }}
-                </p>
-                <p class="text-xs text-red-600">Harga pokok bahan baku</p>
-            </div>
-
-            {{-- Gross Profit --}}
-            <div class="flex flex-col gap-2 rounded-2xl border border-blue-200 bg-blue-50 p-5 dark:border-blue-800/40 dark:bg-blue-900/20">
-                <div class="flex items-center gap-2">
-                    <span class="text-xl">📈</span>
-                    <p class="text-xs font-semibold text-blue-700 dark:text-blue-400">Laba Kotor</p>
-                </div>
-                <p class="text-2xl font-black text-blue-800 dark:text-blue-300">
-                    Rp {{ number_format($r['gross_profit'], 0, ',', '.') }}
-                </p>
-                <p class="text-xs text-blue-600">Margin {{ $r['gross_margin_pct'] }}%</p>
-            </div>
-
-            {{-- Total Expense --}}
-            <div class="flex flex-col gap-2 rounded-2xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-800/40 dark:bg-amber-900/20">
-                <div class="flex items-center gap-2">
-                    <span class="text-xl">📤</span>
-                    <p class="text-xs font-semibold text-amber-700 dark:text-amber-400">Total Expense</p>
-                </div>
-                <p class="text-2xl font-black text-amber-800 dark:text-amber-300">
-                    Rp {{ number_format($r['total_expenses'], 0, ',', '.') }}
-                </p>
-                <p class="text-xs text-amber-600">Biaya operasional</p>
-            </div>
-
-            {{-- Net Profit --}}
-            @php $netPositive = $r['net_profit'] >= 0; @endphp
-            <div @class([
-                'flex flex-col gap-2 rounded-2xl border p-5',
-                'border-emerald-300 bg-emerald-500 text-white' => $netPositive,
-                'border-red-300 bg-red-500 text-white' => !$netPositive,
-            ])>
-                <div class="flex items-center gap-2">
-                    <span class="text-xl">{{ $netPositive ? '✅' : '❌' }}</span>
-                    <p class="text-xs font-semibold opacity-80">{{ $netPositive ? 'Laba Bersih' : 'Rugi Bersih' }}</p>
-                </div>
-                <p class="text-2xl font-black">
-                    Rp {{ number_format(abs($r['net_profit']), 0, ',', '.') }}
-                </p>
-                <p class="text-xs opacity-70">Net margin {{ $r['net_margin_pct'] }}%</p>
-            </div>
-        </div>
-
-        {{-- ═══════════════════════════════════════════════════════════════════
-             TWO COLUMNS: Income Statement + Expense Breakdown
-        ═══════════════════════════════════════════════════════════════════ --}}
-        <div class="grid gap-4 lg:grid-cols-2">
-
-            {{-- Income Statement --}}
-            <div class="rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
-                <div class="border-b border-zinc-100 px-5 py-4 dark:border-zinc-800">
-                    <h3 class="font-bold text-zinc-800 dark:text-white">📋 Laporan Laba-Rugi</h3>
-                    <p class="text-xs text-zinc-400 mt-0.5">
-                        {{ \Carbon\Carbon::parse($r['period_from'])->translatedFormat('d M Y') }}
-                        —
-                        {{ \Carbon\Carbon::parse($r['period_to'])->translatedFormat('d M Y') }}
-                    </p>
-                </div>
-                <div class="p-5 space-y-1">
-                    @foreach($r['summary'] as $row)
-                        <div @class([
-                            'flex items-center justify-between rounded-xl px-4 py-3',
-                            'bg-emerald-50' => $row['type'] === 'income',
-                            'bg-red-50' => $row['type'] === 'expense',
-                            'bg-blue-50 font-bold' => $row['type'] === 'subtotal',
-                            'bg-zinc-900 text-white' => $row['type'] === 'total',
-                        ])>
-                            <span @class([
-                                'text-sm',
-                                'text-emerald-800' => $row['type'] === 'income',
-                                'text-red-800' => $row['type'] === 'expense',
-                                'text-blue-800 font-semibold' => $row['type'] === 'subtotal',
-                                'text-white font-bold' => $row['type'] === 'total',
-                            ])>
-                                {{ $row['label'] }}
-                            </span>
-                            <span @class([
-                                'text-sm font-bold tabular-nums',
-                                'text-emerald-700' => $row['type'] === 'income',
-                                'text-red-700' => $row['type'] === 'expense',
-                                'text-blue-700' => $row['type'] === 'subtotal',
-                                'text-white text-base' => $row['type'] === 'total',
-                            ])>
-                                @if($row['amount'] < 0)
-                                    − Rp {{ number_format(abs($row['amount']), 0, ',', '.') }}
-                                @else
-                                    Rp {{ number_format($row['amount'], 0, ',', '.') }}
-                                @endif
-                            </span>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-
-            {{-- Expense Breakdown --}}
-            <div class="rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
-                <div class="border-b border-zinc-100 px-5 py-4 dark:border-zinc-800">
-                    <h3 class="font-bold text-zinc-800 dark:text-white">📊 Rincian Pengeluaran</h3>
-                </div>
-                <div class="p-5 space-y-3">
-                    @if(empty($r['expenses_by_category']))
-                        <div class="flex flex-col items-center py-8 text-center">
-                            <span class="text-4xl">📭</span>
-                            <p class="mt-3 text-sm text-zinc-400">Tidak ada pengeluaran pada periode ini</p>
-                        </div>
-                    @else
-                        @php $totalExp = $r['total_expenses']; @endphp
-                        @foreach($r['expenses_by_category'] as $cat => $amount)
-                            @php $pct = $totalExp > 0 ? round($amount / $totalExp * 100, 1) : 0; @endphp
-                            <div>
-                                <div class="mb-1 flex items-center justify-between">
-                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">{{ $cat }}</span>
-                                    <span class="text-sm font-bold text-zinc-900 dark:text-white">
-                                        Rp {{ number_format($amount, 0, ',', '.') }}
-                                        <span class="ml-1 text-xs font-normal text-zinc-400">({{ $pct }}%)</span>
-                                    </span>
-                                </div>
-                                <div class="h-2 w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
-                                    <div
-                                        class="h-full rounded-full bg-amber-400 transition-all duration-500"
-                                        style="width: {{ $pct }}%"
-                                    ></div>
-                                </div>
-                            </div>
-                        @endforeach
-                    @endif
-                </div>
-            </div>
-        </div>
-
-        {{-- ═══════════════════════════════════════════════════════════════════
-             TOP MENU ITEMS
-        ═══════════════════════════════════════════════════════════════════ --}}
-        @if(!empty($this->topItems))
-            <div class="rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
-                <div class="border-b border-zinc-100 px-5 py-4 dark:border-zinc-800">
-                    <h3 class="font-bold text-zinc-800 dark:text-white">🏆 Top 10 Menu Terlaris</h3>
-                    <p class="text-xs text-zinc-400 mt-0.5">Berdasarkan revenue tertinggi</p>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-zinc-100 dark:divide-zinc-800">
-                        <thead class="bg-zinc-50 dark:bg-zinc-800/60">
-                            <tr>
-                                <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-zinc-500">#</th>
-                                <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-zinc-500">Menu</th>
-                                <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-zinc-500">Qty</th>
-                                <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-zinc-500">Revenue</th>
-                                <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-zinc-500">HPP</th>
-                                <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-zinc-500">Laba</th>
-                                <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-zinc-500">Margin</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
-                            @foreach($this->topItems as $i => $item)
-                                <tr class="transition hover:bg-zinc-50 dark:hover:bg-zinc-800/40">
-                                    <td class="px-5 py-3 text-sm font-bold text-zinc-400">{{ $i + 1 }}</td>
-                                    <td class="px-5 py-3 text-sm font-semibold text-zinc-800 dark:text-zinc-200">
-                                        {{ $item['menu_item_name'] }}
-                                    </td>
-                                    <td class="px-5 py-3 text-right text-sm text-zinc-600">{{ $item['total_qty'] }}x</td>
-                                    <td class="px-5 py-3 text-right text-sm font-medium text-emerald-700">
-                                        Rp {{ number_format($item['total_revenue'], 0, ',', '.') }}
-                                    </td>
-                                    <td class="px-5 py-3 text-right text-sm text-red-600">
-                                        Rp {{ number_format($item['total_hpp'], 0, ',', '.') }}
-                                    </td>
-                                    <td class="px-5 py-3 text-right text-sm font-bold text-blue-700">
-                                        Rp {{ number_format($item['gross_profit'], 0, ',', '.') }}
-                                    </td>
-                                    <td class="px-5 py-3 text-right">
-                                        <span @class([
-                                            'inline-block rounded-full px-2.5 py-0.5 text-xs font-bold',
-                                            'bg-emerald-100 text-emerald-700' => $item['margin_pct'] >= 30,
-                                            'bg-amber-100 text-amber-700' => $item['margin_pct'] >= 15 && $item['margin_pct'] < 30,
-                                            'bg-red-100 text-red-700' => $item['margin_pct'] < 15,
-                                        ])>
-                                            {{ $item['margin_pct'] }}%
-                                        </span>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        @endif
-
-        {{-- ═══════════════════════════════════════════════════════════════════
-             DAILY TREND TABLE
-        ═══════════════════════════════════════════════════════════════════ --}}
-        @if(!empty($this->dailyTrend))
-            <div class="rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
-                <div class="border-b border-zinc-100 px-5 py-4 dark:border-zinc-800">
-                    <h3 class="font-bold text-zinc-800 dark:text-white">📅 Tren Harian</h3>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-zinc-100 dark:divide-zinc-800">
-                        <thead class="bg-zinc-50 dark:bg-zinc-800/60">
-                            <tr>
-                                <th class="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-zinc-500">Tanggal</th>
-                                <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-zinc-500">Revenue</th>
-                                <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-zinc-500">HPP</th>
-                                <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-zinc-500">Laba Kotor</th>
-                                <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-zinc-500">Expense</th>
-                                <th class="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-zinc-500">Net Profit</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
-                            @foreach($this->dailyTrend as $day)
-                                @php $isProfit = $day['net_profit'] >= 0; @endphp
-                                <tr class="transition hover:bg-zinc-50 dark:hover:bg-zinc-800/40">
-                                    <td class="px-5 py-3 text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                                        {{ \Carbon\Carbon::parse($day['date'])->translatedFormat('d M Y, l') }}
-                                    </td>
-                                    <td class="px-5 py-3 text-right text-sm text-emerald-700">Rp {{ number_format($day['revenue'], 0, ',', '.') }}</td>
-                                    <td class="px-5 py-3 text-right text-sm text-red-600">Rp {{ number_format($day['hpp'], 0, ',', '.') }}</td>
-                                    <td class="px-5 py-3 text-right text-sm font-medium text-blue-600">Rp {{ number_format($day['gross_profit'], 0, ',', '.') }}</td>
-                                    <td class="px-5 py-3 text-right text-sm text-amber-700">Rp {{ number_format($day['expenses'], 0, ',', '.') }}</td>
-                                    <td class="px-5 py-3 text-right">
-                                        <span @class([
-                                            'text-sm font-bold',
-                                            'text-emerald-700' => $isProfit,
-                                            'text-red-600' => !$isProfit,
-                                        ])>
-                                            {{ $isProfit ? '+' : '-' }}Rp {{ number_format(abs($day['net_profit']), 0, ',', '.') }}
-                                        </span>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        @endif
-
-    @else
-        {{-- Empty State --}}
-        <div class="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-zinc-300 bg-white py-20 dark:border-zinc-700 dark:bg-zinc-900">
-            <span class="text-6xl">📊</span>
-            <p class="mt-4 text-lg font-semibold text-zinc-500">Pilih periode untuk melihat laporan</p>
-            <p class="mt-1 text-sm text-zinc-400">Gunakan tombol preset atau isi tanggal secara manual</p>
+    {{-- Flash Status/Error --}}
+    @if(session('error'))
+        <div class="bg-error-container/20 border border-error text-error px-4 py-3 rounded-xl text-sm flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">error</span>
+            {{ session('error') }}
         </div>
     @endif
+
+    {{-- ── Financial Summary Cards ─────────────────────────────────── --}}
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-card-gap">
+        {{-- Total Revenue --}}
+        <div class="bg-surface border border-surface-variant rounded-xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-shadow">
+            <p class="font-body-md text-body-md text-on-surface-variant mb-2">Total Revenue</p>
+            <p class="font-headline-lg text-headline-lg text-secondary">Rp {{ number_format($rev, 0, ',', '.') }}</p>
+        </div>
+        {{-- Laba Kotor --}}
+        <div class="bg-surface border border-surface-variant rounded-xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-shadow">
+            <p class="font-body-md text-body-md text-on-surface-variant mb-2">Laba Kotor</p>
+            <p class="font-headline-lg text-headline-lg text-secondary">Rp {{ number_format($gross, 0, ',', '.') }}</p>
+        </div>
+        {{-- Total HPP --}}
+        <div class="bg-surface border border-surface-variant rounded-xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-shadow">
+            <p class="font-body-md text-body-md text-on-surface-variant mb-2">Total HPP</p>
+            <p class="font-headline-lg text-headline-lg text-tertiary">Rp {{ number_format($cogs, 0, ',', '.') }}</p>
+        </div>
+        {{-- Total Expense --}}
+        <div class="bg-surface border border-surface-variant rounded-xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-shadow">
+            <p class="font-body-md text-body-md text-on-surface-variant mb-2">Total Expense</p>
+            <p class="font-headline-lg text-headline-lg text-error">Rp {{ number_format($exp, 0, ',', '.') }}</p>
+        </div>
+        {{-- Laba Bersih (Hero) --}}
+        <div class="bg-surface border border-surface-variant border-t-4 border-t-secondary-container rounded-xl p-5 shadow-[0_8px_30px_rgba(253,192,3,0.15)] hover:shadow-[0_8px_30px_rgba(253,192,3,0.25)] transition-shadow lg:col-span-1 md:col-span-2">
+            <p class="font-label-caps text-label-caps text-on-surface-variant mb-2 uppercase">Laba Bersih</p>
+            <p class="font-headline-lg text-headline-lg font-bold text-secondary">Rp {{ number_format($net, 0, ',', '.') }}</p>
+        </div>
+    </section>
+
+    {{-- ── Main Data Section ────────────────────────────────────────── --}}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-card-gap">
+
+        {{-- Donut Chart: Pengeluaran Operasional --}}
+        <section class="lg:col-span-1 bg-surface border border-surface-variant rounded-xl p-container-padding shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col">
+            <h3 class="font-headline-md text-headline-md text-on-surface mb-6">Pengeluaran Operasional</h3>
+            <div class="flex-1 flex flex-col items-center justify-center relative min-h-[250px]">
+                <div class="w-48 h-48 rounded-full border-[16px] border-surface-container-high relative"
+                     style="background: conic-gradient(#bc000a 0% 45%, #fdc003 45% 75%, #5a5c5e 75% 100%); mask-image: radial-gradient(transparent 55%, black 56%); -webkit-mask-image: radial-gradient(transparent 55%, black 56%);">
+                </div>
+                <div class="absolute inset-0 flex items-center justify-center flex-col">
+                    <span class="font-body-md text-body-md text-on-surface-variant">Total</span>
+                    <span class="font-headline-md text-headline-md font-bold text-on-surface">{{ number_format($exp, 0, ',', '.') }}</span>
+                </div>
+            </div>
+            <div class="mt-8 flex flex-col gap-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-primary"></div>
+                        <span class="font-body-md text-body-md text-on-surface">Gaji Karyawan</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="font-body-md text-body-md font-bold block">{{ $gajiPct ?? '45' }}%</span>
+                        <span class="text-xs text-on-surface-variant">{{ $gajiNominal ?? 'Rp 0' }}</span>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-secondary-container"></div>
+                        <span class="font-body-md text-body-md text-on-surface">Operasional &amp; Listrik</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="font-body-md text-body-md font-bold block">{{ $operasionalPct ?? '30' }}%</span>
+                        <span class="text-xs text-on-surface-variant">{{ $operasionalNominal ?? 'Rp 0' }}</span>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-tertiary"></div>
+                        <span class="font-body-md text-body-md text-on-surface">Lain-lain</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="font-body-md text-body-md font-bold block">{{ $lainPct ?? '25' }}%</span>
+                        <span class="text-xs text-on-surface-variant">{{ $lainNominal ?? 'Rp 0' }}</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {{-- Top Menu Terlaris Table --}}
+        <section class="lg:col-span-2 bg-surface border border-surface-variant rounded-xl p-container-padding shadow-[0_4px_20px_rgba(0,0,0,0.03)] overflow-hidden flex flex-col">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="font-headline-md text-headline-md text-on-surface">Top Menu Terlaris</h3>
+                <a href="{{ route('menu.index') }}" wire:navigate class="text-primary text-sm font-bold hover:underline">Lihat Semua</a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-surface-variant">
+                            <th class="py-3 px-4 font-label-caps text-label-caps text-on-surface-variant uppercase w-16 text-center">Rank</th>
+                            <th class="py-3 px-4 font-label-caps text-label-caps text-on-surface-variant uppercase">Menu</th>
+                            <th class="py-3 px-4 font-label-caps text-label-caps text-on-surface-variant uppercase text-right">Terjual</th>
+                            <th class="py-3 px-4 font-label-caps text-label-caps text-on-surface-variant uppercase text-right">Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($top as $index => $item)
+                            <tr class="border-b border-surface-variant hover:bg-surface-container-low transition-colors cursor-default">
+                                <td class="py-3 px-4 text-center">
+                                    <div class="w-8 h-8 rounded-full {{ $index < 3 ? 'bg-secondary-container text-on-secondary-container' : 'bg-surface-container text-on-surface-variant' }} flex items-center justify-center font-bold mx-auto text-sm">{{ $index + 1 }}</div>
+                                </td>
+                                <td class="py-3 px-4 font-body-lg text-body-lg text-on-surface">{{ $item['menu_item_name'] ?? ($item->menu_item_name ?? '-') }}</td>
+                                <td class="py-3 px-4 font-body-md text-body-md text-on-surface-variant text-right">{{ number_format($item['total_qty'] ?? ($item->total_qty ?? 0), 0, ',', '.') }} porsi</td>
+                                <td class="py-3 px-4 font-body-lg text-body-lg font-bold text-on-surface text-right">Rp {{ number_format($item['total_revenue'] ?? ($item->total_revenue ?? 0), 0, ',', '.') }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="py-12 text-center text-on-surface-variant font-body-md text-body-md">Belum ada data penjualan</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
 
 </div>

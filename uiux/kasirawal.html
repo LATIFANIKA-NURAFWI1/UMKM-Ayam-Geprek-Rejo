@@ -1,0 +1,206 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>DAPUR — GEPREK REJO KDS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#936e69",
+                        "inverse-primary": "#ffb4aa",
+                        "on-tertiary-container": "#fcfdfe",
+                        "on-surface-variant": "#5e3f3b",
+                        "surface-bright": "#f7f9ff",
+                        "surface-container-highest": "#e0e3e8",
+                        "surface-dim": "#d7dadf",
+                        "secondary-container": "#fdc003",
+                        "primary": "#bc000a",
+                        "surface": "#f7f9ff",
+                        "secondary-fixed": "#ffdf9e",
+                        "on-tertiary-fixed-variant": "#454748",
+                        "tertiary": "#5a5c5e",
+                        "inverse-on-surface": "#eef1f6",
+                        "on-surface": "#181c20",
+                        "error": "#ba1a1a",
+                        "background": "#f7f9ff",
+                        "on-secondary-fixed-variant": "#5b4300",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2d3135",
+                        "outline-variant": "#e8bcb6",
+                        "on-primary-fixed-variant": "#930006",
+                        "primary-container": "#e61919",
+                        "surface-container-high": "#e5e8ee",
+                        "on-secondary-container": "#6c5000",
+                        "tertiary-fixed": "#e1e3e4",
+                        "primary-fixed": "#ffdad5",
+                        "on-secondary-fixed": "#261a00",
+                        "surface-variant": "#e0e3e8",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f1f4f9",
+                        "surface-container": "#ebeef3",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#c5c7c8",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#191c1d",
+                        "secondary": "#785900",
+                        "surface-tint": "#c0000b",
+                        "tertiary-container": "#737576",
+                        "on-background": "#181c20",
+                        "secondary-fixed-dim": "#fabd00",
+                        "on-primary-container": "#fffbff",
+                        "on-primary-fixed": "#410001",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed-dim": "#ffb4aa"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "card-gap": "16px",
+                        "base": "8px",
+                        "section-margin": "32px",
+                        "container-padding": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "label-caps": ["Inter"],
+                        "order-number": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "order-number": ["48px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "800" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .fill-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col antialiased">
+<!-- TopAppBar -->
+<header class="bg-surface border-b border-outline-variant shadow-sm docked full-width top-0 z-40">
+<div class="flex justify-between items-center w-full px-container-padding py-4">
+<div class="flex items-center gap-4">
+<span class="text-headline-lg font-headline-lg font-bold text-on-surface">DAPUR — GEPREK REJO</span>
+</div>
+<div class="flex items-center gap-6">
+<!-- Clock / Date -->
+<div class="flex flex-col items-end hidden md:flex">
+<span class="text-headline-md font-headline-md text-on-surface" id="live-time">14:30</span>
+<span class="text-body-md font-body-md text-on-surface-variant" id="live-date">Senin, 12 Agustus 2024</span>
+</div>
+<div class="flex gap-2">
+<button aria-label="Toggle Theme" class="p-2 rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200">
+<span class="material-symbols-outlined text-2xl">dark_mode</span>
+</button>
+<button aria-label="Schedule" class="p-2 rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200">
+<span class="material-symbols-outlined text-2xl">schedule</span>
+</button>
+</div>
+<div class="h-8 w-px bg-outline-variant hidden md:block"></div>
+<button class="flex items-center gap-2 text-primary hover:bg-surface-container-high transition-colors duration-200 px-4 py-2 rounded-lg font-label-caps text-label-caps">
+                    Keluar
+                    <span class="material-symbols-outlined text-xl">logout</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow p-container-padding md:p-section-margin overflow-x-hidden">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-section-margin h-[calc(100vh-140px)] min-h-[600px]">
+<!-- Left Column: ANTRIAN MASAK -->
+<section class="bg-surface-container-lowest rounded-[2rem] shadow-[0_4px_24px_rgba(0,0,0,0.04)] border border-[#E9ECEF] flex flex-col overflow-hidden transition-shadow duration-300 hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)] relative">
+<!-- Red Accent Header -->
+<div class="h-2 w-full bg-primary absolute top-0 left-0"></div>
+<div class="p-container-padding flex justify-between items-center border-b border-[#E9ECEF] mt-2">
+<h2 class="text-headline-md font-headline-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary fill-icon">list_alt</span>
+                        ANTRIAN MASAK
+                    </h2>
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-caps text-label-caps">0 pesanan</span>
+</div>
+<!-- Empty State -->
+<div class="flex-grow flex flex-col items-center justify-center p-8 text-center bg-surface-bright">
+<img alt="Dapur siap" class="w-64 h-64 object-contain mb-6 opacity-90 mix-blend-multiply" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiMyPWPl4IELr-PsLuzA5O9ltjMlb_h7XBWIfEAo6nr-rCofoWfKsqzy2q5S52ZtMHL_KYUoiJWbIi10ihrPzXBqH6YPe4EHHPYDEFfLVPE8EJyvzJBRN_z0JeVeB2ySzXzrypdbnIs3HnAr5J0pm-JmXayzwhQ1zUra-P1vgei5AR64zPksMnnEZnOVyb-rYsPeetu8xOdDEsCTI4RO8VpW7qv66S39hGZdJRLu6TCpettrZqukUVHMq_AgnGFu8t63NNDBRJOXw">
+<h3 class="text-headline-md font-headline-md text-on-surface mb-2">Dapur Siap!</h3>
+<p class="text-body-lg font-body-lg text-on-surface-variant max-w-sm">Belum ada pesanan masuk. Istirahat sejenak atau siapkan bahan.</p>
+</div>
+</section>
+<!-- Right Column: SEDANG DIMASAK -->
+<section class="bg-surface-container-lowest rounded-[2rem] shadow-[0_4px_24px_rgba(0,0,0,0.04)] border border-[#E9ECEF] flex flex-col overflow-hidden transition-shadow duration-300 hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)] relative">
+<!-- Gold Accent Header -->
+<div class="h-2 w-full bg-secondary-container absolute top-0 left-0"></div>
+<div class="p-container-padding flex justify-between items-center border-b border-[#E9ECEF] mt-2">
+<h2 class="text-headline-md font-headline-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary fill-icon">outdoor_grill</span>
+                        SEDANG DIMASAK
+                    </h2>
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-caps text-label-caps">0 pesanan</span>
+</div>
+<!-- Empty State -->
+<div class="flex-grow flex flex-col items-center justify-center p-8 text-center bg-surface-bright">
+<img alt="Sedang dimasak" class="w-64 h-64 object-contain mb-6 opacity-90 mix-blend-multiply" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhjUuxHrISYS39LC3vWU6B_Oh5hE2FwNNGX3JXKmtkvmjzkmqqaR7rhYafLVI0Jr4sawsWguzFOUtAC2u5k-OKpVu7VEbJpocliVWdNnpQaaaCOpHw2hTpEgCSuf5MYrnzFUgXPIETrn4MFIiqnG9lhn9IG3v417OiMjWD8XcOnNRRBPFib8wgdqxpz16b6DwVvndY4m4fo4ePVa9y25fj-sksM7KV2_5OKRjoKFCW3dcjGzjjKEcqqg4U89H7XBinLSgoOZtpmp4">
+<h3 class="text-headline-md font-headline-md text-on-surface mb-2">Panci Bersih</h3>
+<p class="text-body-lg font-body-lg text-on-surface-variant max-w-sm">Semua pesanan telah disajikan. Menunggu antrian berikutnya.</p>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="bg-surface-container border-t border-outline-variant shadow-lg fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 px-4 md:hidden">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined text-2xl fill-icon">list_alt</span>
+<span class="font-label-caps text-label-caps mt-1">Antrian</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">outdoor_grill</span>
+<span class="font-label-caps text-label-caps mt-1">Proses</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">history</span>
+<span class="font-label-caps text-label-caps mt-1">Riwayat</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-variant rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">restaurant_menu</span>
+<span class="font-label-caps text-label-caps mt-1">Menu</span>
+</a>
+</nav>
+<script>
+        // Simple script to update time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('live-time').textContent = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('live-date').textContent = now.toLocaleDateString('id-ID', options);
+        }
+        
+        setInterval(updateTime, 60000); // Update every minute
+        updateTime(); // Initial call
+    </script>
+</body></html>
