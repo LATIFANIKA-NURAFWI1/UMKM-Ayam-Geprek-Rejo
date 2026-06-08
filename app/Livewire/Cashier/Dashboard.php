@@ -198,10 +198,10 @@ class Dashboard extends Component
         $currentCount = $pending->count();
         if ($this->lastPendingCount >= 0 && $currentCount > $this->lastPendingCount) {
             $newest = $pending->first();
-            $this->dispatch('new-order', [
-                'queue_number' => $newest ? $newest->queue_number : '?',
-                'order_number' => $newest ? $newest->order_number : '',
-            ]);
+            $this->dispatch('new-order',
+                queue_number: $newest ? $newest->queue_number : '?',
+                order_number: $newest ? $newest->order_number : '',
+            );
         }
         $this->lastPendingCount = $currentCount;
 

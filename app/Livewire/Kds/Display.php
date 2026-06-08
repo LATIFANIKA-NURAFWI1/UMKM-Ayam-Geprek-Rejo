@@ -167,10 +167,10 @@ class Display extends Component
         $currentCount = $antrianMasak->count();
         if ($this->lastAntrianCount >= 0 && $currentCount > $this->lastAntrianCount) {
             $newest = $antrianMasak->first();
-            $this->dispatch('new-order', [
-                'queue_number' => $newest ? $newest->queue_number : '?',
-                'order_number' => $newest ? $newest->order_number : '',
-            ]);
+            $this->dispatch('new-order',
+                queue_number: $newest ? $newest->queue_number : '?',
+                order_number: $newest ? $newest->order_number : '',
+            );
         }
         $this->lastAntrianCount = $currentCount;
 
