@@ -197,7 +197,9 @@ class PointService
 
         $lastCode = null;
         while ($member->points >= 150) {
-            \Illuminate\Support\Facades\DB::statement('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
+            if (\Illuminate\Support\Facades\DB::getDriverName() !== 'sqlite') {
+                \Illuminate\Support\Facades\DB::statement('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ');
+            }
             $lastCode = \Illuminate\Support\Facades\DB::transaction(function () use ($member) {
                 // Re-fetch member under lock to avoid race conditions
                 $memberLocked = Member::lockForUpdate()->find($member->id);
@@ -228,6 +230,7 @@ class PointService
 
                 // Create the Voucher
                 \App\Models\Voucher::create([
+                    'member_id'        => $memberLocked->id,
                     'code'             => $code,
                     'name'             => 'Gratis 1 Paket Nasi Ayam Geprek',
                     'description'      => 'Reward member penukaran 150 poin. Berlaku untuk 1 Paket Nasi Ayam Geprek gratis.',

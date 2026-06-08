@@ -500,6 +500,74 @@
                                 {{ $voucherError }}
                             </p>
                         @endif
+
+                        {{-- Available Vouchers List --}}
+                        @if($this->availableVouchers->isNotEmpty())
+                            <div class="mt-4 pt-4 border-t border-gray-100 space-y-2.5">
+                                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Voucher Tersedia ({{ $this->availableVouchers->count() }})</p>
+                                
+                                <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                                    @foreach($this->availableVouchers as $voucher)
+                                        @php
+                                            $discountText = $voucher->discount_type === 'percentage' 
+                                                ? 'Diskon ' . (int)$voucher->discount_value . '%'
+                                                : 'Diskon Rp ' . number_format($voucher->discount_value, 0, ',', '.');
+                                            
+                                            $minTrans = (float)$voucher->minimum_order > 0
+                                                ? 'Min. Belanja Rp ' . number_format($voucher->minimum_order, 0, ',', '.')
+                                                : 'Tanpa Min. Belanja';
+                                        @endphp
+                                        <div class="relative flex items-center bg-gradient-to-r from-[#fff8f7] to-white border border-[#f5d7d3] hover:border-[#bc000a] rounded-xl overflow-hidden shadow-sm hover:shadow transition-all duration-300 group">
+                                            
+                                            {{-- Left Ticket Cutout/Side --}}
+                                            <div class="w-12 bg-[#bc000a]/5 flex flex-col items-center justify-center py-4 border-r-2 border-dashed border-[#f5d7d3] flex-shrink-0">
+                                                <span class="text-xl group-hover:scale-110 transition-transform duration-300">🎁</span>
+                                            </div>
+                                            
+                                            {{-- Right Ticket Info --}}
+                                            <div class="flex-1 min-w-0 p-3 flex items-center justify-between gap-3">
+                                                <div class="min-w-0">
+                                                    <h4 class="font-jakarta font-bold text-gray-900 text-sm leading-snug truncate">
+                                                        {{ $voucher->name }}
+                                                    </h4>
+                                                    <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
+                                                        <span class="text-xs font-bold text-[#bc000a]">{{ $discountText }}</span>
+                                                        <span class="text-gray-300 text-[10px]">•</span>
+                                                        <span class="text-[10px] text-gray-500 font-medium">{{ $minTrans }}</span>
+                                                    </div>
+                                                    <div class="flex items-center gap-2 mt-2">
+                                                        <span class="text-[9px] font-mono font-bold bg-[#ffdad5] text-[#bc000a] px-1.5 py-0.5 rounded uppercase tracking-wider">
+                                                            {{ $voucher->code }}
+                                                        </span>
+                                                        @if($voucher->expires_at)
+                                                            <span class="text-[9px] text-gray-400">
+                                                                s/d {{ $voucher->expires_at->translatedFormat('d M Y') }}
+                                                            </span>
+                                                        @endif
+                                                        @if($voucher->member_only)
+                                                            <span class="text-[9px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">
+                                                                Member
+                                                            </span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                
+                                                <button type="button" 
+                                                    wire:click="selectVoucher('{{ $voucher->code }}')"
+                                                    wire:loading.attr="disabled"
+                                                    class="px-3 py-1.5 bg-[#bc000a] hover:bg-[#c0000b] text-white text-xs font-bold rounded-lg transition active:scale-95 flex-shrink-0 shadow-sm shadow-[#bc000a]/10 hover:shadow-md">
+                                                    Gunakan
+                                                </button>
+                                            </div>
+                                            
+                                            {{-- Small ticket circular cutouts for aesthetics --}}
+                                            <div class="absolute left-11 -top-1.5 w-3 h-3 bg-white border-b border-r border-[#f5d7d3] rounded-full"></div>
+                                            <div class="absolute left-11 -bottom-1.5 w-3 h-3 bg-white border-t border-r border-[#f5d7d3] rounded-full"></div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
                     @endif
                 </div>
             </div>

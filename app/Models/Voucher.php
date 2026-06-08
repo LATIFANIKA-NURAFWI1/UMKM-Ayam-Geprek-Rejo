@@ -12,6 +12,7 @@ class Voucher extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'member_id',
         'code',
         'name',
         'description',
@@ -47,6 +48,11 @@ class Voucher extends Model
     public function uses(): HasMany
     {
         return $this->hasMany(VoucherUse::class);
+    }
+
+    public function member(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Member::class);
     }
 
     // ─── Scopes ──────────────────────────────────────────────────────────────

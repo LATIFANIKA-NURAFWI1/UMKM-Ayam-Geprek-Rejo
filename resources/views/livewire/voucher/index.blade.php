@@ -69,10 +69,16 @@
                         </div>
                     </div>
 
-                    <span class="px-3 py-1 rounded-full border text-[11px] font-bold uppercase tracking-wider
-                                 {{ $isAktif ? 'border-secondary-fixed-dim bg-[#fff7e6] text-secondary-fixed-dim' : 'border-surface-variant bg-surface-container text-on-surface-variant' }}">
-                        {{ $isAktif ? 'Aktif' : 'Tidak Aktif' }}
-                    </span>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <span class="px-3 py-1 rounded-full border text-[11px] font-bold uppercase tracking-wider
+                                     {{ $voucher->member_only ? 'border-blue-300 bg-blue-50/50 text-blue-600' : 'border-emerald-300 bg-emerald-50/50 text-emerald-600' }}">
+                            {{ $voucher->member_only ? 'Member' : 'Umum' }}
+                        </span>
+                        <span class="px-3 py-1 rounded-full border text-[11px] font-bold uppercase tracking-wider
+                                     {{ $isAktif ? 'border-secondary-fixed-dim bg-[#fff7e6] text-secondary-fixed-dim' : 'border-surface-variant bg-surface-container text-on-surface-variant' }}">
+                            {{ $isAktif ? 'Aktif' : 'Tidak Aktif' }}
+                        </span>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-surface-variant/50">
@@ -244,6 +250,22 @@
                                    class="flex-1 bg-surface-container-low border border-transparent rounded-lg px-3 py-3 font-body-md text-body-md text-on-surface transition-all focus:bg-surface-container-lowest focus:border-secondary-container focus:ring-1 focus:ring-secondary-container focus:outline-none">
                         </div>
                         @error('formEndDate')
+                            <p class="text-primary text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Tipe Akses Voucher (Umum vs Member) --}}
+                    <div>
+                        <label class="font-label-caps text-label-caps text-on-surface-variant mb-2 uppercase block">Tipe Akses Voucher</label>
+                        <div class="relative">
+                            <select wire:model="formMemberOnly"
+                                    class="w-full bg-surface-container-low border border-transparent rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface appearance-none transition-all focus:bg-surface-container-lowest focus:border-secondary-container focus:ring-1 focus:ring-secondary-container focus:outline-none pr-10">
+                                <option value="0">Umum (Bisa digunakan oleh semua customer)</option>
+                                <option value="1">Khusus Member (Hanya untuk customer yang login)</option>
+                            </select>
+                            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">expand_more</span>
+                        </div>
+                        @error('formMemberOnly')
                             <p class="text-primary text-xs mt-1">{{ $message }}</p>
                         @enderror
                     </div>

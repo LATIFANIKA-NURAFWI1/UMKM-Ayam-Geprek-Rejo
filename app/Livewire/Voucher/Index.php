@@ -36,6 +36,7 @@ class Index extends Component
     public string  $formEndDate       = '';
     public string  $formMaxUses       = '';
     public bool    $formIsActive      = true;
+    public bool    $formMemberOnly    = false;
 
     // ─── Delete ──────────────────────────────────────────────────────────────
 
@@ -79,6 +80,7 @@ class Index extends Component
         $this->formEndDate       = $v->expires_at ? $v->expires_at->toDateString() : today()->addMonth()->toDateString();
         $this->formMaxUses       = $v->max_uses ? (string) $v->max_uses : '';
         $this->formIsActive      = (bool) $v->is_active;
+        $this->formMemberOnly    = (bool) $v->member_only;
         $this->showForm          = true;
     }
 
@@ -93,6 +95,7 @@ class Index extends Component
             'formStartDate'     => ['nullable', 'date'],
             'formEndDate'       => ['nullable', 'date'],
             'formMaxUses'       => ['nullable', 'integer', 'min:1'],
+            'formMemberOnly'    => ['required', 'boolean'],
         ];
 
         // Validasi diskon persentase max 100
@@ -131,6 +134,7 @@ class Index extends Component
             'expires_at'    => $this->formEndDate ?: null,
             'max_uses'      => $this->formMaxUses ? (int) $this->formMaxUses : null,
             'is_active'     => $this->formIsActive,
+            'member_only'   => filter_var($this->formMemberOnly, FILTER_VALIDATE_BOOLEAN),
         ];
 
         if ($this->editingId) {
@@ -208,5 +212,6 @@ class Index extends Component
         $this->formEndDate       = today()->addMonth()->toDateString();
         $this->formMaxUses       = '';
         $this->formIsActive      = true;
+        $this->formMemberOnly    = false;
     }
 }

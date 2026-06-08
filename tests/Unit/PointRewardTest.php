@@ -41,9 +41,10 @@ test('auto redeem reward at 150 points', function () {
     $vouchers = Voucher::where('code', 'like', 'FREE-GEPREK-%')->get();
     expect($vouchers)->toHaveCount(2);
 
-    $vouchers->each(function ($voucher) {
+    $vouchers->each(function ($voucher) use ($member) {
         expect($voucher->discount_type)->toBe('fixed');
         expect($voucher->max_uses)->toBe(1);
+        expect($voucher->member_id)->toBe($member->id);
     });
 
     // Verify session has the codes

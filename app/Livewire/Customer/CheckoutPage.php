@@ -171,6 +171,43 @@ class CheckoutPage extends Component
         $this->voucherError    = '';
     }
 
+    #[Computed]
+    public function availableVouchers()
+    {
+        $query = \App\Models\Voucher::active()
+            ->where(function ($q) {
+                // Skenario 1: Voucher pribadi milik member yang sedang login
+                if ($this->loggedInMemberId !== null) {
+                    $q->where('member_id', $this->loggedInMemberId);
+                } else {
+                    $q->whereRaw('1 = 0');
+                }
+            })
+            ->orWhere(function ($q) {
+                // Skenario 2: Voucher umum/promo dari owner
+                $q->whereNull('member_id');
+                
+                if ($this->loggedInMemberId === null) {
+                    // Pelanggan non-member hanya melihat voucher umum non-member-only
+                    $q->where('member_only', false);
+                }
+            });
+
+        // Filter agar uses_count < max_uses (atau max_uses = 0/unlimited)
+        $query->where(function ($q) {
+            $q->where('max_uses', 0)
+              ->orWhereRaw('uses_count < max_uses');
+        });
+
+        return $query->get();
+    }
+
+    public function selectVoucher(string $code): void
+    {
+        $this->voucherCode = $code;
+        $this->applyVoucher();
+    }
+
     // =========================================================================
     // MEMBER
     // =========================================================================
@@ -309,7 +346,14 @@ class CheckoutPage extends Component
 
     public function closeRewardPopup(): void
     {
+        $redeemed = session('reward_vouchers_redeemed', []);
         session()->forget('reward_vouchers_redeemed');
+
+        if (! empty($redeemed)) {
+            // Auto apply the first redeemed voucher code
+            $this->voucherCode = $redeemed[0];
+            $this->applyVoucher();
+        }
     }
 
     // =========================================================================
