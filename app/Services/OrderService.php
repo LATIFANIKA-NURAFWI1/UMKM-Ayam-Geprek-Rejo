@@ -132,10 +132,8 @@ class OrderService
                 ]);
             }
 
-            // 5. Redeem poin (jika ada)
-            if ($member && $pointsRedeemed > 0) {
-                $this->pointService->redeemPoints($member, $order, $pointsRedeemed);
-            }
+            // 5. JANGAN potong poin di sini — poin hanya dipotong saat kasir konfirmasi (confirmPayment)
+            //    Order sudah mencatat points_redeemed & points_redeemed_amount untuk referensi kasir.
 
             Log::info("OrderService: Order #{$orderNumber} (queue: {$queueNumber}) dibuat.");
 
@@ -204,8 +202,19 @@ class OrderService
             // Refresh total_hpp setelah freeze
             $order->refresh();
 
-            // ── STEP 4 & 5: Proses poin & voucher (jika ada member) ────────
+            // ── STEP 4: Proses poin earn & REDEEM (ATOMIC) ─────────────────
             if ($order->member) {
+                // REDEEM: Potong poin jika pesanan menggunakan redeem
+                // Poin baru dipotong DI SINI (bukan saat createOrder)
+                if ((int) $order->points_redeemed > 0) {
+                    // Re-fetch member dengan lock untuk cegah race condition
+                    $memberLocked = \App\Models\Member::lockForUpdate()->findOrFail($order->member_id);
+                    $this->pointService->redeemPoints($memberLocked, $order, (int) $order->points_redeemed);
+                    $order->member = $memberLocked->refresh(); // sinkronisasi state
+                }
+
+                // EARN: Hitung poin dari total_amount (setelah diskon)
+                // Catatan: jika total_amount = 0 (full redeem), poin yang didapat = 0
                 $this->pointService->earnPoints($order->member, $order);
             }
 

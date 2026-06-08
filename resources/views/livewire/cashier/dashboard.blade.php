@@ -197,15 +197,19 @@
                                     </div>
                                 @endif
 
-                                {{-- Discount Info --}}
-                                @if($order->discount_amount > 0 || $order->points_redeemed_amount > 0)
+                                {{-- Badge Promo Poin Member --}}
+                                @if((int)$order->points_redeemed > 0)
+                                    <div class="flex items-center gap-1.5 rounded-lg bg-amber-50 border border-amber-200 px-3 py-1.5">
+                                        <span class="text-sm">✨</span>
+                                        <span class="text-xs font-bold text-amber-700">Promo Poin Member</span>
+                                        <span class="ml-auto text-xs text-amber-600">{{ $order->points_redeemed }} poin → −Rp {{ number_format($order->points_redeemed_amount, 0, ',', '.') }}</span>
+                                    </div>
+                                @endif
+
+                                {{-- Discount Info (Voucher) --}}
+                                @if($order->discount_amount > 0)
                                     <div class="rounded-lg bg-green-50 px-3 py-1.5 text-xs text-green-700">
-                                        @if($order->discount_amount > 0)
-                                            <span>🎟 Voucher: -Rp {{ number_format($order->discount_amount, 0, ',', '.') }}</span>
-                                        @endif
-                                        @if($order->points_redeemed_amount > 0)
-                                            <span class="ml-2">⭐ Poin: -Rp {{ number_format($order->points_redeemed_amount, 0, ',', '.') }}</span>
-                                        @endif
+                                        <span>🎟 Voucher: -Rp {{ number_format($order->discount_amount, 0, ',', '.') }}</span>
                                     </div>
                                 @endif
 
@@ -295,6 +299,11 @@
                             {{-- Customer --}}
                             @if($order->member)
                                 <p class="mb-1 truncate text-xs font-medium text-gray-600">⭐ {{ $order->member->name }}</p>
+                            @endif
+
+                            {{-- Badge Promo Poin --}}
+                            @if((int)$order->points_redeemed > 0)
+                                <span class="mb-1 inline-block rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-700">✨ Promo Poin</span>
                             @endif
 
                             {{-- Type --}}
