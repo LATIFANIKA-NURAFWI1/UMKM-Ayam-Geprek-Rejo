@@ -18,7 +18,9 @@ use App\Livewire\Stok\Index as StokIndex;
 use App\Livewire\Voucher\Index as VoucherIndex;
 use Illuminate\Support\Facades\Route;
 
-Route::view("/", "welcome")->name("home");
+Route::get("/", function () {
+    return redirect()->route('login');
+})->name("home");
 
 // ── Post-Login Redirect (berdasarkan role) ───────────────────────────────────
 Route::get('/redirect-by-role', function () {
