@@ -108,6 +108,18 @@
                     </flux:sidebar.group>
                 </div>
 
+                {{-- ── Staf & Shift ────────────────────────────── --}}
+                <div class="sidebar-group-separator">
+                    <flux:sidebar.group :heading="__('Staf')" class="grid">
+                        <flux:sidebar.item icon="user-group"
+                            :href="route('staf.index')"
+                            :current="request()->routeIs('staf.*')"
+                            wire:navigate>
+                            {{ __('Staf & Shift') }}
+                        </flux:sidebar.item>
+                    </flux:sidebar.group>
+                </div>
+
             </flux:sidebar.nav>
 
             <flux:spacer />
