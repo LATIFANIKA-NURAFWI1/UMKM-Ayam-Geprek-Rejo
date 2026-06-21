@@ -7,6 +7,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -14,7 +15,8 @@ use Laravel\Fortify\Contracts\PasskeyUser;
 use Laravel\Fortify\PasskeyAuthenticatable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
-#[Fillable(['name', 'email', 'password', 'role'])]
+// is_active ditambahkan untuk kebutuhan REQ-FUNC-039 / N9.1
+#[Fillable(['name', 'email', 'password', 'role', 'is_active'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements PasskeyUser
 {
@@ -30,7 +32,8 @@ class User extends Authenticatable implements PasskeyUser
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'         => 'hashed',
+            'is_active'        => 'boolean', // Cast agar mudah digunakan sebagai bool
         ];
     }
 
@@ -38,10 +41,39 @@ class User extends Authenticatable implements PasskeyUser
     // ROLE HELPERS
     // =========================================================================
 
+    // =========================================================================
+    // RELASI
+    // =========================================================================
+
+    /**
+     * Satu User memiliki banyak jadwal shift.
+     * Digunakan untuk REQ-FUNC-040.
+     */
+    public function shifts(): HasMany
+    {
+        return $this->hasMany(StaffShift::class)->orderBy('shift_date');
+    }
+
+    // =========================================================================
+    // ROLE & STATUS HELPERS
+    // =========================================================================
+
     /** Apakah user ini adalah owner/admin? */
     public function isOwner(): bool
     {
         return $this->role === 'owner';
+    }
+
+    /** Apakah user ini adalah staf (bukan owner)? */
+    public function isStaff(): bool
+    {
+        return in_array($this->role, ['kasir', 'kds', 'inventory']);
+    }
+
+    /** Apakah akun user ini aktif? Digunakan middleware & N9.1. */
+    public function isActive(): bool
+    {
+        return (bool) $this->is_active;
     }
 
     /** Apakah user ini kasir? */

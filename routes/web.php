@@ -82,6 +82,10 @@ Route::middleware(["auth", "verified", "role:owner"])->group(function () {
 
     // Laporan
     Route::get("laporan", LaporanIndex::class)->name("laporan.index");
+
+    // ── Modul 9: Manajemen Staf & Jadwal Shift (REQ-FUNC-039 & REQ-FUNC-040) ──
+    // Hanya dapat diakses oleh owner (proteksi via middleware 'role:owner')
+    Route::get("staf", \App\Livewire\Admin\StaffManager::class)->name("staf.index");
 });
 
 // ── Kasir Dashboard (role: kasir) ─────────────────────────────────────────────
