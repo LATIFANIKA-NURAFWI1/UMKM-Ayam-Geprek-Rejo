@@ -21,14 +21,14 @@
                     {{-- Member Button --}}
                     @if($loggedInMemberId)
                         <button wire:click="$set('showMemberModal', true)"
-                                class="font-inter flex items-center gap-1 sm:gap-1.5 rounded-full bg-white text-[#6c5000] px-2.5 py-1.5 sm:px-3 sm:py-1.5 text-[9px] sm:text-[10px] font-bold shadow-sm transition active:scale-95 hover:opacity-90">
+                                class="font-inter flex items-center gap-1 sm:gap-1.5 rounded-full bg-white text-[#6c5000] px-2.5 py-1.5 sm:px-3 sm:py-1.5 text-[9px] sm:text-[10px] font-bold shadow-sm border border-[#bc000a]/30 transition active:scale-95 hover:opacity-90">
                             <span class="material-symbols-outlined text-[13px] sm:text-[14px]">star</span>
                             <span class="hidden min-[380px]:inline">{{ explode(' ', $loggedInMemberName)[0] }} · </span>
                             <span>{{ number_format($loggedInMemberPoints, 0, ',', '.') }} P</span>
                         </button>
                     @else
                         <button wire:click="$set('showMemberModal', true)"
-                                class="font-inter bg-white text-[#6c5000] py-1.5 px-2.5 sm:px-3 rounded-full transition-all active:scale-95 flex items-center gap-1 shadow-sm text-[9px] sm:text-[10px] font-bold tracking-wide hover:bg-gray-50">
+                                class="font-inter bg-white text-[#6c5000] py-1.5 px-2.5 sm:px-3 rounded-full transition-all active:scale-95 flex items-center gap-1 shadow-sm border border-[#bc000a]/30 text-[9px] sm:text-[10px] font-bold tracking-wide hover:bg-gray-50">
                             <span class="material-symbols-outlined text-[13px] sm:text-[14px]">account_circle</span>
                             <span class="hidden min-[380px]:inline">DAFTAR / LOGIN</span>
                             <span class="min-[380px]:hidden">LOGIN</span>
@@ -37,7 +37,7 @@
 
                     {{-- Cart Icon --}}
                     <div wire:click="goToCheckout"
-                         class="relative p-1.5 sm:p-2 bg-white rounded-full shadow-sm transition-colors cursor-pointer flex-shrink-0 hover:bg-gray-50">
+                         class="relative p-1.5 sm:p-2 bg-white rounded-full shadow-sm border border-[#bc000a]/30 transition-colors cursor-pointer flex-shrink-0 hover:bg-gray-50">
                         <span class="material-symbols-outlined text-[24px] sm:text-[28px] text-[#6c5000]">shopping_cart</span>
                         @if($this->cartCount > 0)
                             <span class="font-inter absolute -top-0.5 -right-0.5 bg-[#bc000a] text-white w-4 h-4 sm:w-5 sm:h-5 rounded-full text-[8px] sm:text-[10px] flex items-center justify-center font-bold border-2 border-white">
@@ -61,7 +61,7 @@
                     type="text"
                     wire:model.live.debounce.300ms="searchQuery"
                     placeholder="Cari menu favoritmu..."
-                    class="w-full font-jakarta bg-white border-none rounded-xl py-3 sm:py-4 pl-12 sm:pl-14 pr-10 shadow-[0_4px_16px_-6px_rgba(0,0,0,0.08)] focus:ring-2 focus:ring-[#bc000a]/20 text-sm sm:text-[15px] leading-[22px] font-medium placeholder:text-[#5e3f3b]/50 transition-all outline-none"
+                    class="w-full font-jakarta bg-white border border-[#bc000a]/20 rounded-xl py-3 sm:py-4 pl-12 sm:pl-14 pr-10 shadow-[0_4px_16px_-6px_rgba(0,0,0,0.08)] focus:ring-2 focus:ring-[#bc000a]/30 text-sm sm:text-[15px] leading-[22px] font-medium placeholder:text-[#5e3f3b]/50 transition-all outline-none"
                 >
                 {{-- Clear search --}}
                 @if($searchQuery)
@@ -89,8 +89,8 @@
                     wire:click="$set('activeCategory', null)"
                     @class([
                         'font-inter whitespace-nowrap px-4 py-1.5 rounded-full text-[11px] leading-[16px] tracking-[0.05em] font-bold transition-all',
-                        'bg-[#bc000a] text-white shadow-lg' => $activeCategory === null,
-                        'bg-white text-[#181c20] hover:bg-[#e5e8ee] border border-[#e0e3e8]' => $activeCategory !== null,
+                        'bg-[#bc000a] text-white shadow-lg border border-[#bc000a]' => $activeCategory === null,
+                        'bg-white text-[#181c20] hover:bg-[#e5e8ee] border border-[#bc000a]/25' => $activeCategory !== null,
                     ])
                 >
                     SEMUA
@@ -101,8 +101,8 @@
                         wire:click="$set('activeCategory', {{ $cat->id }})"
                         @class([
                             'font-inter whitespace-nowrap px-4 py-1.5 rounded-full text-[11px] leading-[16px] tracking-[0.05em] font-bold transition-all',
-                            'bg-[#bc000a] text-white shadow-lg' => $activeCategory === $cat->id,
-                            'bg-white text-[#181c20] hover:bg-[#e5e8ee] border border-[#e0e3e8]' => $activeCategory !== $cat->id,
+                            'bg-[#bc000a] text-white shadow-lg border border-[#bc000a]' => $activeCategory === $cat->id,
+                            'bg-white text-[#181c20] hover:bg-[#e5e8ee] border border-[#bc000a]/25' => $activeCategory !== $cat->id,
                         ])
                     >
                         @if($cat->icon)<span>{{ $cat->icon }}</span> @endif{{ strtoupper($cat->name) }}
@@ -166,7 +166,7 @@
                     @php $inCart = isset($this->cart[$item->id]); @endphp
 
                     {{-- Menu Card --}}
-                    <div class="bg-white rounded-xl overflow-hidden shadow-[0_10px_30px_-12px_rgba(0,0,0,0.08)] border border-[#e0e3e8]/50 flex flex-col hover:-translate-y-1 transition-transform duration-300">
+                    <div class="bg-white rounded-xl overflow-hidden shadow-[0_10px_30px_-12px_rgba(0,0,0,0.08)] border border-[#bc000a]/15 flex flex-col hover:-translate-y-1 hover:border-[#bc000a]/35 transition-all duration-300">
 
                         {{-- Image --}}
                         <div wire:click="showMenuDetail({{ $item->id }})" class="aspect-[4/3] w-full relative overflow-hidden cursor-pointer">
@@ -258,7 +258,7 @@
     {{-- ══════════════════════════════════════════════════════════ --}}
     {{-- FIXED BOTTOM CART BAR                                     --}}
     {{-- ══════════════════════════════════════════════════════════ --}}
-    <div class="fixed bottom-0 left-0 w-full z-50 bg-white border-t border-gray-200 shadow-[0_-4px_16px_rgba(0,0,0,0.08)]">
+    <div class="fixed bottom-0 left-0 w-full z-50 bg-white border-t border-[#bc000a]/20 shadow-[0_-4px_16px_rgba(0,0,0,0.08)]">
         <div class="max-w-3xl mx-auto w-full px-4 py-3">
         @if($this->cartCount > 0)
                 <button
