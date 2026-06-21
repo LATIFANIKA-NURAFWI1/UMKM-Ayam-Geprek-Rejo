@@ -2,7 +2,7 @@
   <img src="public/images/logo.png" alt="Logo Ayam Geprek Rejo" width="120"/>
 </p>
 
-<h1 align="center">🍗 Sistem Self-Order UMKM Ayam Geprek Rejo</h1>
+<h1 align="center">Sistem Self-Order UMKM Ayam Geprek Rejo</h1>
 
 <p align="center">
   Aplikasi pemesanan mandiri berbasis web untuk UMKM Ayam Geprek Rejo.<br>
@@ -20,7 +20,7 @@
 
 ---
 
-## 📋 Daftar Isi
+## Daftar Isi
 
 - [Tentang Aplikasi](#-tentang-aplikasi)
 - [Fitur Unggulan](#-fitur-unggulan)
@@ -36,7 +36,7 @@
 
 ---
 
-## 📖 Tentang Aplikasi
+## Tentang Aplikasi
 
 **Sistem Self-Order UMKM Ayam Geprek Rejo** adalah aplikasi web yang memungkinkan pelanggan memesan makanan secara mandiri (self-order) tanpa perlu antri di kasir. Aplikasi ini dirancang khusus untuk kebutuhan UMKM restoran cepat saji dengan manajemen operasional yang terintegrasi.
 
@@ -46,9 +46,9 @@
 
 ---
 
-## ✨ Fitur Unggulan
+## Fitur Unggulan
 
-### 👥 Untuk Pelanggan (Customer)
+### Untuk Pelanggan (Customer)
 - **Self-Order Menu** — Pesan makanan langsung dari meja tanpa antri
 - **Filter Kategori** — Tampilan menu berdasarkan kategori (Ayam Geprek, Camilan, Ekstra, Minuman, Paket Nasi)
 - **Keranjang Belanja** — Tambah, kurangi, dan kelola item pesanan
@@ -57,7 +57,7 @@
 - **Program Member & Poin** — Daftar member untuk kumpulkan poin dan dapatkan reward
 - **Status Pesanan Real-time** — Pantau status pesanan secara langsung
 
-### 🔑 Untuk Owner/Admin
+### Untuk Owner/Admin
 - **Dashboard Analitik** — Ringkasan penjualan, pendapatan, dan statistik harian
 - **Manajemen Menu** — Tambah, edit, hapus menu beserta gambar dan kategori
 - **Manajemen Kategori** — Kelola kategori menu
@@ -69,11 +69,11 @@
 - **Laporan Penjualan** — Laporan laba rugi dengan export PDF
 - **Pengaturan QRIS** — Upload gambar QRIS untuk pembayaran
 
-### 🖥️ Untuk Kasir
+### Untuk Kasir
 - **Dashboard Kasir** — Tampilan pesanan masuk dan antrian pembayaran
 - **Konfirmasi Pembayaran** — Tandai pesanan sebagai lunas
 
-### 🍳 Untuk Tim Dapur (KDS - Kitchen Display System)
+### Untuk Tim Dapur (KDS - Kitchen Display System)
 - **Display Pesanan Dapur** — Tampilan real-time pesanan yang perlu disiapkan
 - **Update Status Masak** — Tandai pesanan sebagai sedang diproses atau selesai
 
@@ -111,7 +111,7 @@ Pastikan sistem Anda telah terinstall:
 
 ---
 
-## 🚀 Instalasi Lokal (Development)
+## Instalasi Lokal (Development)
 
 ### Langkah 1: Clone Repository
 
@@ -207,7 +207,7 @@ php artisan serve
 
 ---
 
-## 🌐 Deployment ke Production Server (HestiaCP)
+## Deployment ke Production Server (HestiaCP)
 
 ### Prasyarat Server
 - PHP 8.3+
@@ -321,13 +321,13 @@ php artisan view:cache
 ### Langkah 9: Verifikasi
 
 Buka browser dan akses domain Anda. Pastikan:
-- ✅ Halaman menu tampil dengan benar
-- ✅ Login berfungsi dengan akun yang tersedia
-- ✅ Gambar menu tampil (jika gambar tidak tampil, upload manual via File Manager)
+- Halaman menu tampil dengan benar
+- Login berfungsi dengan akun yang tersedia
+- Gambar menu tampil (jika gambar tidak tampil, upload manual via File Manager)
 
 ---
 
-## 🗄 Struktur Database
+## Struktur Database
 
 Aplikasi menggunakan 14 tabel utama:
 
@@ -350,16 +350,16 @@ Aplikasi menggunakan 14 tabel utama:
 
 ---
 
-## 🔑 Akun Default Sistem
+## Akun Default Sistem
 
 Akun-akun berikut tersedia setelah import database / menjalankan seeder:
 
 | Role          | Email                     | Password   | Akses                         |
 |--------------|---------------------------|------------|-------------------------------|
-| 🔑 Owner/Admin | `owner@geprekrejo.com`  | `owner123` | Seluruh fitur manajemen       |
-| 🖥️ Kasir 1    | `kasir1@geprekrejo.com`  | `kasir123` | Dashboard kasir               |
-| 🖥️ Kasir 2    | `kasir2@geprekrejo.com`  | `kasir123` | Dashboard kasir               |
-| 🍳 KDS Dapur  | `dapur@geprekrejo.com`   | `dapur123` | Kitchen Display System (KDS)  |
+| Owner/Admin | `owner@geprekrejo.com`  | `owner123` | Seluruh fitur manajemen       |
+| Kasir 1    | `kasir1@geprekrejo.com`  | `kasir123` | Dashboard kasir               |
+| Kasir 2    | `kasir2@geprekrejo.com`  | `kasir123` | Dashboard kasir               |
+| KDS Dapur  | `dapur@geprekrejo.com`   | `dapur123` | Kitchen Display System (KDS)  |
 
 > **Penting:** Ubah semua password di atas setelah pertama kali login di production!
 
@@ -374,21 +374,21 @@ Buka /order → Pilih Menu → Tambah ke Keranjang
     → Checkout → Konfirmasi Pesanan
     → Bayar via QRIS → Menunggu Konfirmasi Kasir
     → Pesanan Dikonfirmasi → Dapur Siapkan Pesanan
-    → Pesanan Selesai ✅
+    → Pesanan Selesai 
 ```
 
 ### Alur Kasir
 ```
 Login (/kasir) → Lihat Antrian Pesanan
     → Konfirmasi Pembayaran QRIS
-    → Tandai Pesanan Lunas ✅
+    → Tandai Pesanan Lunas
 ```
 
 ### Alur Tim Dapur (KDS)
 ```
 Login (/kds) → Lihat Display Pesanan Masuk
     → Update Status: "Sedang Dimasak"
-    → Update Status: "Selesai" ✅
+    → Update Status: "Selesai" 
 ```
 
 ### Alur Owner/Admin
@@ -401,7 +401,7 @@ Login → Dashboard Analitik
 
 ---
 
-## 🧪 Pengujian BDD (Behavior-Driven Development)
+## Pengujian BDD (Behavior-Driven Development)
 
 Aplikasi ini diuji menggunakan pendekatan **Behavior-Driven Development (BDD)** dengan framework **Pest PHP**.
 
@@ -504,33 +504,31 @@ tests/
 
 ---
 
-## 👨‍💻 Tim Pengembang
+## Tim Pengembang
 
 **Kelompok 8 — Kelas B**  
 Program Studi Informatika — UNJEDIR
 
 | Nama               | Role              |
 |--------------------|-------------------|
-| *(isi nama anggota)* | Backend Developer |
-| *(isi nama anggota)* | Frontend Developer|
-| *(isi nama anggota)* | UI/UX Designer    |
-| *(isi nama anggota)* | Database Engineer |
-
-**Dosen Pengampu:** *(isi nama dosen)*
+| *(Adjeng Mutiara Dewi (H1D024055))* | Backend Developer |
+| *(Rahmadani Hafsari (H1D024057))* | Frontend Developer|
+| *(Nayli Ghassaniy L. N. (H1D024058))* | UI/UX Designer    |
+| *(Latifanika Nurafwi (H1D024099))* | Database Engineer |
 
 ---
 
-## 📝 Catatan Penting
+## Catatan Penting
 
-> ⚠️ File `.env` **tidak** disertakan dalam repository karena mengandung informasi sensitif (kredensial database, application key). Ikuti langkah instalasi untuk membuat file `.env` sendiri.
+> File `.env` **tidak** disertakan dalam repository karena mengandung informasi sensitif (kredensial database, application key). Ikuti langkah instalasi untuk membuat file `.env` sendiri.
 
-> 📁 Folder `storage/app/public/menu` berisi gambar menu. Jika gambar tidak tampil setelah deployment, upload manual gambar-gambar tersebut ke server via File Manager HestiaCP ke path: `public_html/storage/app/public/menu/`.
+> Folder `storage/app/public/menu` berisi gambar menu. Jika gambar tidak tampil setelah deployment, upload manual gambar-gambar tersebut ke server via File Manager HestiaCP ke path: `public_html/storage/app/public/menu/`.
 
-> 🔄 Setelah setiap update code di server, jalankan: `git pull && php artisan optimize:clear && npm run build`
+> Setelah setiap update code di server, jalankan: `git pull && php artisan optimize:clear && npm run build`
 
 ---
 
 <p align="center">
-  Dibuat dengan ❤️ oleh Kelompok 8 — Kelas B Informatika UNJEDIR<br>
+  Dibuat dengan oleh Kelompok 8 — Kelas B Informatika Universitas Jenderal Soedirman<br>
   <em>SDLC: Agile | Testing: BDD (Behavior-Driven Development)</em>
 </p>
