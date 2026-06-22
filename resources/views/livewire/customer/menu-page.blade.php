@@ -9,11 +9,9 @@
         <header class="bg-[#fdc003] border-b border-[#e5ac00]">
             <div class="max-w-7xl mx-auto px-6 py-2 flex justify-between items-center">
                 {{-- Brand --}}
-                <div class="flex flex-col">
-                    <span class="font-inter text-[8px] sm:text-[10px] tracking-widest text-[#6c5000] uppercase font-bold leading-tight">SELF ORDER</span>
-                    <div class="flex items-center gap-2 mt-1">
-                        <img src="{{ asset('images/logo.png') }}" alt="Geprek Rejo" class="h-8 sm:h-10 w-auto object-contain">
-                    </div>
+                <div class="flex items-center gap-2">
+                    <img src="{{ asset('images/logo.png') }}" alt="Geprek Rejo" class="h-8 sm:h-10 w-auto object-contain">
+                    <span class="font-jakarta font-bold text-[#6c5000] text-sm sm:text-base">Geprek Rejo</span>
                 </div>
 
                 {{-- Right Controls: Member + Cart --}}
